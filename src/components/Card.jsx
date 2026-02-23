@@ -23,123 +23,374 @@ const SUIT_ACCENTS = {
 
 function JackSVG({ suit }) {
   const c = SUIT_ACCENTS[suit]
+  const isRed = suit === 'hearts' || suit === 'diamonds'
+  const skinTone = '#f5d0a9'
+  const skinShade = '#e8b88a'
+  const hairColor = isRed ? '#8b5e3c' : '#2a1a0a'
+  const hatColor = isRed ? '#c41e3a' : '#1a1a2e'
+  const hatAccent = isRed ? '#e8485e' : '#3a3a5e'
+  const tunicColor = isRed ? '#c41e3a' : '#1a1a2e'
+  const tunicLight = isRed ? '#e8485e' : '#3a3a5e'
+  const goldTrim = '#d4a844'
+  const goldDark = '#a07828'
   return (
-    <svg viewBox="0 0 80 100" className="face-svg">
-      {/* Background diamond frame */}
-      <polygon points="40,4 72,50 40,96 8,50" fill="none" stroke={c.primary} strokeWidth="1" opacity="0.2" />
-      {/* Hat */}
-      <path d="M24,32 L40,18 L56,32 L52,34 L40,24 L28,34 Z" fill={c.primary} />
-      <circle cx="40" cy="18" r="3" fill={c.secondary} />
-      {/* Head */}
-      <ellipse cx="40" cy="42" rx="12" ry="13" fill={c.tertiary} stroke={c.primary} strokeWidth="1.2" />
-      {/* Eyes */}
-      <ellipse cx="35" cy="40" rx="2" ry="2.5" fill={c.primary} />
-      <ellipse cx="45" cy="40" rx="2" ry="2.5" fill={c.primary} />
-      <circle cx="35.5" cy="39.5" r="0.7" fill="#fff" />
-      <circle cx="45.5" cy="39.5" r="0.7" fill="#fff" />
-      {/* Slight smile */}
-      <path d="M35,47 Q40,51 45,47" fill="none" stroke={c.primary} strokeWidth="1" strokeLinecap="round" />
-      {/* Collar */}
-      <path d="M30,54 L40,60 L50,54" fill="none" stroke={c.primary} strokeWidth="1.5" />
-      <path d="M30,54 L28,62 L40,60 L52,62 L50,54" fill={c.primary} opacity="0.15" />
-      {/* Body / tunic */}
-      <path d="M26,62 L24,88 L56,88 L54,62 Z" fill={c.primary} opacity="0.12" stroke={c.primary} strokeWidth="1" />
-      {/* Decorative belt */}
-      <rect x="28" y="72" width="24" height="3" rx="1.5" fill={c.secondary} opacity="0.5" />
-      {/* Sword */}
-      <line x1="60" y1="36" x2="62" y2="80" stroke={c.secondary} strokeWidth="2" strokeLinecap="round" />
-      <line x1="56" y1="54" x2="66" y2="52" stroke={c.secondary} strokeWidth="2" strokeLinecap="round" />
-      <circle cx="61" cy="53" r="2" fill={c.primary} opacity="0.4" />
-      {/* Suit symbol */}
-      <text x="40" y="92" textAnchor="middle" fontSize="10" fill={c.primary} fontFamily="serif">{SUIT_SYMBOLS[suit]}</text>
+    <svg viewBox="0 0 80 120" className="face-svg">
+      <defs>
+        <clipPath id={`jack-top-${suit}`}><rect x="0" y="0" width="80" height="60" /></clipPath>
+        <clipPath id={`jack-bot-${suit}`}><rect x="0" y="60" width="80" height="60" /></clipPath>
+      </defs>
+      {/* Decorative border */}
+      <rect x="2" y="2" width="76" height="116" rx="4" fill="none" stroke={c.primary} strokeWidth="0.5" opacity="0.2" />
+      {/* === TOP HALF === */}
+      <g clipPath={`url(#jack-top-${suit})`}>
+        {/* Feathered beret/cap */}
+        <ellipse cx="40" cy="18" rx="14" ry="7" fill={hatColor} />
+        <path d="M28,18 Q26,12 30,8 Q36,5 40,10 Q44,5 50,8 Q54,12 52,18" fill={hatColor} stroke={hatAccent} strokeWidth="0.5" />
+        <path d="M34,16 Q32,6 28,4 Q26,2 24,5" fill="none" stroke={goldTrim} strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M32,14 Q30,6 27,5" fill="none" stroke={goldTrim} strokeWidth="0.7" opacity="0.6" strokeLinecap="round" />
+        <ellipse cx="40" cy="19" rx="13" ry="3" fill={hatAccent} opacity="0.5" />
+        <rect x="30" y="17" width="20" height="3" rx="1.5" fill={goldTrim} opacity="0.8" />
+        {/* Hair curling out from under hat */}
+        <path d="M27,20 Q24,26 26,34" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M53,20 Q56,26 54,34" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M26,30 Q23,34 25,36" fill="none" stroke={hairColor} strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M54,30 Q57,34 55,36" fill="none" stroke={hairColor} strokeWidth="1.5" strokeLinecap="round" />
+        {/* Face */}
+        <ellipse cx="40" cy="32" rx="11" ry="12" fill={skinTone} stroke={skinShade} strokeWidth="0.8" />
+        {/* Eyes */}
+        <ellipse cx="36" cy="30" rx="2" ry="1.5" fill="#fff" />
+        <ellipse cx="44" cy="30" rx="2" ry="1.5" fill="#fff" />
+        <circle cx="36.5" cy="30.2" r="1.2" fill={c.primary} />
+        <circle cx="44.5" cy="30.2" r="1.2" fill={c.primary} />
+        <circle cx="37" cy="29.8" r="0.4" fill="#fff" />
+        <circle cx="45" cy="29.8" r="0.4" fill="#fff" />
+        {/* Eyebrows */}
+        <path d="M33,27.5 Q36,26 38.5,27" fill="none" stroke={hairColor} strokeWidth="0.8" />
+        <path d="M41.5,27 Q44,26 47,27.5" fill="none" stroke={hairColor} strokeWidth="0.8" />
+        {/* Nose */}
+        <path d="M40,31 L39,35 L40.5,35.5" fill="none" stroke={skinShade} strokeWidth="0.6" strokeLinecap="round" />
+        {/* Mouth */}
+        <path d="M37,38 Q40,40 43,38" fill="#c47070" stroke="#a05050" strokeWidth="0.4" />
+        {/* Collar - ornate */}
+        <path d="M29,43 L33,48 L40,44 L47,48 L51,43" fill={goldTrim} stroke={goldDark} strokeWidth="0.5" />
+        <path d="M31,44 L40,50 L49,44" fill={tunicColor} opacity="0.3" />
+        {/* Tunic top */}
+        <path d="M25,48 L22,60 L58,60 L55,48 Q40,56 25,48 Z" fill={tunicColor} stroke={tunicColor} strokeWidth="0.5" />
+        <path d="M35,50 L40,58 L45,50" fill={tunicLight} opacity="0.4" />
+        {/* Gold trim on tunic */}
+        <line x1="40" y1="48" x2="40" y2="60" stroke={goldTrim} strokeWidth="1" opacity="0.6" />
+        {/* Leaf/feather held in hand */}
+        <path d="M58,36 Q64,32 66,24 Q62,30 56,34" fill={isRed ? '#4a8c3f' : '#3a6a3a'} stroke={isRed ? '#2d5a27' : '#1a3a1a'} strokeWidth="0.4" />
+        <line x1="57" y1="37" x2="65" y2="26" stroke={isRed ? '#2d5a27' : '#1a3a1a'} strokeWidth="0.5" />
+      </g>
+      {/* === CENTER DIVIDER === */}
+      <line x1="6" y1="60" x2="74" y2="60" stroke={c.primary} strokeWidth="0.3" opacity="0.3" />
+      {/* Suit symbols at center */}
+      <text x="10" y="57" fontSize="8" fill={c.primary} fontFamily="serif">{SUIT_SYMBOLS[suit]}</text>
+      <text x="70" y="65" fontSize="8" fill={c.primary} fontFamily="serif" textAnchor="middle" transform="rotate(180,70,63)">{SUIT_SYMBOLS[suit]}</text>
+      {/* === BOTTOM HALF (mirrored) === */}
+      <g clipPath={`url(#jack-bot-${suit})`} transform="rotate(180,40,90)">
+        {/* Feathered beret/cap */}
+        <ellipse cx="40" cy="18" rx="14" ry="7" fill={hatColor} />
+        <path d="M28,18 Q26,12 30,8 Q36,5 40,10 Q44,5 50,8 Q54,12 52,18" fill={hatColor} stroke={hatAccent} strokeWidth="0.5" />
+        <path d="M34,16 Q32,6 28,4 Q26,2 24,5" fill="none" stroke={goldTrim} strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M32,14 Q30,6 27,5" fill="none" stroke={goldTrim} strokeWidth="0.7" opacity="0.6" strokeLinecap="round" />
+        <ellipse cx="40" cy="19" rx="13" ry="3" fill={hatAccent} opacity="0.5" />
+        <rect x="30" y="17" width="20" height="3" rx="1.5" fill={goldTrim} opacity="0.8" />
+        {/* Hair */}
+        <path d="M27,20 Q24,26 26,34" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M53,20 Q56,26 54,34" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M26,30 Q23,34 25,36" fill="none" stroke={hairColor} strokeWidth="1.5" strokeLinecap="round" />
+        <path d="M54,30 Q57,34 55,36" fill="none" stroke={hairColor} strokeWidth="1.5" strokeLinecap="round" />
+        {/* Face */}
+        <ellipse cx="40" cy="32" rx="11" ry="12" fill={skinTone} stroke={skinShade} strokeWidth="0.8" />
+        <ellipse cx="36" cy="30" rx="2" ry="1.5" fill="#fff" />
+        <ellipse cx="44" cy="30" rx="2" ry="1.5" fill="#fff" />
+        <circle cx="36.5" cy="30.2" r="1.2" fill={c.primary} />
+        <circle cx="44.5" cy="30.2" r="1.2" fill={c.primary} />
+        <circle cx="37" cy="29.8" r="0.4" fill="#fff" />
+        <circle cx="45" cy="29.8" r="0.4" fill="#fff" />
+        <path d="M33,27.5 Q36,26 38.5,27" fill="none" stroke={hairColor} strokeWidth="0.8" />
+        <path d="M41.5,27 Q44,26 47,27.5" fill="none" stroke={hairColor} strokeWidth="0.8" />
+        <path d="M40,31 L39,35 L40.5,35.5" fill="none" stroke={skinShade} strokeWidth="0.6" strokeLinecap="round" />
+        <path d="M37,38 Q40,40 43,38" fill="#c47070" stroke="#a05050" strokeWidth="0.4" />
+        <path d="M29,43 L33,48 L40,44 L47,48 L51,43" fill={goldTrim} stroke={goldDark} strokeWidth="0.5" />
+        <path d="M31,44 L40,50 L49,44" fill={tunicColor} opacity="0.3" />
+        <path d="M25,48 L22,60 L58,60 L55,48 Q40,56 25,48 Z" fill={tunicColor} stroke={tunicColor} strokeWidth="0.5" />
+        <path d="M35,50 L40,58 L45,50" fill={tunicLight} opacity="0.4" />
+        <line x1="40" y1="48" x2="40" y2="60" stroke={goldTrim} strokeWidth="1" opacity="0.6" />
+        <path d="M58,36 Q64,32 66,24 Q62,30 56,34" fill={isRed ? '#4a8c3f' : '#3a6a3a'} stroke={isRed ? '#2d5a27' : '#1a3a1a'} strokeWidth="0.4" />
+        <line x1="57" y1="37" x2="65" y2="26" stroke={isRed ? '#2d5a27' : '#1a3a1a'} strokeWidth="0.5" />
+      </g>
     </svg>
   )
 }
 
 function QueenSVG({ suit }) {
   const c = SUIT_ACCENTS[suit]
+  const isRed = suit === 'hearts' || suit === 'diamonds'
+  const skinTone = '#f5d0a9'
+  const skinShade = '#e8b88a'
+  const hairColor = isRed ? '#8b4513' : '#1a0a00'
+  const dressColor = isRed ? '#c41e3a' : '#1a1a2e'
+  const dressLight = isRed ? '#e8485e' : '#3a3a5e'
+  const goldTrim = '#d4a844'
+  const goldDark = '#a07828'
+  const crownJewel = isRed ? '#2255aa' : '#cc3333'
   return (
-    <svg viewBox="0 0 80 100" className="face-svg">
-      {/* Ornamental arch */}
-      <ellipse cx="40" cy="50" rx="34" ry="44" fill="none" stroke={c.primary} strokeWidth="0.8" opacity="0.12" />
-      {/* Crown */}
-      <path d="M26,30 L28,18 L32,26 L36,14 L40,24 L44,14 L48,26 L52,18 L54,30 Z" fill={c.secondary} stroke={c.primary} strokeWidth="0.8" />
-      <circle cx="36" cy="16" r="2" fill={c.tertiary} stroke={c.primary} strokeWidth="0.5" />
-      <circle cx="40" cy="22" r="2" fill={c.tertiary} stroke={c.primary} strokeWidth="0.5" />
-      <circle cx="44" cy="16" r="2" fill={c.tertiary} stroke={c.primary} strokeWidth="0.5" />
-      {/* Head */}
-      <ellipse cx="40" cy="42" rx="12" ry="13" fill={c.tertiary} stroke={c.primary} strokeWidth="1.2" />
-      {/* Hair flowing */}
-      <path d="M28,38 Q24,50 26,60" fill="none" stroke={c.primary} strokeWidth="1.5" opacity="0.3" />
-      <path d="M52,38 Q56,50 54,60" fill="none" stroke={c.primary} strokeWidth="1.5" opacity="0.3" />
-      {/* Eyes */}
-      <ellipse cx="35" cy="40" rx="2.2" ry="2.8" fill={c.primary} />
-      <ellipse cx="45" cy="40" rx="2.2" ry="2.8" fill={c.primary} />
-      <circle cx="35.7" cy="39.3" r="0.8" fill="#fff" />
-      <circle cx="45.7" cy="39.3" r="0.8" fill="#fff" />
-      {/* Lashes */}
-      <path d="M32,37 L33,38" stroke={c.primary} strokeWidth="0.6" />
-      <path d="M48,37 L47,38" stroke={c.primary} strokeWidth="0.6" />
-      {/* Lips */}
-      <path d="M36,47 Q40,52 44,47" fill={c.secondary} opacity="0.6" />
-      {/* Necklace */}
-      <path d="M30,55 Q40,62 50,55" fill="none" stroke={c.secondary} strokeWidth="1" />
-      <circle cx="40" cy="60" r="2.5" fill={c.secondary} opacity="0.5" />
-      {/* Dress bodice */}
-      <path d="M28,58 Q26,72 24,90 L56,90 Q54,72 52,58 Q40,66 28,58 Z" fill={c.primary} opacity="0.12" stroke={c.primary} strokeWidth="1" />
-      {/* Dress decoration - V pattern */}
-      <path d="M34,68 L40,78 L46,68" fill="none" stroke={c.secondary} strokeWidth="1" opacity="0.5" />
-      <path d="M36,74 L40,82 L44,74" fill="none" stroke={c.secondary} strokeWidth="0.8" opacity="0.35" />
-      {/* Suit symbol */}
-      <text x="40" y="96" textAnchor="middle" fontSize="10" fill={c.primary} fontFamily="serif">{SUIT_SYMBOLS[suit]}</text>
+    <svg viewBox="0 0 80 120" className="face-svg">
+      <defs>
+        <clipPath id={`queen-top-${suit}`}><rect x="0" y="0" width="80" height="60" /></clipPath>
+        <clipPath id={`queen-bot-${suit}`}><rect x="0" y="60" width="80" height="60" /></clipPath>
+      </defs>
+      <rect x="2" y="2" width="76" height="116" rx="4" fill="none" stroke={c.primary} strokeWidth="0.5" opacity="0.2" />
+      {/* === TOP HALF === */}
+      <g clipPath={`url(#queen-top-${suit})`}>
+        {/* Crown - ornate arched crown */}
+        <path d="M28,20 L26,10 L31,16 L34,6 L37,14 L40,4 L43,14 L46,6 L49,16 L54,10 L52,20 Z" fill={goldTrim} stroke={goldDark} strokeWidth="0.8" />
+        <rect x="28" y="18" width="24" height="4" rx="1" fill={goldTrim} stroke={goldDark} strokeWidth="0.5" />
+        {/* Crown jewels */}
+        <circle cx="34" cy="8" r="1.8" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="40" cy="6" r="2.2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="46" cy="8" r="1.8" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="31" cy="14" r="1.2" fill="#fff" opacity="0.7" />
+        <circle cx="49" cy="14" r="1.2" fill="#fff" opacity="0.7" />
+        {/* Cross atop crown */}
+        <line x1="40" y1="1" x2="40" y2="6" stroke={goldDark} strokeWidth="1.2" />
+        <line x1="38" y1="3" x2="42" y2="3" stroke={goldDark} strokeWidth="1" />
+        {/* Hair - elegant waves */}
+        <path d="M28,22 Q24,28 25,38 Q24,42 22,46" fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
+        <path d="M52,22 Q56,28 55,38 Q56,42 58,46" fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
+        <path d="M26,24 Q22,32 24,40" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.5" strokeLinecap="round" />
+        <path d="M54,24 Q58,32 56,40" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.5" strokeLinecap="round" />
+        {/* Face */}
+        <ellipse cx="40" cy="33" rx="11" ry="12" fill={skinTone} stroke={skinShade} strokeWidth="0.8" />
+        {/* Eyes - elegant with lashes */}
+        <ellipse cx="36" cy="31" rx="2.2" ry="1.6" fill="#fff" />
+        <ellipse cx="44" cy="31" rx="2.2" ry="1.6" fill="#fff" />
+        <circle cx="36.3" cy="31.2" r="1.3" fill={c.primary} />
+        <circle cx="44.3" cy="31.2" r="1.3" fill={c.primary} />
+        <circle cx="36.7" cy="30.7" r="0.4" fill="#fff" />
+        <circle cx="44.7" cy="30.7" r="0.4" fill="#fff" />
+        {/* Upper lashes */}
+        <path d="M33.5,29 Q36,28.5 38.5,29.5" fill="none" stroke={hairColor} strokeWidth="0.7" />
+        <path d="M41.5,29.5 Q44,28.5 46.5,29" fill="none" stroke={hairColor} strokeWidth="0.7" />
+        {/* Delicate eyebrows */}
+        <path d="M33,27.5 Q36,26.5 38.5,27.5" fill="none" stroke={hairColor} strokeWidth="0.6" />
+        <path d="M41.5,27.5 Q44,26.5 47,27.5" fill="none" stroke={hairColor} strokeWidth="0.6" />
+        {/* Nose */}
+        <path d="M40,32.5 L39.2,36 Q40,36.8 41,36.3" fill="none" stroke={skinShade} strokeWidth="0.5" strokeLinecap="round" />
+        {/* Lips - fuller, regal */}
+        <path d="M37,39 Q38.5,38 40,39.5 Q41.5,38 43,39 Q41,41 40,41 Q39,41 37,39 Z" fill="#c06060" stroke="#a04040" strokeWidth="0.3" />
+        {/* Necklace */}
+        <path d="M30,44 Q35,47 40,48 Q45,47 50,44" fill="none" stroke={goldTrim} strokeWidth="1" />
+        <circle cx="40" cy="48" r="2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="35" cy="46.5" r="1" fill={goldTrim} />
+        <circle cx="45" cy="46.5" r="1" fill={goldTrim} />
+        {/* Dress bodice */}
+        <path d="M24,46 L20,60 L60,60 L56,46 Q40,55 24,46 Z" fill={dressColor} stroke={dressColor} strokeWidth="0.5" />
+        {/* Dress neckline - sweetheart */}
+        <path d="M28,46 Q34,52 40,48 Q46,52 52,46" fill={dressLight} opacity="0.3" stroke={goldTrim} strokeWidth="0.5" />
+        {/* Dress center decoration */}
+        <line x1="40" y1="48" x2="40" y2="60" stroke={goldTrim} strokeWidth="0.8" opacity="0.6" />
+        {/* Rose/flower held */}
+        <circle cx="62" cy="42" r="3.5" fill={isRed ? '#e84848' : '#d44'} opacity="0.8" />
+        <circle cx="62" cy="42" r="2" fill={isRed ? '#ff6868' : '#e66'} opacity="0.6" />
+        <path d="M62,45 L61,54" stroke="#2d5a27" strokeWidth="1" strokeLinecap="round" />
+        <path d="M61.5,48 Q58,47 57,46" fill="none" stroke="#3a7a3a" strokeWidth="0.6" strokeLinecap="round" />
+      </g>
+      {/* CENTER DIVIDER */}
+      <line x1="6" y1="60" x2="74" y2="60" stroke={c.primary} strokeWidth="0.3" opacity="0.3" />
+      <text x="10" y="57" fontSize="8" fill={c.primary} fontFamily="serif">{SUIT_SYMBOLS[suit]}</text>
+      <text x="70" y="65" fontSize="8" fill={c.primary} fontFamily="serif" textAnchor="middle" transform="rotate(180,70,63)">{SUIT_SYMBOLS[suit]}</text>
+      {/* === BOTTOM HALF (mirrored) === */}
+      <g clipPath={`url(#queen-bot-${suit})`} transform="rotate(180,40,90)">
+        <path d="M28,20 L26,10 L31,16 L34,6 L37,14 L40,4 L43,14 L46,6 L49,16 L54,10 L52,20 Z" fill={goldTrim} stroke={goldDark} strokeWidth="0.8" />
+        <rect x="28" y="18" width="24" height="4" rx="1" fill={goldTrim} stroke={goldDark} strokeWidth="0.5" />
+        <circle cx="34" cy="8" r="1.8" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="40" cy="6" r="2.2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="46" cy="8" r="1.8" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="31" cy="14" r="1.2" fill="#fff" opacity="0.7" />
+        <circle cx="49" cy="14" r="1.2" fill="#fff" opacity="0.7" />
+        <line x1="40" y1="1" x2="40" y2="6" stroke={goldDark} strokeWidth="1.2" />
+        <line x1="38" y1="3" x2="42" y2="3" stroke={goldDark} strokeWidth="1" />
+        <path d="M28,22 Q24,28 25,38 Q24,42 22,46" fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
+        <path d="M52,22 Q56,28 55,38 Q56,42 58,46" fill="none" stroke={hairColor} strokeWidth="3" strokeLinecap="round" />
+        <path d="M26,24 Q22,32 24,40" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.5" strokeLinecap="round" />
+        <path d="M54,24 Q58,32 56,40" fill="none" stroke={hairColor} strokeWidth="2" opacity="0.5" strokeLinecap="round" />
+        <ellipse cx="40" cy="33" rx="11" ry="12" fill={skinTone} stroke={skinShade} strokeWidth="0.8" />
+        <ellipse cx="36" cy="31" rx="2.2" ry="1.6" fill="#fff" />
+        <ellipse cx="44" cy="31" rx="2.2" ry="1.6" fill="#fff" />
+        <circle cx="36.3" cy="31.2" r="1.3" fill={c.primary} />
+        <circle cx="44.3" cy="31.2" r="1.3" fill={c.primary} />
+        <circle cx="36.7" cy="30.7" r="0.4" fill="#fff" />
+        <circle cx="44.7" cy="30.7" r="0.4" fill="#fff" />
+        <path d="M33.5,29 Q36,28.5 38.5,29.5" fill="none" stroke={hairColor} strokeWidth="0.7" />
+        <path d="M41.5,29.5 Q44,28.5 46.5,29" fill="none" stroke={hairColor} strokeWidth="0.7" />
+        <path d="M33,27.5 Q36,26.5 38.5,27.5" fill="none" stroke={hairColor} strokeWidth="0.6" />
+        <path d="M41.5,27.5 Q44,26.5 47,27.5" fill="none" stroke={hairColor} strokeWidth="0.6" />
+        <path d="M40,32.5 L39.2,36 Q40,36.8 41,36.3" fill="none" stroke={skinShade} strokeWidth="0.5" strokeLinecap="round" />
+        <path d="M37,39 Q38.5,38 40,39.5 Q41.5,38 43,39 Q41,41 40,41 Q39,41 37,39 Z" fill="#c06060" stroke="#a04040" strokeWidth="0.3" />
+        <path d="M30,44 Q35,47 40,48 Q45,47 50,44" fill="none" stroke={goldTrim} strokeWidth="1" />
+        <circle cx="40" cy="48" r="2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="35" cy="46.5" r="1" fill={goldTrim} />
+        <circle cx="45" cy="46.5" r="1" fill={goldTrim} />
+        <path d="M24,46 L20,60 L60,60 L56,46 Q40,55 24,46 Z" fill={dressColor} stroke={dressColor} strokeWidth="0.5" />
+        <path d="M28,46 Q34,52 40,48 Q46,52 52,46" fill={dressLight} opacity="0.3" stroke={goldTrim} strokeWidth="0.5" />
+        <line x1="40" y1="48" x2="40" y2="60" stroke={goldTrim} strokeWidth="0.8" opacity="0.6" />
+        <circle cx="62" cy="42" r="3.5" fill={isRed ? '#e84848' : '#d44'} opacity="0.8" />
+        <circle cx="62" cy="42" r="2" fill={isRed ? '#ff6868' : '#e66'} opacity="0.6" />
+        <path d="M62,45 L61,54" stroke="#2d5a27" strokeWidth="1" strokeLinecap="round" />
+        <path d="M61.5,48 Q58,47 57,46" fill="none" stroke="#3a7a3a" strokeWidth="0.6" strokeLinecap="round" />
+      </g>
     </svg>
   )
 }
 
 function KingSVG({ suit }) {
   const c = SUIT_ACCENTS[suit]
+  const isRed = suit === 'hearts' || suit === 'diamonds'
+  const skinTone = '#f5d0a9'
+  const skinShade = '#e8b88a'
+  const hairColor = isRed ? '#6b3a1a' : '#1a0a00'
+  const beardColor = isRed ? '#7b4a2a' : '#2a1a0a'
+  const robeColor = isRed ? '#c41e3a' : '#1a1a2e'
+  const robeLight = isRed ? '#e8485e' : '#3a3a5e'
+  const goldTrim = '#d4a844'
+  const goldDark = '#a07828'
+  const crownJewel = isRed ? '#2255aa' : '#cc3333'
+  const ermineBg = '#f0ead6'
   return (
-    <svg viewBox="0 0 80 100" className="face-svg">
-      {/* Background cross */}
-      <line x1="40" y1="6" x2="40" y2="94" stroke={c.primary} strokeWidth="0.8" opacity="0.08" />
-      <line x1="10" y1="50" x2="70" y2="50" stroke={c.primary} strokeWidth="0.8" opacity="0.08" />
-      {/* Crown - grander than Queen's */}
-      <path d="M22,30 L24,12 L32,24 L40,8 L48,24 L56,12 L58,30 Z" fill={c.secondary} stroke={c.primary} strokeWidth="1" />
-      <rect x="24" y="28" width="32" height="5" rx="1" fill={c.primary} opacity="0.3" />
-      <circle cx="40" cy="10" r="3" fill={c.tertiary} stroke={c.primary} strokeWidth="0.8" />
-      <circle cx="32" cy="22" r="2" fill={c.tertiary} stroke={c.primary} strokeWidth="0.5" />
-      <circle cx="48" cy="22" r="2" fill={c.tertiary} stroke={c.primary} strokeWidth="0.5" />
-      {/* Cross on crown */}
-      <line x1="40" y1="5" x2="40" y2="13" stroke={c.primary} strokeWidth="1.5" />
-      <line x1="37" y1="8" x2="43" y2="8" stroke={c.primary} strokeWidth="1.5" />
-      {/* Head */}
-      <ellipse cx="40" cy="44" rx="13" ry="14" fill={c.tertiary} stroke={c.primary} strokeWidth="1.2" />
-      {/* Beard */}
-      <path d="M29,48 Q32,60 40,64 Q48,60 51,48" fill={c.primary} opacity="0.12" />
-      <path d="M30,49 Q33,58 40,62 Q47,58 50,49" fill="none" stroke={c.primary} strokeWidth="0.8" opacity="0.3" />
-      {/* Eyes - more stern */}
-      <line x1="33" y1="41" x2="38" y2="41" stroke={c.primary} strokeWidth="2.5" strokeLinecap="round" />
-      <line x1="42" y1="41" x2="47" y2="41" stroke={c.primary} strokeWidth="2.5" strokeLinecap="round" />
-      <circle cx="35.5" cy="41" r="0.6" fill="#fff" />
-      <circle cx="44.5" cy="41" r="0.6" fill="#fff" />
-      {/* Eyebrows */}
-      <path d="M32,38 L38,37" stroke={c.primary} strokeWidth="1" strokeLinecap="round" />
-      <path d="M42,37 L48,38" stroke={c.primary} strokeWidth="1" strokeLinecap="round" />
-      {/* Mouth in beard */}
-      <line x1="37" y1="50" x2="43" y2="50" stroke={c.secondary} strokeWidth="1" strokeLinecap="round" />
-      {/* Robe / mantle */}
-      <path d="M22,62 L18,92 L62,92 L58,62 Z" fill={c.primary} opacity="0.12" stroke={c.primary} strokeWidth="1" />
-      {/* Ermine trim */}
-      <path d="M24,64 L40,70 L56,64" fill="none" stroke={c.secondary} strokeWidth="2" />
-      {/* Scepter */}
-      <line x1="18" y1="40" x2="16" y2="86" stroke={c.secondary} strokeWidth="2" strokeLinecap="round" />
-      <circle cx="18" cy="38" r="4" fill={c.secondary} opacity="0.4" stroke={c.primary} strokeWidth="0.8" />
-      <circle cx="18" cy="38" r="1.5" fill={c.tertiary} />
-      {/* Chest cross/medal */}
-      <line x1="40" y1="72" x2="40" y2="84" stroke={c.secondary} strokeWidth="1.5" opacity="0.5" />
-      <line x1="35" y1="78" x2="45" y2="78" stroke={c.secondary} strokeWidth="1.5" opacity="0.5" />
-      {/* Suit symbol */}
-      <text x="40" y="96" textAnchor="middle" fontSize="10" fill={c.primary} fontFamily="serif">{SUIT_SYMBOLS[suit]}</text>
+    <svg viewBox="0 0 80 120" className="face-svg">
+      <defs>
+        <clipPath id={`king-top-${suit}`}><rect x="0" y="0" width="80" height="60" /></clipPath>
+        <clipPath id={`king-bot-${suit}`}><rect x="0" y="60" width="80" height="60" /></clipPath>
+      </defs>
+      <rect x="2" y="2" width="76" height="116" rx="4" fill="none" stroke={c.primary} strokeWidth="0.5" opacity="0.2" />
+      {/* === TOP HALF === */}
+      <g clipPath={`url(#king-top-${suit})`}>
+        {/* Grand crown */}
+        <path d="M25,22 L23,8 L30,16 L35,4 L40,14 L45,4 L50,16 L57,8 L55,22 Z" fill={goldTrim} stroke={goldDark} strokeWidth="0.8" />
+        <rect x="25" y="20" width="30" height="5" rx="1.5" fill={goldTrim} stroke={goldDark} strokeWidth="0.6" />
+        {/* Ermine band on crown */}
+        <rect x="26" y="21" width="28" height="3" rx="1" fill={ermineBg} opacity="0.7" />
+        <circle cx="30" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="35" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="40" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="45" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="50" cy="22.5" r="0.6" fill="#111" />
+        {/* Crown jewels */}
+        <circle cx="35" cy="6" r="2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="40" cy="12" r="1.5" fill="#fff" opacity="0.5" stroke={goldDark} strokeWidth="0.3" />
+        <circle cx="45" cy="6" r="2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="30" cy="14" r="1.3" fill={crownJewel} opacity="0.7" stroke={goldDark} strokeWidth="0.3" />
+        <circle cx="50" cy="14" r="1.3" fill={crownJewel} opacity="0.7" stroke={goldDark} strokeWidth="0.3" />
+        {/* Cross pattée atop crown */}
+        <path d="M40,0 L38.5,3 L40,2.5 L41.5,3 Z" fill={goldDark} />
+        <line x1="40" y1="0" x2="40" y2="5" stroke={goldDark} strokeWidth="1.5" />
+        <line x1="37.5" y1="2.5" x2="42.5" y2="2.5" stroke={goldDark} strokeWidth="1.2" />
+        {/* Hair */}
+        <path d="M27,25 Q24,30 25,38" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M53,25 Q56,30 55,38" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        {/* Face */}
+        <ellipse cx="40" cy="35" rx="12" ry="13" fill={skinTone} stroke={skinShade} strokeWidth="0.8" />
+        {/* Eyes - stern, regal */}
+        <ellipse cx="36" cy="32" rx="2" ry="1.4" fill="#fff" />
+        <ellipse cx="44" cy="32" rx="2" ry="1.4" fill="#fff" />
+        <circle cx="36.3" cy="32.2" r="1.1" fill={c.primary} />
+        <circle cx="44.3" cy="32.2" r="1.1" fill={c.primary} />
+        <circle cx="36.7" cy="31.8" r="0.35" fill="#fff" />
+        <circle cx="44.7" cy="31.8" r="0.35" fill="#fff" />
+        {/* Heavy eyebrows */}
+        <path d="M33,29.5 Q36,28 39,29" fill="none" stroke={hairColor} strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M41,29 Q44,28 47,29.5" fill="none" stroke={hairColor} strokeWidth="1.2" strokeLinecap="round" />
+        {/* Nose */}
+        <path d="M40,33.5 L38.8,37.5 Q40,38.5 41.2,37.8" fill="none" stroke={skinShade} strokeWidth="0.6" strokeLinecap="round" />
+        {/* Mustache */}
+        <path d="M35,39 Q37,41 40,39.5 Q43,41 45,39" fill={beardColor} opacity="0.7" />
+        {/* Beard - full and regal */}
+        <path d="M30,40 Q29,46 32,52 Q36,56 40,57 Q44,56 48,52 Q51,46 50,40" fill={beardColor} opacity="0.25" />
+        <path d="M31,41 Q30,47 33,52 Q37,55 40,56 Q43,55 47,52 Q50,47 49,41" fill="none" stroke={beardColor} strokeWidth="0.6" opacity="0.5" />
+        <path d="M33,44 Q36,48 40,49 Q44,48 47,44" fill="none" stroke={beardColor} strokeWidth="0.4" opacity="0.4" />
+        <path d="M34,47 Q37,51 40,52 Q43,51 46,47" fill="none" stroke={beardColor} strokeWidth="0.4" opacity="0.3" />
+        {/* Mouth (in beard) */}
+        <line x1="38" y1="42" x2="42" y2="42" stroke="#a06060" strokeWidth="0.8" strokeLinecap="round" />
+        {/* Ermine collar / robe top */}
+        <rect x="22" y="52" width="36" height="5" rx="2" fill={ermineBg} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="26" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="31" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="36" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="40" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="44" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="49" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="54" cy="54.5" r="0.6" fill="#111" />
+        {/* Robe */}
+        <path d="M20,56 L16,60 L64,60 L60,56 Z" fill={robeColor} stroke={robeColor} strokeWidth="0.5" />
+        {/* Gold chain/medallion */}
+        <path d="M32,52 Q36,55 40,55 Q44,55 48,52" fill="none" stroke={goldTrim} strokeWidth="0.8" />
+        {/* Scepter */}
+        <line x1="16" y1="30" x2="14" y2="58" stroke={goldDark} strokeWidth="2" strokeLinecap="round" />
+        <circle cx="16" cy="28" r="3.5" fill={goldTrim} stroke={goldDark} strokeWidth="0.6" />
+        <circle cx="16" cy="28" r="1.5" fill={crownJewel} />
+        <line x1="13.5" y1="25.5" x2="18.5" y2="25.5" stroke={goldDark} strokeWidth="1" />
+        <line x1="16" y1="23" x2="16" y2="28" stroke={goldDark} strokeWidth="1" />
+      </g>
+      {/* CENTER DIVIDER */}
+      <line x1="6" y1="60" x2="74" y2="60" stroke={c.primary} strokeWidth="0.3" opacity="0.3" />
+      <text x="10" y="57" fontSize="8" fill={c.primary} fontFamily="serif">{SUIT_SYMBOLS[suit]}</text>
+      <text x="70" y="65" fontSize="8" fill={c.primary} fontFamily="serif" textAnchor="middle" transform="rotate(180,70,63)">{SUIT_SYMBOLS[suit]}</text>
+      {/* === BOTTOM HALF (mirrored) === */}
+      <g clipPath={`url(#king-bot-${suit})`} transform="rotate(180,40,90)">
+        <path d="M25,22 L23,8 L30,16 L35,4 L40,14 L45,4 L50,16 L57,8 L55,22 Z" fill={goldTrim} stroke={goldDark} strokeWidth="0.8" />
+        <rect x="25" y="20" width="30" height="5" rx="1.5" fill={goldTrim} stroke={goldDark} strokeWidth="0.6" />
+        <rect x="26" y="21" width="28" height="3" rx="1" fill={ermineBg} opacity="0.7" />
+        <circle cx="30" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="35" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="40" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="45" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="50" cy="22.5" r="0.6" fill="#111" />
+        <circle cx="35" cy="6" r="2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="40" cy="12" r="1.5" fill="#fff" opacity="0.5" stroke={goldDark} strokeWidth="0.3" />
+        <circle cx="45" cy="6" r="2" fill={crownJewel} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="30" cy="14" r="1.3" fill={crownJewel} opacity="0.7" stroke={goldDark} strokeWidth="0.3" />
+        <circle cx="50" cy="14" r="1.3" fill={crownJewel} opacity="0.7" stroke={goldDark} strokeWidth="0.3" />
+        <path d="M40,0 L38.5,3 L40,2.5 L41.5,3 Z" fill={goldDark} />
+        <line x1="40" y1="0" x2="40" y2="5" stroke={goldDark} strokeWidth="1.5" />
+        <line x1="37.5" y1="2.5" x2="42.5" y2="2.5" stroke={goldDark} strokeWidth="1.2" />
+        <path d="M27,25 Q24,30 25,38" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        <path d="M53,25 Q56,30 55,38" fill="none" stroke={hairColor} strokeWidth="2.5" strokeLinecap="round" />
+        <ellipse cx="40" cy="35" rx="12" ry="13" fill={skinTone} stroke={skinShade} strokeWidth="0.8" />
+        <ellipse cx="36" cy="32" rx="2" ry="1.4" fill="#fff" />
+        <ellipse cx="44" cy="32" rx="2" ry="1.4" fill="#fff" />
+        <circle cx="36.3" cy="32.2" r="1.1" fill={c.primary} />
+        <circle cx="44.3" cy="32.2" r="1.1" fill={c.primary} />
+        <circle cx="36.7" cy="31.8" r="0.35" fill="#fff" />
+        <circle cx="44.7" cy="31.8" r="0.35" fill="#fff" />
+        <path d="M33,29.5 Q36,28 39,29" fill="none" stroke={hairColor} strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M41,29 Q44,28 47,29.5" fill="none" stroke={hairColor} strokeWidth="1.2" strokeLinecap="round" />
+        <path d="M40,33.5 L38.8,37.5 Q40,38.5 41.2,37.8" fill="none" stroke={skinShade} strokeWidth="0.6" strokeLinecap="round" />
+        <path d="M35,39 Q37,41 40,39.5 Q43,41 45,39" fill={beardColor} opacity="0.7" />
+        <path d="M30,40 Q29,46 32,52 Q36,56 40,57 Q44,56 48,52 Q51,46 50,40" fill={beardColor} opacity="0.25" />
+        <path d="M31,41 Q30,47 33,52 Q37,55 40,56 Q43,55 47,52 Q50,47 49,41" fill="none" stroke={beardColor} strokeWidth="0.6" opacity="0.5" />
+        <path d="M33,44 Q36,48 40,49 Q44,48 47,44" fill="none" stroke={beardColor} strokeWidth="0.4" opacity="0.4" />
+        <path d="M34,47 Q37,51 40,52 Q43,51 46,47" fill="none" stroke={beardColor} strokeWidth="0.4" opacity="0.3" />
+        <line x1="38" y1="42" x2="42" y2="42" stroke="#a06060" strokeWidth="0.8" strokeLinecap="round" />
+        <rect x="22" y="52" width="36" height="5" rx="2" fill={ermineBg} stroke={goldDark} strokeWidth="0.4" />
+        <circle cx="26" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="31" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="36" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="40" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="44" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="49" cy="54.5" r="0.6" fill="#111" />
+        <circle cx="54" cy="54.5" r="0.6" fill="#111" />
+        <path d="M20,56 L16,60 L64,60 L60,56 Z" fill={robeColor} stroke={robeColor} strokeWidth="0.5" />
+        <path d="M32,52 Q36,55 40,55 Q44,55 48,52" fill="none" stroke={goldTrim} strokeWidth="0.8" />
+        <line x1="16" y1="30" x2="14" y2="58" stroke={goldDark} strokeWidth="2" strokeLinecap="round" />
+        <circle cx="16" cy="28" r="3.5" fill={goldTrim} stroke={goldDark} strokeWidth="0.6" />
+        <circle cx="16" cy="28" r="1.5" fill={crownJewel} />
+        <line x1="13.5" y1="25.5" x2="18.5" y2="25.5" stroke={goldDark} strokeWidth="1" />
+        <line x1="16" y1="23" x2="16" y2="28" stroke={goldDark} strokeWidth="1" />
+      </g>
     </svg>
   )
 }
