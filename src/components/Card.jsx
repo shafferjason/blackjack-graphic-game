@@ -255,7 +255,6 @@ function KingSVG({ suit }) {
   const hairColor = isRed ? '#6b3a1a' : '#1a0a00'
   const beardColor = isRed ? '#7b4a2a' : '#2a1a0a'
   const robeColor = isRed ? '#c41e3a' : '#1a1a2e'
-  const robeLight = isRed ? '#e8485e' : '#3a3a5e'
   const goldTrim = '#d4a844'
   const goldDark = '#a07828'
   const crownJewel = isRed ? '#2255aa' : '#cc3333'
