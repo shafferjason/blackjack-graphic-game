@@ -5,34 +5,73 @@ import { renderWithSettings } from '../test/renderWithSettings'
 import { GAME_STATES } from '../constants'
 import type { GamePhase } from '../types'
 
+const defaultProps = {
+  chips: 900,
+  bet: 100,
+  canDouble: true,
+  onHit: vi.fn(),
+  onStand: vi.fn(),
+  onDoubleDown: vi.fn(),
+  onNewRound: vi.fn(),
+  onReset: vi.fn(),
+}
+
 describe('ActionControls component', () => {
   it('shows Hit and Stand buttons during PLAYER_TURN', () => {
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.PLAYER_TURN as GamePhase}
-        chips={900}
-        bet={100}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(screen.getByText('Hit')).toBeInTheDocument()
     expect(screen.getByText('Stand')).toBeInTheDocument()
   })
 
+  it('shows Double button during PLAYER_TURN', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canDouble={true}
+      />
+    )
+    expect(screen.getByText('Double')).toBeInTheDocument()
+    expect(screen.getByText('Double')).not.toBeDisabled()
+  })
+
+  it('disables Double button when canDouble is false', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canDouble={false}
+      />
+    )
+    expect(screen.getByText('Double')).toBeDisabled()
+  })
+
+  it('calls onDoubleDown when Double is clicked', () => {
+    const onDoubleDown = vi.fn()
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canDouble={true}
+        onDoubleDown={onDoubleDown}
+      />
+    )
+    fireEvent.click(screen.getByText('Double'))
+    expect(onDoubleDown).toHaveBeenCalled()
+  })
+
   it('calls onHit when Hit is clicked', () => {
     const onHit = vi.fn()
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.PLAYER_TURN as GamePhase}
-        chips={900}
-        bet={100}
         onHit={onHit}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     fireEvent.click(screen.getByText('Hit'))
@@ -43,13 +82,9 @@ describe('ActionControls component', () => {
     const onStand = vi.fn()
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.PLAYER_TURN as GamePhase}
-        chips={900}
-        bet={100}
-        onHit={vi.fn()}
         onStand={onStand}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     fireEvent.click(screen.getByText('Stand'))
@@ -59,13 +94,8 @@ describe('ActionControls component', () => {
   it('shows "Dealer is drawing..." during DEALING', () => {
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.DEALING as GamePhase}
-        chips={900}
-        bet={100}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(screen.getByText('Dealer is drawing...')).toBeInTheDocument()
@@ -74,13 +104,8 @@ describe('ActionControls component', () => {
   it('shows "Dealer is drawing..." during DEALER_TURN', () => {
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.DEALER_TURN as GamePhase}
-        chips={900}
-        bet={100}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(screen.getByText('Dealer is drawing...')).toBeInTheDocument()
@@ -89,13 +114,10 @@ describe('ActionControls component', () => {
   it('shows "Doubling down..." during DOUBLING', () => {
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.DOUBLING as GamePhase}
         chips={800}
         bet={200}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(screen.getByText('Doubling down...')).toBeInTheDocument()
@@ -104,13 +126,9 @@ describe('ActionControls component', () => {
   it('shows "Surrendering..." during SURRENDERING', () => {
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.SURRENDERING as GamePhase}
         chips={950}
-        bet={100}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(screen.getByText('Surrendering...')).toBeInTheDocument()
@@ -119,13 +137,10 @@ describe('ActionControls component', () => {
   it('shows New Round and Reset buttons during GAME_OVER', () => {
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={1100}
         bet={0}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(screen.getByText('New Round')).toBeInTheDocument()
@@ -135,13 +150,10 @@ describe('ActionControls component', () => {
   it('disables New Round when chips <= 0', () => {
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={0}
         bet={0}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(screen.getByText('New Round')).toBeDisabled()
@@ -151,13 +163,11 @@ describe('ActionControls component', () => {
     const onNewRound = vi.fn()
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={1000}
         bet={0}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
         onNewRound={onNewRound}
-        onReset={vi.fn()}
       />
     )
     fireEvent.click(screen.getByText('New Round'))
@@ -168,12 +178,10 @@ describe('ActionControls component', () => {
     const onReset = vi.fn()
     renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={1000}
         bet={0}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
         onReset={onReset}
       />
     )
@@ -184,13 +192,10 @@ describe('ActionControls component', () => {
   it('returns null for unhandled game states', () => {
     const { container } = renderWithSettings(
       <ActionControls
+        {...defaultProps}
         gameState={GAME_STATES.BETTING as GamePhase}
         chips={1000}
         bet={50}
-        onHit={vi.fn()}
-        onStand={vi.fn()}
-        onNewRound={vi.fn()}
-        onReset={vi.fn()}
       />
     )
     expect(container.innerHTML).toBe('')

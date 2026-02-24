@@ -331,6 +331,25 @@
   transform: translateY(-1px);
 }
 
+.btn-double {
+  background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);
+  color: #0a0f1a;
+  box-shadow: 0 4px 12px rgba(212, 166, 68, 0.3);
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
+.btn-double:not(:disabled):hover {
+  box-shadow: 0 6px 20px rgba(212, 166, 68, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-double:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 .play-buttons {
   display: flex;
   gap: 14px;
@@ -415,8 +434,8 @@
     font-size: 0.85rem;
   }
 
-  .btn-hit, .btn-stand {
-    padding: 12px 30px;
+  .btn-hit, .btn-stand, .btn-double {
+    padding: 12px 24px;
     font-size: 1rem;
   }
 }

@@ -185,6 +185,65 @@ describe('gameReducer — state transitions', () => {
       expect(next.phase).toBe(GAME_STATES.DOUBLING)
       expect(next.message).toBe('Doubling down...')
     })
+
+    it('transitions from DOUBLING to GAME_OVER on RESOLVE', () => {
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'doubling',
+        chips: 800,
+        bet: 200,
+        playerHand: [
+          { rank: '5', suit: 'hearts', id: 1 },
+          { rank: '6', suit: 'clubs', id: 2 },
+          { rank: '10', suit: 'diamonds', id: 3 },
+        ],
+        dealerRevealed: true,
+      }
+
+      const next = gameReducer(state, {
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: 'You win! 21 beats 18.',
+          result: 'win',
+          chips: 1200, // 800 + getWinPayout(200)
+          dealerRevealed: true,
+          stats: { wins: 1, losses: 0, pushes: 0 },
+        },
+      })
+
+      expect(next.phase).toBe(GAME_STATES.GAME_OVER)
+      expect(next.chips).toBe(1200)
+      expect(next.result).toBe('win')
+    })
+
+    it('handles bust after double down', () => {
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'doubling',
+        chips: 800,
+        bet: 200,
+        playerHand: [
+          { rank: '10', suit: 'hearts', id: 1 },
+          { rank: '8', suit: 'clubs', id: 2 },
+          { rank: '5', suit: 'diamonds', id: 3 },
+        ],
+        dealerRevealed: true,
+      }
+
+      const next = gameReducer(state, {
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: 'Bust! You went over 21 with 23.',
+          result: 'lose',
+          dealerRevealed: true,
+          stats: { wins: 0, losses: 1, pushes: 0 },
+        },
+      })
+
+      expect(next.phase).toBe(GAME_STATES.GAME_OVER)
+      expect(next.result).toBe('lose')
+      expect(next.chips).toBe(800) // no payout on bust
+    })
   })
 
   describe('SURRENDER', () => {

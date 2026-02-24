@@ -53,8 +53,10 @@ function App() {
               gameState={state.gameState}
               chips={state.chips}
               bet={state.bet}
+              canDouble={state.canDouble}
               onHit={actions.hit}
               onStand={actions.stand}
+              onDoubleDown={actions.doubleDown}
               onNewRound={actions.newRound}
               onReset={actions.resetGame}
             />

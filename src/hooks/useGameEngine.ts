@@ -196,6 +196,39 @@ export function useGameEngine() {
     resolveGame(state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats)
   }, [state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, resolveGame])
 
+  const doubleDown = useCallback(() => {
+    if (state.phase !== GAME_STATES.PLAYER_TURN) return
+    if (state.chips < state.bet) return // can't afford to double
+
+    const { card, newDeck } = drawCard(state.deck)
+    card.id = ++cardIdRef.current
+    const newHand = [...state.playerHand, card]
+    const doubledBet = state.bet * 2
+    const chipsAfterDouble = state.chips - state.bet // deduct the additional bet
+
+    dispatch({
+      type: ACTIONS.DOUBLE,
+      payload: { playerHand: newHand, deck: newDeck },
+    })
+
+    const score = calculateScore(newHand)
+    if (score > 21) {
+      // Bust after double
+      dispatch({
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: `Bust! You went over 21 with ${score}.`,
+          result: 'lose',
+          dealerRevealed: true,
+          stats: { ...state.stats, losses: state.stats.losses + 1 },
+        },
+      })
+    } else {
+      // Resolve against dealer with doubled bet
+      resolveGame(newHand, state.dealerHand, newDeck, doubledBet, chipsAfterDouble, state.stats)
+    }
+  }, [state.phase, state.chips, state.bet, state.deck, state.playerHand, state.dealerHand, state.stats, drawCard, resolveGame, GAME_STATES])
+
   const newRound = useCallback(() => {
     dispatch({ type: ACTIONS.NEW_ROUND })
   }, [])
@@ -218,6 +251,10 @@ export function useGameEngine() {
   // Map phase to gameState for backward-compatible component API
   const gameState = state.phase
 
+  const canDouble = state.phase === GAME_STATES.PLAYER_TURN
+    && state.playerHand.length === 2
+    && state.chips >= state.bet
+
   return {
     state: {
       playerHand: state.playerHand,
@@ -231,6 +268,7 @@ export function useGameEngine() {
       stats: state.stats,
       playerScore,
       dealerVisibleScore,
+      canDouble,
     },
     actions: {
       placeBet,
@@ -238,6 +276,7 @@ export function useGameEngine() {
       dealCards,
       hit,
       stand,
+      doubleDown,
       newRound,
       resetGame,
     },
