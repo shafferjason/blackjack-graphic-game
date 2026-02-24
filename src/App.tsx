@@ -1,3 +1,4 @@
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { useGameEngine } from './hooks/useGameEngine'
 import { useGameSettings } from './config/GameSettingsContext'
 import { useSoundEffects } from './hooks/useSoundEffects'
@@ -13,6 +14,7 @@ import SettingsPanel from './components/SettingsPanel'
 import StatsDashboard from './components/StatsDashboard'
 import HandHistory from './components/HandHistory'
 import AchievementToast from './components/AchievementToast'
+import ChipAnimation from './components/ChipAnimation'
 import './App.css'
 
 function App() {
@@ -28,6 +30,38 @@ function App() {
     dealerHandLength: state.dealerHand.length,
     cutCardReached: state.cutCardReached,
   })
+
+  // ── Chip animation triggers ──
+  const betSeqRef = useRef(0)
+  const winSeqRef = useRef(0)
+  const [betTrigger, setBetTrigger] = useState({ amount: 0, seq: 0 })
+  const [winTrigger, setWinTrigger] = useState({ amount: 0, seq: 0 })
+  const prevChipsRef = useRef(state.chips)
+  const prevGameStateRef = useRef(state.gameState)
+
+  const handlePlaceBet = useCallback((amount: number) => {
+    betSeqRef.current += 1
+    setBetTrigger({ amount, seq: betSeqRef.current })
+    actions.placeBet(amount)
+  }, [actions])
+
+  // Detect win payouts: when transitioning to GAME_OVER and chips increased
+  useEffect(() => {
+    const wasPlaying = prevGameStateRef.current !== GAME_STATES.GAME_OVER
+      && prevGameStateRef.current !== GAME_STATES.BETTING
+      && prevGameStateRef.current !== GAME_STATES.IDLE
+    const isNowGameOver = state.gameState === GAME_STATES.GAME_OVER
+    const chipsIncreased = state.chips > prevChipsRef.current
+
+    if (wasPlaying && isNowGameOver && chipsIncreased) {
+      const winAmount = state.chips - prevChipsRef.current
+      winSeqRef.current += 1
+      setWinTrigger({ amount: winAmount, seq: winSeqRef.current })
+    }
+
+    prevChipsRef.current = state.chips
+    prevGameStateRef.current = state.gameState
+  }, [state.gameState, state.chips, GAME_STATES])
 
   const isSplitActive = state.isSplit && state.splitHands.length > 0
 
@@ -62,6 +96,11 @@ function App() {
       </header>
 
       <main className="table">
+        <ChipAnimation
+          betTrigger={betTrigger}
+          winTrigger={winTrigger}
+        />
+
         <ShoeIndicator
           cardsRemaining={state.cardsRemaining}
           shoeSize={state.shoeSize}
@@ -98,7 +137,7 @@ function App() {
             <BettingControls
               chips={state.chips}
               bet={state.bet}
-              onPlaceBet={actions.placeBet}
+              onPlaceBet={handlePlaceBet}
               onClearBet={actions.clearBet}
               onDeal={actions.dealCards}
               onButtonClick={playButtonClick}
