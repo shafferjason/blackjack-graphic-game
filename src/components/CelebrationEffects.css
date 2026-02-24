@@ -1,0 +1,165 @@
+/* ── Celebration Effects Layer ── */
+.celebration-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 60;
+  overflow: hidden;
+}
+
+/* ── Gold Particle Burst (Blackjack) ── */
+.gold-particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 6px rgba(212, 166, 68, 0.8);
+  will-change: transform, opacity;
+  animation: particleBurst 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes particleBurst {
+  0% {
+    opacity: 1;
+    transform: translate(var(--dx), var(--dy)) scale(1);
+  }
+  60% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--dx) * 4), calc(var(--dy) * 4 + 40px)) scale(0);
+  }
+}
+
+/* "BLACKJACK!" animated text */
+.blackjack-text {
+  position: absolute;
+  top: 38%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  letter-spacing: 4px;
+  color: var(--gold-light);
+  text-shadow:
+    0 0 20px rgba(212, 166, 68, 0.6),
+    0 0 40px rgba(212, 166, 68, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  animation: blackjackTextPop 1.8s ease-out forwards;
+  z-index: 61;
+}
+
+@keyframes blackjackTextPop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  25% {
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  35% {
+    transform: translate(-50%, -50%) scale(1.05);
+  }
+  45% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  75% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1) translateY(-15px);
+  }
+}
+
+/* ── Red Flash (Bust) ── */
+.bust-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 70%, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
+  animation: bustFlash 0.6s ease-out forwards;
+}
+
+@keyframes bustFlash {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* ── Confetti Rain (Big Win) ── */
+.confetti-piece {
+  position: absolute;
+  top: -10px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  will-change: transform, opacity;
+  animation: confettiFall var(--fall-duration, 1.6s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation-delay: var(--delay, 0s);
+  opacity: 0;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(var(--sway, 20px)) translateY(var(--fall-dist, 400px)) rotate(var(--spin, 720deg));
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .gold-particle,
+  .blackjack-text,
+  .bust-flash,
+  .confetti-piece {
+    animation: none;
+    display: none;
+  }
+}
+
+/* ── Small phone adjustments ── */
+@media (max-width: 379px) {
+  .blackjack-text {
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+  }
+
+  .gold-particle {
+    width: 6px;
+    height: 6px;
+  }
+
+  .confetti-piece {
+    width: 6px;
+    height: 10px;
+  }
+}
+
+/* ── Desktop ── */
+@media (min-width: 600px) {
+  .blackjack-text {
+    font-size: 3.2rem;
+    letter-spacing: 6px;
+  }
+}

@@ -15,6 +15,7 @@ import StatsDashboard from './components/StatsDashboard'
 import HandHistory from './components/HandHistory'
 import AchievementToast from './components/AchievementToast'
 import ChipAnimation from './components/ChipAnimation'
+import CelebrationEffects from './components/CelebrationEffects'
 import './App.css'
 
 function App() {
@@ -99,6 +100,13 @@ function App() {
         <ChipAnimation
           betTrigger={betTrigger}
           winTrigger={winTrigger}
+        />
+
+        <CelebrationEffects
+          result={state.result}
+          gameState={state.gameState}
+          winAmount={winTrigger.amount}
+          bet={state.bet}
         />
 
         <ShoeIndicator
