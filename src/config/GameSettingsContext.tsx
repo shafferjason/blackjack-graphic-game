@@ -57,8 +57,12 @@ export const GameSettingsProvider = ({ children }: { children: ReactNode }) => {
     setOverrides(prev => ({ ...prev, [key]: value }))
   }
 
+  const resetSettings = () => {
+    setOverrides({ ...DEFAULT_HOUSE_RULES })
+  }
+
   // Merge compile-time constants with any runtime overrides
-  const value = { ...constants, ...overrides, updateSetting } as GameSettings
+  const value = { ...constants, ...overrides, updateSetting, resetSettings } as GameSettings
 
   return (
     <GameSettingsContext.Provider value={value}>

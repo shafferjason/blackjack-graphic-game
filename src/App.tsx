@@ -33,7 +33,7 @@ function App() {
           <span className="suit-icon">&#9824;</span> Blackjack <span className="suit-icon red">&#9829;</span>
         </h1>
         <Scoreboard stats={state.stats} />
-        <SettingsPanel isPlaying={isPlaying} />
+        <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
       </header>
 
       <main className="table">

@@ -1,10 +1,11 @@
-import { useReducer, useCallback, useRef } from 'react'
+import { useReducer, useCallback, useRef, useEffect } from 'react'
 import { createShoe } from '../utils/deck'
 import { cardValue, calculateScore, isBlackjack, isSoft17 } from '../utils/scoring'
 import { getBlackjackPayout, getWinPayout, getPushPayout } from '../utils/payout'
 import { useGameSettings } from '../config/GameSettingsContext'
 import { gameReducer, createInitialState, ACTIONS } from '../state/gameReducer'
-import type { Card, Hand, Deck, GameStats, GameResult, GamePhase, SplitHand } from '../types'
+import { saveGameState, loadGameState, clearAllStorage } from '../utils/storage'
+import type { Card, Hand, Deck, GameState, GameStats, GameResult, GamePhase, SplitHand } from '../types'
 
 export function useGameEngine() {
   const {
@@ -19,10 +20,78 @@ export function useGameEngine() {
     DEALER_HITS_SOFT_17,
     ALLOW_DOUBLE_AFTER_SPLIT,
     ALLOW_SURRENDER,
+    resetSettings,
   } = useGameSettings()
 
   const [state, dispatch] = useReducer(gameReducer, STARTING_BANKROLL, createInitialState)
   const cardIdRef = useRef(0)
+  const restoredRef = useRef(false)
+
+  // Restore state from localStorage on first mount
+  useEffect(() => {
+    if (restoredRef.current) return
+    restoredRef.current = true
+
+    const saved = loadGameState()
+    if (!saved) return
+
+    // If we were mid-hand (dealing, player turn, dealer turn, etc.), revert to a safe state
+    const activePhases = ['dealing', 'player_turn', 'splitting', 'doubling', 'insurance_offer', 'surrendering', 'dealer_turn']
+    const wasInActiveHand = activePhases.includes(saved.phase)
+
+    if (wasInActiveHand) {
+      // Restore bankroll/stats but start a fresh betting round
+      // The bet was already deducted from chips during the hand, so return it
+      dispatch({
+        type: ACTIONS.RESTORE_STATE,
+        payload: {
+          chips: saved.chips + saved.bet + saved.insuranceBet,
+          stats: saved.stats,
+          deck: saved.deck,
+          shoeSize: saved.shoeSize,
+          cutCardReached: saved.cutCardReached,
+        } as Partial<GameState>,
+      })
+    } else {
+      // Safe to fully restore (betting, game_over, resolving, idle)
+      dispatch({
+        type: ACTIONS.RESTORE_STATE,
+        payload: {
+          chips: saved.chips,
+          stats: saved.stats,
+          bet: saved.bet,
+          phase: saved.phase as GamePhase,
+          playerHand: saved.playerHand,
+          dealerHand: saved.dealerHand,
+          deck: saved.deck,
+          dealerRevealed: saved.dealerRevealed,
+          result: saved.result,
+          message: saved.message,
+          insuranceBet: saved.insuranceBet,
+          splitHands: saved.splitHands,
+          activeHandIndex: saved.activeHandIndex,
+          isSplit: saved.isSplit,
+          shoeSize: saved.shoeSize,
+          cutCardReached: saved.cutCardReached,
+        } as Partial<GameState>,
+      })
+    }
+
+    // Sync cardIdRef with restored cards to avoid ID collisions
+    const allCards = [
+      ...(saved.playerHand || []),
+      ...(saved.dealerHand || []),
+      ...(saved.deck || []),
+      ...(saved.splitHands || []).flatMap(h => h.cards),
+    ]
+    const maxId = allCards.reduce((max, c) => Math.max(max, c.id ?? 0), 0)
+    if (maxId > 0) cardIdRef.current = maxId
+  }, [])
+
+  // Persist state to localStorage on every change
+  useEffect(() => {
+    saveGameState(state)
+  }, [state])
 
   const drawCard = useCallback((currentDeck: Deck): { card: Card; newDeck: Deck } => {
     const newDeck = [...currentDeck]
@@ -507,6 +576,12 @@ export function useGameEngine() {
     dispatch({ type: ACTIONS.RESET, payload: { startingBankroll: STARTING_BANKROLL } })
   }, [STARTING_BANKROLL])
 
+  const resetEverything = useCallback(() => {
+    clearAllStorage()
+    resetSettings()
+    dispatch({ type: ACTIONS.RESET, payload: { startingBankroll: STARTING_BANKROLL } })
+  }, [STARTING_BANKROLL, resetSettings])
+
   const playerScore = calculateScore(state.playerHand)
   const dealerVisibleScore = state.dealerRevealed
     ? calculateScore(state.dealerHand)
@@ -584,6 +659,7 @@ export function useGameEngine() {
       declineInsurance,
       newRound,
       resetGame,
+      resetEverything,
     },
   }
 }

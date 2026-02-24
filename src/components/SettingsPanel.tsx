@@ -3,10 +3,12 @@ import { useGameSettings } from '../config/GameSettingsContext'
 
 interface SettingsPanelProps {
   isPlaying: boolean
+  onResetEverything: () => void
 }
 
-export default function SettingsPanel({ isPlaying }: SettingsPanelProps) {
+export default function SettingsPanel({ isPlaying, onResetEverything }: SettingsPanelProps) {
   const [open, setOpen] = useState(false)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
   const settings = useGameSettings()
 
   const {
@@ -17,6 +19,12 @@ export default function SettingsPanel({ isPlaying }: SettingsPanelProps) {
     ALLOW_SURRENDER,
     updateSetting,
   } = settings
+
+  const handleResetEverything = () => {
+    onResetEverything()
+    setShowResetConfirm(false)
+    setOpen(false)
+  }
 
   return (
     <>
@@ -29,11 +37,11 @@ export default function SettingsPanel({ isPlaying }: SettingsPanelProps) {
       </button>
 
       {open && (
-        <div className="settings-overlay" onClick={() => setOpen(false)}>
+        <div className="settings-overlay" onClick={() => { setOpen(false); setShowResetConfirm(false) }}>
           <div className="settings-panel" onClick={e => e.stopPropagation()}>
             <div className="settings-header">
               <h2>House Rules</h2>
-              <button className="settings-close" onClick={() => setOpen(false)}>&times;</button>
+              <button className="settings-close" onClick={() => { setOpen(false); setShowResetConfirm(false) }}>&times;</button>
             </div>
 
             {isPlaying && (
@@ -133,6 +141,38 @@ export default function SettingsPanel({ isPlaying }: SettingsPanelProps) {
                     Not Allowed
                   </button>
                 </div>
+              </div>
+
+              {/* Reset Everything */}
+              <div className="setting-row reset-section">
+                {!showResetConfirm ? (
+                  <button
+                    className="btn-reset-everything"
+                    onClick={() => setShowResetConfirm(true)}
+                  >
+                    Reset Everything
+                  </button>
+                ) : (
+                  <div className="reset-confirm">
+                    <p className="reset-confirm-text">
+                      This will reset your bankroll, stats, and settings to defaults. Are you sure?
+                    </p>
+                    <div className="reset-confirm-buttons">
+                      <button
+                        className="btn-reset-confirm"
+                        onClick={handleResetEverything}
+                      >
+                        Yes, Reset
+                      </button>
+                      <button
+                        className="btn-reset-cancel"
+                        onClick={() => setShowResetConfirm(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>

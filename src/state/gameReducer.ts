@@ -20,6 +20,7 @@ export const ACTIONS = {
   RESOLVE: 'RESOLVE',
   NEW_ROUND: 'NEW_ROUND',
   RESET: 'RESET',
+  RESTORE_STATE: 'RESTORE_STATE',
 } as const
 
 // ── Legal transitions: for each state, which actions are allowed ──
@@ -72,6 +73,11 @@ export function createInitialState(startingBankroll: number): GameState {
 // ── Reducer ──
 export function gameReducer(state: GameState, action: GameAction): GameState {
   const { type } = action
+
+  // RESTORE_STATE bypasses FSM validation — it's used to hydrate from localStorage
+  if (type === ACTIONS.RESTORE_STATE) {
+    return { ...state, ...action.payload }
+  }
 
   if (!isValidAction(state.phase, type)) {
     if (import.meta.env.DEV) {

@@ -724,6 +724,84 @@
   color: #0a0f1a;
 }
 
+/* Reset Everything */
+.reset-section {
+  margin-top: 8px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.btn-reset-everything {
+  width: 100%;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset-everything:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.reset-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reset-confirm-text {
+  font-size: 0.85rem;
+  color: #f87171;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.reset-confirm-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-reset-confirm {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset-confirm:hover {
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.btn-reset-cancel {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-reset-cancel:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+}
+
 /* Footer */
 .footer {
   text-align: center;

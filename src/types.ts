@@ -82,6 +82,7 @@ export type GameAction =
   | { type: 'RESOLVE'; payload: ResolvePayload }
   | { type: 'NEW_ROUND' }
   | { type: 'RESET'; payload?: { startingBankroll: number } }
+  | { type: 'RESTORE_STATE'; payload: Partial<GameState> }
 
 export interface ResolvePayload {
   message: string
@@ -121,4 +122,5 @@ export interface GameSettings {
   ALLOW_DOUBLE_AFTER_SPLIT: boolean
   ALLOW_SURRENDER: boolean
   updateSetting: (key: string, value: unknown) => void
+  resetSettings: () => void
 }
