@@ -24,8 +24,15 @@ export const DECK_PENETRATION = 0.75
 
 // ── Game state machine ──
 export const GAME_STATES = {
+  IDLE: 'idle',
   BETTING: 'betting',
-  PLAYING: 'playing',
+  DEALING: 'dealing',
+  PLAYER_TURN: 'player_turn',
+  SPLITTING: 'splitting',
+  DOUBLING: 'doubling',
+  INSURANCE_OFFER: 'insurance_offer',
+  SURRENDERING: 'surrendering',
   DEALER_TURN: 'dealer_turn',
+  RESOLVING: 'resolving',
   GAME_OVER: 'game_over',
 }

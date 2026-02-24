@@ -40,7 +40,7 @@ function App() {
         />
 
         <div className="controls-area">
-          {state.gameState === GAME_STATES.BETTING ? (
+          {(state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE) ? (
             <BettingControls
               chips={state.chips}
               bet={state.bet}

@@ -1,8 +1,9 @@
-import { useState, useCallback, useRef } from 'react'
+import { useReducer, useCallback, useRef } from 'react'
 import { createDeck } from '../utils/deck'
 import { cardValue, calculateScore, isBlackjack } from '../utils/scoring'
 import { getBlackjackPayout, getWinPayout, getPushPayout } from '../utils/payout'
 import { useGameSettings } from '../config/GameSettingsContext'
+import { gameReducer, createInitialState, ACTIONS } from '../state/gameReducer'
 
 export function useGameEngine() {
   const {
@@ -12,16 +13,8 @@ export function useGameEngine() {
     DEALER_PLAY_INITIAL_DELAY,
     DEALER_DRAW_DELAY,
   } = useGameSettings()
-  const [deck, setDeck] = useState([])
-  const [playerHand, setPlayerHand] = useState([])
-  const [dealerHand, setDealerHand] = useState([])
-  const [gameState, setGameState] = useState(GAME_STATES.BETTING)
-  const [message, setMessage] = useState('Place your bet to start!')
-  const [chips, setChips] = useState(STARTING_BANKROLL)
-  const [bet, setBet] = useState(0)
-  const [result, setResult] = useState(null)
-  const [dealerRevealed, setDealerRevealed] = useState(false)
-  const [stats, setStats] = useState({ wins: 0, losses: 0, pushes: 0 })
+
+  const [state, dispatch] = useReducer(gameReducer, STARTING_BANKROLL, createInitialState)
   const cardIdRef = useRef(0)
 
   const drawCard = useCallback((currentDeck) => {
@@ -31,19 +24,15 @@ export function useGameEngine() {
   }, [])
 
   const placeBet = useCallback((amount) => {
-    if (chips < amount) return
-    setBet(prev => prev + amount)
-  }, [chips])
+    dispatch({ type: ACTIONS.PLACE_BET, payload: { amount } })
+  }, [])
 
   const clearBet = useCallback(() => {
-    setBet(0)
+    dispatch({ type: ACTIONS.CLEAR_BET })
   }, [])
 
   const dealCards = useCallback(() => {
-    if (bet === 0) return
-    setChips(prev => prev - bet)
-    setResult(null)
-    setDealerRevealed(false)
+    if (state.bet === 0) return
 
     let currentDeck = createDeck()
     const pHand = []
@@ -61,31 +50,52 @@ export function useGameEngine() {
       currentDeck = res.newDeck
     }
 
-    setDeck(currentDeck)
-    setPlayerHand(pHand)
-    setDealerHand(dHand)
-    setGameState(GAME_STATES.PLAYING)
+    // Transition to DEALING
+    dispatch({
+      type: ACTIONS.DEAL,
+      payload: { deck: currentDeck, playerHand: pHand, dealerHand: dHand },
+    })
+
+    // Immediately check for blackjacks and resolve
+    const currentBet = state.bet
+    const currentChips = state.chips - currentBet
 
     if (isBlackjack(pHand) && isBlackjack(dHand)) {
-      setDealerRevealed(true)
-      setGameState(GAME_STATES.GAME_OVER)
-      setMessage("Both have Blackjack — it's a push!")
-      setResult('push')
-      setChips(prev => prev + getPushPayout(bet))
-      setStats(prev => ({ ...prev, pushes: prev.pushes + 1 }))
+      dispatch({
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: "Both have Blackjack — it's a push!",
+          result: 'push',
+          chips: currentChips + getPushPayout(currentBet),
+          dealerRevealed: true,
+          stats: { ...state.stats, pushes: state.stats.pushes + 1 },
+        },
+      })
     } else if (isBlackjack(pHand)) {
-      setDealerRevealed(true)
-      setGameState(GAME_STATES.GAME_OVER)
-      setMessage('Blackjack! You win 3:2!')
-      setResult('blackjack')
-      setChips(prev => prev + getBlackjackPayout(bet))
-      setStats(prev => ({ ...prev, wins: prev.wins + 1 }))
+      dispatch({
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: 'Blackjack! You win 3:2!',
+          result: 'blackjack',
+          chips: currentChips + getBlackjackPayout(currentBet),
+          dealerRevealed: true,
+          stats: { ...state.stats, wins: state.stats.wins + 1 },
+        },
+      })
     } else {
-      setMessage('Hit or Stand?')
+      // Normal play — transition DEALING → PLAYER_TURN
+      dispatch({
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: 'Hit or Stand?',
+          result: null,
+          phase: GAME_STATES.PLAYER_TURN,
+        },
+      })
     }
-  }, [bet, drawCard, GAME_STATES])
+  }, [state.bet, state.chips, state.stats, drawCard, GAME_STATES])
 
-  const resolveGame = useCallback((pHand, dHand, dDeck, currentBet) => {
+  const resolveGame = useCallback((pHand, dHand, dDeck, currentBet, currentChips, currentStats) => {
     const dealerPlay = (dh, dd) => {
       let dealerScore = calculateScore(dh)
       const playerScore = calculateScore(pHand)
@@ -94,106 +104,130 @@ export function useGameEngine() {
         const { card, newDeck } = drawCard(dd)
         card.id = ++cardIdRef.current
         const newDh = [...dh, card]
-        setDealerHand([...newDh])
-        setDeck(newDeck)
+        dispatch({
+          type: ACTIONS.DEALER_DRAW,
+          payload: { dealerHand: [...newDh], deck: newDeck },
+        })
         setTimeout(() => dealerPlay(newDh, newDeck), DEALER_DRAW_DELAY)
       } else {
-        setGameState(GAME_STATES.GAME_OVER)
+        let message, result, chipDelta, statKey
         if (dealerScore > 21) {
-          setMessage(`Dealer busts with ${dealerScore}! You win!`)
-          setResult('win')
-          setChips(prev => prev + getWinPayout(currentBet))
-          setStats(prev => ({ ...prev, wins: prev.wins + 1 }))
+          message = `Dealer busts with ${dealerScore}! You win!`
+          result = 'win'
+          chipDelta = getWinPayout(currentBet)
+          statKey = 'wins'
         } else if (playerScore > dealerScore) {
-          setMessage(`You win! ${playerScore} beats ${dealerScore}.`)
-          setResult('win')
-          setChips(prev => prev + getWinPayout(currentBet))
-          setStats(prev => ({ ...prev, wins: prev.wins + 1 }))
+          message = `You win! ${playerScore} beats ${dealerScore}.`
+          result = 'win'
+          chipDelta = getWinPayout(currentBet)
+          statKey = 'wins'
         } else if (dealerScore > playerScore) {
-          setMessage(`Dealer wins. ${dealerScore} beats ${playerScore}.`)
-          setResult('lose')
-          setStats(prev => ({ ...prev, losses: prev.losses + 1 }))
+          message = `Dealer wins. ${dealerScore} beats ${playerScore}.`
+          result = 'lose'
+          chipDelta = 0
+          statKey = 'losses'
         } else {
-          setMessage(`Push! Both have ${playerScore}.`)
-          setResult('push')
-          setChips(prev => prev + getPushPayout(currentBet))
-          setStats(prev => ({ ...prev, pushes: prev.pushes + 1 }))
+          message = `Push! Both have ${playerScore}.`
+          result = 'push'
+          chipDelta = getPushPayout(currentBet)
+          statKey = 'pushes'
         }
+
+        dispatch({
+          type: ACTIONS.RESOLVE,
+          payload: {
+            message,
+            result,
+            chips: currentChips + chipDelta,
+            dealerRevealed: true,
+            stats: { ...currentStats, [statKey]: currentStats[statKey] + 1 },
+          },
+        })
       }
     }
     setTimeout(() => dealerPlay(dHand, dDeck), DEALER_PLAY_INITIAL_DELAY)
-  }, [drawCard, DEALER_STAND_THRESHOLD, DEALER_DRAW_DELAY, DEALER_PLAY_INITIAL_DELAY, GAME_STATES])
+  }, [drawCard, DEALER_STAND_THRESHOLD, DEALER_DRAW_DELAY, DEALER_PLAY_INITIAL_DELAY])
 
   const hit = useCallback(() => {
-    if (gameState !== GAME_STATES.PLAYING) return
-    const { card, newDeck } = drawCard(deck)
+    if (state.phase !== GAME_STATES.PLAYER_TURN) return
+    const { card, newDeck } = drawCard(state.deck)
     card.id = ++cardIdRef.current
 
-    const newHand = [...playerHand, card]
-    setPlayerHand(newHand)
-    setDeck(newDeck)
-
+    const newHand = [...state.playerHand, card]
     const score = calculateScore(newHand)
+
     if (score > 21) {
-      setDealerRevealed(true)
-      setGameState(GAME_STATES.GAME_OVER)
-      setMessage(`Bust! You went over 21 with ${score}.`)
-      setResult('lose')
-      setStats(prev => ({ ...prev, losses: prev.losses + 1 }))
+      // Bust: HIT to update hand, then RESOLVE
+      dispatch({
+        type: ACTIONS.HIT,
+        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN },
+      })
+      dispatch({
+        type: ACTIONS.STAND, // transition to DEALER_TURN so RESOLVE is valid
+      })
+      dispatch({
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: `Bust! You went over 21 with ${score}.`,
+          result: 'lose',
+          dealerRevealed: true,
+          stats: { ...state.stats, losses: state.stats.losses + 1 },
+        },
+      })
     } else if (score === 21) {
-      setDealerRevealed(true)
-      setGameState(GAME_STATES.DEALER_TURN)
-      setMessage('Dealer is playing...')
-      resolveGame(newHand, dealerHand, newDeck, bet)
+      // Auto-stand on 21
+      dispatch({
+        type: ACTIONS.HIT,
+        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN },
+      })
+      dispatch({ type: ACTIONS.STAND })
+      resolveGame(newHand, state.dealerHand, newDeck, state.bet, state.chips, state.stats)
+    } else {
+      dispatch({
+        type: ACTIONS.HIT,
+        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN },
+      })
     }
-  }, [gameState, deck, playerHand, dealerHand, drawCard, resolveGame, bet, GAME_STATES])
+  }, [state.phase, state.deck, state.playerHand, state.dealerHand, state.bet, state.stats, drawCard, resolveGame, GAME_STATES])
 
   const stand = useCallback(() => {
-    setDealerRevealed(true)
-    setGameState(GAME_STATES.DEALER_TURN)
-    setMessage('Dealer is playing...')
-    resolveGame(playerHand, dealerHand, deck, bet)
-  }, [playerHand, dealerHand, deck, resolveGame, bet, GAME_STATES])
+    dispatch({ type: ACTIONS.STAND })
+    resolveGame(state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats)
+  }, [state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, resolveGame])
 
   const newRound = useCallback(() => {
-    setPlayerHand([])
-    setDealerHand([])
-    setDeck([])
-    setBet(0)
-    setResult(null)
-    setDealerRevealed(false)
-    setMessage('Place your bet to start!')
-    setGameState(GAME_STATES.BETTING)
-  }, [GAME_STATES])
+    dispatch({ type: ACTIONS.NEW_ROUND })
+  }, [])
 
   const resetGame = useCallback(() => {
-    setChips(STARTING_BANKROLL)
-    setStats({ wins: 0, losses: 0, pushes: 0 })
-    newRound()
-  }, [newRound, STARTING_BANKROLL])
+    dispatch({ type: ACTIONS.RESET, payload: { startingBankroll: STARTING_BANKROLL } })
+  }, [STARTING_BANKROLL])
 
-  const playerScore = calculateScore(playerHand)
-  const dealerVisibleScore = dealerRevealed
-    ? calculateScore(dealerHand)
-    : dealerHand.length > 0
-    ? cardValue(dealerHand[0])
+  const playerScore = calculateScore(state.playerHand)
+  const dealerVisibleScore = state.dealerRevealed
+    ? calculateScore(state.dealerHand)
+    : state.dealerHand.length > 0
+    ? cardValue(state.dealerHand[0])
     : 0
 
-  const displayMessage = (chips <= 0 && gameState === GAME_STATES.BETTING)
+  const displayMessage = (state.chips <= 0 && state.phase === GAME_STATES.BETTING)
     ? "You're out of chips! Reset to play again."
-    : message
+    : state.message
+
+  // Map phase to gameState for backward-compatible component API
+  const gameState = state.phase
 
   return {
     state: {
-      playerHand,
-      dealerHand,
+      playerHand: state.playerHand,
+      dealerHand: state.dealerHand,
       gameState,
       message: displayMessage,
-      chips,
-      bet,
-      result,
-      dealerRevealed,
-      stats,
+      chips: state.chips,
+      bet: state.bet,
+      result: state.result,
+      dealerRevealed: state.dealerRevealed,
+      stats: state.stats,
       playerScore,
       dealerVisibleScore,
     },
