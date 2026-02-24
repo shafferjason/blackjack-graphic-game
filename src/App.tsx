@@ -1,6 +1,7 @@
-import { useRef, useState, useCallback, useEffect } from 'react'
+import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { useGameEngine } from './hooks/useGameEngine'
 import { useGameSettings } from './config/GameSettingsContext'
+import type { TableFeltTheme } from './types'
 import { useSoundEffects } from './hooks/useSoundEffects'
 import Scoreboard from './components/Scoreboard'
 import DealerHand from './components/DealerHand'
@@ -19,7 +20,23 @@ import CelebrationEffects from './components/CelebrationEffects'
 import './App.css'
 
 function App() {
-  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO } = useGameSettings()
+  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME } = useGameSettings()
+
+  const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
+    'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
+    'navy-blue':     { felt: '#1a3a6b', feltDark: '#0f2548', feltLight: '#245090' },
+    'casino-red':    { felt: '#6b1a1a', feltDark: '#4a1212', feltLight: '#8a2424' },
+    'royal-purple':  { felt: '#4a1a6b', feltDark: '#331248', feltLight: '#5e2490' },
+  }
+
+  const feltStyle = useMemo(() => {
+    const colors = FELT_COLORS[TABLE_FELT_THEME] ?? FELT_COLORS['classic-green']
+    return {
+      '--felt': colors.felt,
+      '--felt-dark': colors.feltDark,
+      '--felt-light': colors.feltLight,
+    } as React.CSSProperties
+  }, [TABLE_FELT_THEME])
   const { state, actions } = useGameEngine()
 
   const { muted, toggleMute, playButtonClick } = useSoundEffects({
@@ -96,7 +113,7 @@ function App() {
         </div>
       </header>
 
-      <main className="table">
+      <main className="table" style={feltStyle}>
         <ChipAnimation
           betTrigger={betTrigger}
           winTrigger={winTrigger}

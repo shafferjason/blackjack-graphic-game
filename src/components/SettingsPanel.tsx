@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useGameSettings } from '../config/GameSettingsContext'
-import type { CardBackTheme } from '../types'
+import type { CardBackTheme, TableFeltTheme } from '../types'
 
 interface SettingsPanelProps {
   isPlaying: boolean
@@ -19,8 +19,16 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
     ALLOW_DOUBLE_AFTER_SPLIT,
     ALLOW_SURRENDER,
     CARD_BACK_THEME,
+    TABLE_FELT_THEME,
     updateSetting,
   } = settings
+
+  const feltThemes: { value: TableFeltTheme; label: string; color: string }[] = [
+    { value: 'classic-green', label: 'Green', color: '#0b6623' },
+    { value: 'navy-blue', label: 'Blue', color: '#1a3a6b' },
+    { value: 'casino-red', label: 'Red', color: '#6b1a1a' },
+    { value: 'royal-purple', label: 'Purple', color: '#4a1a6b' },
+  ]
 
   const cardBackThemes: { value: CardBackTheme; label: string; color: string }[] = [
     { value: 'classic-blue', label: 'Blue', color: '#1a3a5c' },
@@ -161,6 +169,23 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                       key={t.value}
                       className={`setting-chip card-back-chip ${CARD_BACK_THEME === t.value ? 'setting-chip-active' : ''}`}
                       onClick={() => updateSetting('CARD_BACK_THEME', t.value)}
+                    >
+                      <span className="card-back-swatch" style={{ background: t.color }} />
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Table Felt Color */}
+              <div className="setting-row">
+                <label className="setting-label">Table Felt Color</label>
+                <div className="setting-options">
+                  {feltThemes.map(t => (
+                    <button
+                      key={t.value}
+                      className={`setting-chip card-back-chip ${TABLE_FELT_THEME === t.value ? 'setting-chip-active' : ''}`}
+                      onClick={() => updateSetting('TABLE_FELT_THEME', t.value)}
                     >
                       <span className="card-back-swatch" style={{ background: t.color }} />
                       {t.label}

@@ -154,6 +154,9 @@ export interface Achievement {
 // ── Card Back Themes ──
 export type CardBackTheme = 'classic-blue' | 'casino-red' | 'royal-green' | 'midnight-gold'
 
+// ── Table Felt Themes ──
+export type TableFeltTheme = 'classic-green' | 'navy-blue' | 'casino-red' | 'royal-purple'
+
 // ── House Rules (configurable) ──
 export interface HouseRules {
   NUM_DECKS: number
@@ -162,6 +165,7 @@ export interface HouseRules {
   ALLOW_DOUBLE_AFTER_SPLIT: boolean
   ALLOW_SURRENDER: boolean
   CARD_BACK_THEME: CardBackTheme
+  TABLE_FELT_THEME: TableFeltTheme
 }
 
 // ── Game Settings ──
@@ -184,6 +188,7 @@ export interface GameSettings {
   ALLOW_DOUBLE_AFTER_SPLIT: boolean
   ALLOW_SURRENDER: boolean
   CARD_BACK_THEME: CardBackTheme
+  TABLE_FELT_THEME: TableFeltTheme
   updateSetting: (key: string, value: unknown) => void
   resetSettings: () => void
 }
