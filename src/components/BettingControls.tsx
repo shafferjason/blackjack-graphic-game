@@ -16,20 +16,21 @@ export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, on
     <div className="betting-panel">
       <ChipStack chips={chips} bet={bet} />
       <div className="chip-row">
-        {CHIP_DENOMINATIONS.map(amount => (
+        {CHIP_DENOMINATIONS.map((amount, index) => (
           <button
             key={amount}
             className={`chip chip-${amount}`}
             onClick={() => onPlaceBet(amount)}
             disabled={chips < amount || (chips - bet) < amount}
+            title={`$${amount} chip (${index + 1})`}
           >
             ${amount}
           </button>
         ))}
       </div>
       <div className="bet-actions">
-        <button className="btn btn-outline" onClick={() => { onButtonClick?.(); onClearBet() }} disabled={bet === 0}>Clear</button>
-        <button className="btn btn-primary" onClick={() => { onButtonClick?.(); onDeal() }} disabled={bet === 0}>Deal</button>
+        <button className="btn btn-outline" onClick={() => { onButtonClick?.(); onClearBet() }} disabled={bet === 0} title="Clear bet (C)">Clear</button>
+        <button className="btn btn-primary" onClick={() => { onButtonClick?.(); onDeal() }} disabled={bet === 0} title="Deal (N / Enter)">Deal</button>
       </div>
     </div>
   )

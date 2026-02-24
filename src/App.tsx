@@ -3,6 +3,7 @@ import { useGameEngine } from './hooks/useGameEngine'
 import { useGameSettings } from './config/GameSettingsContext'
 import type { TableFeltTheme } from './types'
 import { useSoundEffects } from './hooks/useSoundEffects'
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import Scoreboard from './components/Scoreboard'
 import DealerHand from './components/DealerHand'
 import GameBanner from './components/GameBanner'
@@ -20,7 +21,7 @@ import CelebrationEffects from './components/CelebrationEffects'
 import './App.css'
 
 function App() {
-  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME } = useGameSettings()
+  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS } = useGameSettings()
 
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
     'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
@@ -62,6 +63,41 @@ function App() {
     setBetTrigger({ amount, seq: betSeqRef.current })
     actions.placeBet(amount)
   }, [actions])
+
+  // ── Keyboard shortcuts ──
+  const isBetting = state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE
+  const isGameOver = state.gameState === GAME_STATES.GAME_OVER || state.gameState === GAME_STATES.RESOLVING
+
+  useKeyboardShortcuts(
+    {
+      onHit: actions.hit,
+      onStand: actions.stand,
+      onDoubleDown: actions.doubleDown,
+      onSplit: actions.splitPairs,
+      onSurrender: actions.surrender,
+      onAcceptInsurance: actions.acceptInsurance,
+      onDeclineInsurance: actions.declineInsurance,
+      onNewRound: actions.newRound,
+      onDeal: actions.dealCards,
+      onPlaceBet: handlePlaceBet,
+      onClearBet: actions.clearBet,
+      onButtonClick: playButtonClick,
+    },
+    {
+      gameState: state.gameState,
+      chips: state.chips,
+      bet: state.bet,
+      canDouble: state.canDouble,
+      canSplit: state.canSplit,
+      canSurrender: state.canSurrender,
+      canDoubleAfterSplit: state.canDoubleAfterSplit,
+      maxInsuranceBet: state.maxInsuranceBet,
+      chipDenominations: CHIP_DENOMINATIONS,
+      isBetting,
+      isGameOver,
+    },
+    GAME_STATES,
+  )
 
   // Detect win payouts: when transitioning to GAME_OVER and chips increased
   useEffect(() => {
