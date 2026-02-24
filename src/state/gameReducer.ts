@@ -1,5 +1,5 @@
-import { GAME_STATES } from '../constants'
-import type { GameState, GameAction, GamePhase } from '../types'
+import { GAME_STATES, DECK_PENETRATION } from '../constants'
+import type { GameState, GameAction, GamePhase, Card } from '../types'
 
 // ── Action types ──
 export const ACTIONS = {
@@ -41,6 +41,11 @@ function isValidAction(state: GamePhase, action: string): boolean {
   return allowed ? allowed.includes(action) : false
 }
 
+// ── Helper: check if cut card has been reached ──
+function checkCutCard(deck: Card[], shoeSize: number): boolean {
+  return deck.length <= shoeSize * (1 - DECK_PENETRATION)
+}
+
 // ── Initial state ──
 export function createInitialState(startingBankroll: number): GameState {
   return {
@@ -58,6 +63,8 @@ export function createInitialState(startingBankroll: number): GameState {
     splitHands: [],
     activeHandIndex: 0,
     isSplit: false,
+    shoeSize: 0,
+    cutCardReached: false,
   }
 }
 
@@ -95,6 +102,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case ACTIONS.DEAL: {
       const { deck, playerHand, dealerHand } = action.payload
+      // If this is the first deal with this shoe, record its size
+      const shoeSize = state.shoeSize > 0 ? state.shoeSize : (deck.length + playerHand.length + dealerHand.length)
       return {
         ...state,
         deck,
@@ -105,6 +114,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         dealerRevealed: false,
         phase: GAME_STATES.DEALING as GamePhase,
         message: 'Dealing...',
+        shoeSize,
+        cutCardReached: checkCutCard(deck, shoeSize),
       }
     }
 
@@ -129,6 +140,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         playerHand,
         deck,
         phase: (phase || GAME_STATES.PLAYER_TURN) as GamePhase,
+        cutCardReached: checkCutCard(deck, state.shoeSize),
       }
     }
 
@@ -259,6 +271,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         dealerHand,
         deck,
+        cutCardReached: checkCutCard(deck, state.shoeSize),
       }
     }
 
@@ -267,7 +280,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         playerHand: [],
         dealerHand: [],
-        deck: [],
+        // Preserve shoe (deck) between rounds — engine handles reshuffle
         bet: 0,
         insuranceBet: 0,
         result: null,

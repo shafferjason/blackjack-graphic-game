@@ -19,6 +19,8 @@ describe('createInitialState', () => {
     expect(state.activeHandIndex).toBe(0)
     expect(state.isSplit).toBe(false)
     expect(state.insuranceBet).toBe(0)
+    expect(state.shoeSize).toBe(0)
+    expect(state.cutCardReached).toBe(false)
   })
 
   it('uses custom bankroll', () => {
@@ -80,6 +82,45 @@ describe('gameReducer — state transitions', () => {
       expect(next.dealerRevealed).toBe(false)
       expect(next.result).toBeNull()
       expect(next.message).toBe('Dealing...')
+    })
+
+    it('records shoeSize on first deal', () => {
+      let state = createInitialState(1000)
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 100 } })
+
+      const deck = new Array(308).fill({ rank: '2' as const, suit: 'hearts' as const })
+      const playerHand = [{ rank: 'K' as const, suit: 'hearts' as const, id: 1 }, { rank: '5' as const, suit: 'clubs' as const, id: 2 }]
+      const dealerHand = [{ rank: '9' as const, suit: 'spades' as const, id: 3 }, { rank: '7' as const, suit: 'diamonds' as const, id: 4 }]
+
+      const next = gameReducer(state, {
+        type: ACTIONS.DEAL,
+        payload: { deck, playerHand, dealerHand },
+      })
+
+      // shoeSize = deck(308) + player(2) + dealer(2) = 312
+      expect(next.shoeSize).toBe(312)
+      expect(next.cutCardReached).toBe(false) // 308/312 remaining > 25%
+    })
+
+    it('sets cutCardReached when shoe is depleted past cut card', () => {
+      let state = createInitialState(1000)
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 100 } })
+
+      // Simulate shoe with only 50 cards remaining out of 312
+      const deck = new Array(50).fill({ rank: '2' as const, suit: 'hearts' as const })
+      const playerHand = [{ rank: 'K' as const, suit: 'hearts' as const, id: 1 }, { rank: '5' as const, suit: 'clubs' as const, id: 2 }]
+      const dealerHand = [{ rank: '9' as const, suit: 'spades' as const, id: 3 }, { rank: '7' as const, suit: 'diamonds' as const, id: 4 }]
+
+      // Set shoeSize to 312 (existing shoe)
+      state = { ...state, shoeSize: 312 }
+
+      const next = gameReducer(state, {
+        type: ACTIONS.DEAL,
+        payload: { deck, playerHand, dealerHand },
+      })
+
+      expect(next.shoeSize).toBe(312) // preserved from existing shoe
+      expect(next.cutCardReached).toBe(true) // 50/312 < 25%
     })
   })
 
@@ -526,7 +567,8 @@ describe('gameReducer — state transitions', () => {
   })
 
   describe('NEW_ROUND', () => {
-    it('resets hands and bet, keeps chips and stats', () => {
+    it('resets hands and bet, keeps chips, stats, and shoe', () => {
+      const remainingDeck = [{ rank: '2' as const, suit: 'hearts' as const }, { rank: '3' as const, suit: 'clubs' as const }]
       const state: GameState = {
         ...createInitialState(1000),
         phase: 'game_over',
@@ -534,15 +576,20 @@ describe('gameReducer — state transitions', () => {
         bet: 100,
         playerHand: [{ rank: 'K', suit: 'hearts' }],
         dealerHand: [{ rank: '5', suit: 'clubs' }],
+        deck: remainingDeck,
         result: 'win',
         dealerRevealed: true,
         stats: { wins: 5, losses: 3, pushes: 1 },
+        shoeSize: 312,
+        cutCardReached: false,
       }
 
       const next = gameReducer(state, { type: ACTIONS.NEW_ROUND })
       expect(next.phase).toBe(GAME_STATES.BETTING)
       expect(next.chips).toBe(1200) // preserved
       expect(next.stats).toEqual({ wins: 5, losses: 3, pushes: 1 }) // preserved
+      expect(next.deck).toEqual(remainingDeck) // shoe preserved between rounds
+      expect(next.shoeSize).toBe(312) // shoe size preserved
       expect(next.bet).toBe(0)
       expect(next.playerHand).toEqual([])
       expect(next.dealerHand).toEqual([])

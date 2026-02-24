@@ -1,5 +1,5 @@
 import { useReducer, useCallback, useRef } from 'react'
-import { createDeck } from '../utils/deck'
+import { createShoe } from '../utils/deck'
 import { cardValue, calculateScore, isBlackjack } from '../utils/scoring'
 import { getBlackjackPayout, getWinPayout, getPushPayout } from '../utils/payout'
 import { useGameSettings } from '../config/GameSettingsContext'
@@ -14,6 +14,7 @@ export function useGameEngine() {
     DEALER_PLAY_INITIAL_DELAY,
     DEALER_DRAW_DELAY,
     MAX_SPLIT_HANDS,
+    NUM_DECKS,
   } = useGameSettings()
 
   const [state, dispatch] = useReducer(gameReducer, STARTING_BANKROLL, createInitialState)
@@ -36,7 +37,11 @@ export function useGameEngine() {
   const dealCards = useCallback(() => {
     if (state.bet === 0) return
 
-    let currentDeck = createDeck()
+    // Use existing shoe, or create a new one if empty / cut card was reached last round
+    let currentDeck: Deck = (state.deck.length > 0 && !state.cutCardReached)
+      ? [...state.deck]
+      : createShoe(NUM_DECKS)
+
     const pHand: Hand = []
     const dHand: Hand = []
 
@@ -105,7 +110,7 @@ export function useGameEngine() {
         },
       })
     }
-  }, [state.bet, state.chips, state.stats, drawCard, GAME_STATES])
+  }, [state.bet, state.chips, state.stats, state.deck, state.cutCardReached, drawCard, GAME_STATES, NUM_DECKS])
 
   const resolveGame = useCallback((pHand: Hand, dHand: Hand, dDeck: Deck, currentBet: number, currentChips: number, currentStats: GameStats, currentInsuranceBet: number) => {
     const dealerPlay = (dh: Hand, dd: Deck) => {
@@ -495,6 +500,9 @@ export function useGameEngine() {
     && state.playerHand.length === 2
     && !state.isSplit
 
+  const cardsRemaining = state.deck.length
+  const shoeSize = state.shoeSize
+
   return {
     state: {
       playerHand: state.playerHand,
@@ -516,6 +524,9 @@ export function useGameEngine() {
       isSplit: state.isSplit,
       insuranceBet: state.insuranceBet,
       maxInsuranceBet,
+      cardsRemaining,
+      shoeSize,
+      cutCardReached: state.cutCardReached,
     },
     actions: {
       placeBet,

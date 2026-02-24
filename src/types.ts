@@ -59,6 +59,8 @@ export interface GameState {
   splitHands: SplitHand[]
   activeHandIndex: number
   isSplit: boolean
+  shoeSize: number       // total cards when shoe was created
+  cutCardReached: boolean // true when remaining cards pass the cut card
 }
 
 // ── Game Actions ──

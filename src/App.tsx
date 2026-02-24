@@ -7,6 +7,7 @@ import PlayerHand from './components/PlayerHand'
 import SplitHandsDisplay from './components/SplitHandsDisplay'
 import BettingControls from './components/BettingControls'
 import ActionControls from './components/ActionControls'
+import ShoeIndicator from './components/ShoeIndicator'
 import './App.css'
 
 function App() {
@@ -25,6 +26,12 @@ function App() {
       </header>
 
       <main className="table">
+        <ShoeIndicator
+          cardsRemaining={state.cardsRemaining}
+          shoeSize={state.shoeSize}
+          cutCardReached={state.cutCardReached}
+        />
+
         <DealerHand
           hand={state.dealerHand}
           dealerRevealed={state.dealerRevealed}
@@ -83,7 +90,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <span>Blackjack pays 3:2 &middot; Dealer stands on 17</span>
+        <span>Blackjack pays 3:2 &middot; Dealer stands on 17 &middot; 6-deck shoe</span>
       </footer>
     </div>
   )
