@@ -480,6 +480,26 @@
   transform: translateY(-1px);
 }
 
+/* Surrender button */
+.btn-surrender {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+  padding: 14px 32px;
+  font-size: 1.1rem;
+  border-radius: 12px;
+}
+
+.btn-surrender:not(:disabled):hover {
+  box-shadow: 0 6px 20px rgba(107, 114, 128, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-surrender:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 /* Split button */
 .btn-split {
   background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
@@ -552,7 +572,7 @@
     font-size: 0.85rem;
   }
 
-  .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-insurance {
+  .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
     padding: 12px 24px;
     font-size: 1rem;
   }

@@ -440,6 +440,31 @@ describe('gameReducer — state transitions', () => {
       // floor(25/2) = 12
       expect(next.chips).toBe(987)
     })
+
+    it('transitions from SURRENDERING to GAME_OVER on RESOLVE', () => {
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'surrendering',
+        chips: 950,
+        bet: 100,
+        result: 'lose',
+        dealerRevealed: true,
+      }
+
+      const next = gameReducer(state, {
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: 'Surrendered — half bet returned.',
+          result: 'lose',
+          dealerRevealed: true,
+          stats: { wins: 0, losses: 1, pushes: 0 },
+        },
+      })
+
+      expect(next.phase).toBe(GAME_STATES.GAME_OVER)
+      expect(next.result).toBe('lose')
+      expect(next.stats.losses).toBe(1)
+    })
   })
 
   describe('INSURE', () => {

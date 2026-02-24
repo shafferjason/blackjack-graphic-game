@@ -66,11 +66,13 @@ function App() {
               bet={state.bet}
               canDouble={state.canDouble}
               canSplit={state.canSplit}
+              canSurrender={state.canSurrender}
               maxInsuranceBet={state.maxInsuranceBet}
               onHit={actions.hit}
               onStand={actions.stand}
               onDoubleDown={actions.doubleDown}
               onSplit={actions.splitPairs}
+              onSurrender={actions.surrender}
               onAcceptInsurance={actions.acceptInsurance}
               onDeclineInsurance={actions.declineInsurance}
               onNewRound={actions.newRound}

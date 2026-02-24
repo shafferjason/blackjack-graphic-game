@@ -10,11 +10,13 @@ const defaultProps = {
   bet: 100,
   canDouble: true,
   canSplit: false,
+  canSurrender: true,
   maxInsuranceBet: 50,
   onHit: vi.fn(),
   onStand: vi.fn(),
   onDoubleDown: vi.fn(),
   onSplit: vi.fn(),
+  onSurrender: vi.fn(),
   onAcceptInsurance: vi.fn(),
   onDeclineInsurance: vi.fn(),
   onNewRound: vi.fn(),
@@ -277,6 +279,43 @@ describe('ActionControls component', () => {
     )
     fireEvent.click(screen.getByText('No Insurance'))
     expect(onDeclineInsurance).toHaveBeenCalled()
+  })
+
+  it('shows Surrender button during PLAYER_TURN', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canSurrender={true}
+      />
+    )
+    expect(screen.getByText('Surrender')).toBeInTheDocument()
+    expect(screen.getByText('Surrender')).not.toBeDisabled()
+  })
+
+  it('disables Surrender button when canSurrender is false', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canSurrender={false}
+      />
+    )
+    expect(screen.getByText('Surrender')).toBeDisabled()
+  })
+
+  it('calls onSurrender when Surrender is clicked', () => {
+    const onSurrender = vi.fn()
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canSurrender={true}
+        onSurrender={onSurrender}
+      />
+    )
+    fireEvent.click(screen.getByText('Surrender'))
+    expect(onSurrender).toHaveBeenCalled()
   })
 
   it('returns null for unhandled game states', () => {

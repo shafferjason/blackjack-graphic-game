@@ -426,6 +426,24 @@ export function useGameEngine() {
     }
   }, [state.phase, state.playerHand, state.chips, state.bet, state.deck, state.dealerHand, state.splitHands, state.stats, drawCard, resolveSplitGame, GAME_STATES, MAX_SPLIT_HANDS])
 
+  // ── Surrender ──
+  const surrender = useCallback(() => {
+    if (state.phase !== GAME_STATES.PLAYER_TURN) return
+    if (state.playerHand.length !== 2) return // only before any action
+    if (state.isSplit) return // not available after split
+
+    dispatch({ type: ACTIONS.SURRENDER })
+    dispatch({
+      type: ACTIONS.RESOLVE,
+      payload: {
+        message: 'Surrendered — half bet returned.',
+        result: 'lose',
+        dealerRevealed: true,
+        stats: { ...state.stats, losses: state.stats.losses + 1 },
+      },
+    })
+  }, [state.phase, state.playerHand, state.isSplit, state.stats, GAME_STATES])
+
   // ── Insurance ──
   const maxInsuranceBet = Math.floor(state.bet / 2)
 
@@ -473,6 +491,10 @@ export function useGameEngine() {
     && state.chips >= state.bet
     && state.splitHands.length < MAX_SPLIT_HANDS
 
+  const canSurrender = state.phase === GAME_STATES.PLAYER_TURN
+    && state.playerHand.length === 2
+    && !state.isSplit
+
   return {
     state: {
       playerHand: state.playerHand,
@@ -488,6 +510,7 @@ export function useGameEngine() {
       dealerVisibleScore,
       canDouble,
       canSplit,
+      canSurrender,
       splitHands: state.splitHands,
       activeHandIndex: state.activeHandIndex,
       isSplit: state.isSplit,
@@ -502,6 +525,7 @@ export function useGameEngine() {
       stand,
       doubleDown,
       splitPairs,
+      surrender,
       acceptInsurance,
       declineInsurance,
       newRound,
