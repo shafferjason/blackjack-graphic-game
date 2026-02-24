@@ -18,6 +18,26 @@ export interface GameStats {
   pushes: number
 }
 
+// ── Detailed Statistics ──
+export interface DetailedStats {
+  totalHandsPlayed: number
+  totalBetAmount: number
+  totalPayoutAmount: number
+  blackjackCount: number
+  doubleCount: number
+  splitCount: number
+  surrenderCount: number
+  insuranceTaken: number
+  insuranceWon: number
+  currentWinStreak: number
+  currentLossStreak: number
+  biggestWinStreak: number
+  biggestLossStreak: number
+  startingChips: number
+  chipHistory: number[]       // chip totals after each hand (last 50)
+  resultHistory: GameResult[] // last 50 results for charts
+}
+
 // ── Game Phase ──
 export type GamePhase =
   | 'idle'
@@ -56,6 +76,7 @@ export interface GameState {
   result: GameResult | null
   dealerRevealed: boolean
   stats: GameStats
+  detailedStats: DetailedStats
   splitHands: SplitHand[]
   activeHandIndex: number
   isSplit: boolean

@@ -3,9 +3,57 @@ import { createShoe } from '../utils/deck'
 import { cardValue, calculateScore, isBlackjack, isSoft17 } from '../utils/scoring'
 import { getBlackjackPayout, getWinPayout, getPushPayout } from '../utils/payout'
 import { useGameSettings } from '../config/GameSettingsContext'
-import { gameReducer, createInitialState, ACTIONS } from '../state/gameReducer'
+import { gameReducer, createInitialState, createInitialDetailedStats, ACTIONS } from '../state/gameReducer'
 import { saveGameState, loadGameState, clearAllStorage } from '../utils/storage'
-import type { Card, Hand, Deck, GameState, GameStats, GameResult, GamePhase, SplitHand } from '../types'
+import type { Card, Hand, Deck, GameState, GameStats, GameResult, GamePhase, SplitHand, DetailedStats } from '../types'
+
+const MAX_HISTORY_LENGTH = 50
+
+function updateDetailedStatsForResult(
+  ds: DetailedStats,
+  result: GameResult,
+  betAmount: number,
+  payoutAmount: number,
+  chipsAfter: number,
+  extra?: { isBlackjack?: boolean; isDouble?: boolean; isSplit?: boolean; isSurrender?: boolean; insuranceTaken?: boolean; insuranceWon?: boolean }
+): DetailedStats {
+  const updated = { ...ds }
+  updated.totalHandsPlayed += 1
+  updated.totalBetAmount += betAmount
+  updated.totalPayoutAmount += payoutAmount
+
+  if (extra?.isBlackjack) updated.blackjackCount += 1
+  if (extra?.isDouble) updated.doubleCount += 1
+  if (extra?.isSplit) updated.splitCount += 1
+  if (extra?.isSurrender) updated.surrenderCount += 1
+  if (extra?.insuranceTaken) updated.insuranceTaken += 1
+  if (extra?.insuranceWon) updated.insuranceWon += 1
+
+  // Streak tracking
+  if (result === 'win' || result === 'blackjack') {
+    updated.currentWinStreak += 1
+    updated.currentLossStreak = 0
+    if (updated.currentWinStreak > updated.biggestWinStreak) {
+      updated.biggestWinStreak = updated.currentWinStreak
+    }
+  } else if (result === 'lose') {
+    updated.currentLossStreak += 1
+    updated.currentWinStreak = 0
+    if (updated.currentLossStreak > updated.biggestLossStreak) {
+      updated.biggestLossStreak = updated.currentLossStreak
+    }
+  } else {
+    // push resets both streaks
+    updated.currentWinStreak = 0
+    updated.currentLossStreak = 0
+  }
+
+  // History (keep last N)
+  updated.chipHistory = [...ds.chipHistory, chipsAfter].slice(-MAX_HISTORY_LENGTH)
+  updated.resultHistory = [...ds.resultHistory, result].slice(-MAX_HISTORY_LENGTH)
+
+  return updated
+}
 
 export function useGameEngine() {
   const {
@@ -47,6 +95,7 @@ export function useGameEngine() {
         payload: {
           chips: saved.chips + saved.bet + saved.insuranceBet,
           stats: saved.stats,
+          ...(saved.detailedStats ? { detailedStats: saved.detailedStats } : {}),
           deck: saved.deck,
           shoeSize: saved.shoeSize,
           cutCardReached: saved.cutCardReached,
@@ -59,6 +108,7 @@ export function useGameEngine() {
         payload: {
           chips: saved.chips,
           stats: saved.stats,
+          ...(saved.detailedStats ? { detailedStats: saved.detailedStats } : {}),
           bet: saved.bet,
           phase: saved.phase as GamePhase,
           playerHand: saved.playerHand,
@@ -141,27 +191,42 @@ export function useGameEngine() {
     const currentChips = state.chips - currentBet
 
     if (isBlackjack(pHand) && isBlackjack(dHand)) {
+      const chipsAfter = currentChips + getPushPayout(currentBet)
       dispatch({
         type: ACTIONS.RESOLVE,
         payload: {
           message: "Both have Blackjack — it's a push!",
           result: 'push',
-          chips: currentChips + getPushPayout(currentBet),
+          chips: chipsAfter,
           dealerRevealed: true,
           stats: { ...state.stats, pushes: state.stats.pushes + 1 },
         },
       })
+      dispatch({
+        type: ACTIONS.RESTORE_STATE,
+        payload: {
+          detailedStats: updateDetailedStatsForResult(state.detailedStats, 'push', currentBet, getPushPayout(currentBet), chipsAfter, { isBlackjack: true }),
+        } as Partial<GameState>,
+      })
     } else if (isBlackjack(pHand)) {
       const payoutLabel = BLACKJACK_PAYOUT_RATIO === 1.5 ? '3:2' : '6:5'
+      const payout = getBlackjackPayout(currentBet, BLACKJACK_PAYOUT_RATIO)
+      const chipsAfter = currentChips + payout
       dispatch({
         type: ACTIONS.RESOLVE,
         payload: {
           message: `Blackjack! You win ${payoutLabel}!`,
           result: 'blackjack',
-          chips: currentChips + getBlackjackPayout(currentBet, BLACKJACK_PAYOUT_RATIO),
+          chips: chipsAfter,
           dealerRevealed: true,
           stats: { ...state.stats, wins: state.stats.wins + 1 },
         },
+      })
+      dispatch({
+        type: ACTIONS.RESTORE_STATE,
+        payload: {
+          detailedStats: updateDetailedStatsForResult(state.detailedStats, 'blackjack', currentBet, payout, chipsAfter, { isBlackjack: true }),
+        } as Partial<GameState>,
       })
     } else if (dHand[0].rank === 'A') {
       // Dealer shows Ace — offer insurance before player acts
@@ -184,9 +249,9 @@ export function useGameEngine() {
         },
       })
     }
-  }, [state.bet, state.chips, state.stats, state.deck, state.cutCardReached, drawCard, GAME_STATES, NUM_DECKS, BLACKJACK_PAYOUT_RATIO])
+  }, [state.bet, state.chips, state.stats, state.detailedStats, state.deck, state.cutCardReached, drawCard, GAME_STATES, NUM_DECKS, BLACKJACK_PAYOUT_RATIO])
 
-  const resolveGame = useCallback((pHand: Hand, dHand: Hand, dDeck: Deck, currentBet: number, currentChips: number, currentStats: GameStats, currentInsuranceBet: number) => {
+  const resolveGame = useCallback((pHand: Hand, dHand: Hand, dDeck: Deck, currentBet: number, currentChips: number, currentStats: GameStats, currentInsuranceBet: number, currentDetailedStats?: DetailedStats, extraFlags?: { isDouble?: boolean }) => {
     const dealerPlay = (dh: Hand, dd: Deck) => {
       const dealerScore = calculateScore(dh)
       const playerScore = calculateScore(pHand)
@@ -236,23 +301,38 @@ export function useGameEngine() {
           message += ' Insurance lost.'
         }
 
+        const chipsAfter = currentChips + chipDelta + insurancePayout
+
         dispatch({
           type: ACTIONS.RESOLVE,
           payload: {
             message,
             result,
-            chips: currentChips + chipDelta + insurancePayout,
+            chips: chipsAfter,
             dealerRevealed: true,
             stats: { ...currentStats, [statKey]: currentStats[statKey] + 1 },
           },
         })
+
+        if (currentDetailedStats) {
+          dispatch({
+            type: ACTIONS.RESTORE_STATE,
+            payload: {
+              detailedStats: updateDetailedStatsForResult(currentDetailedStats, result, currentBet, chipDelta, chipsAfter, {
+                isDouble: extraFlags?.isDouble,
+                insuranceTaken: currentInsuranceBet > 0,
+                insuranceWon: insurancePayout > 0,
+              }),
+            } as Partial<GameState>,
+          })
+        }
       }
     }
     setTimeout(() => dealerPlay(dHand, dDeck), DEALER_PLAY_INITIAL_DELAY)
   }, [drawCard, DEALER_STAND_THRESHOLD, DEALER_DRAW_DELAY, DEALER_PLAY_INITIAL_DELAY, DEALER_HITS_SOFT_17])
 
   // ── Resolve all split hands against dealer ──
-  const resolveSplitGame = useCallback((hands: SplitHand[], dHand: Hand, dDeck: Deck, currentChips: number, currentStats: GameStats, currentInsuranceBet: number = 0) => {
+  const resolveSplitGame = useCallback((hands: SplitHand[], dHand: Hand, dDeck: Deck, currentChips: number, currentStats: GameStats, currentInsuranceBet: number = 0, currentDetailedStats?: DetailedStats) => {
     const dealerPlay = (dh: Hand, dd: Deck) => {
       const dealerScore = calculateScore(dh)
       const dealerMustHit = dealerScore < DEALER_STAND_THRESHOLD || (DEALER_HITS_SOFT_17 && isSoft17(dh))
@@ -316,15 +396,38 @@ export function useGameEngine() {
           message += ' Insurance lost.'
         }
 
+        const finalChips = totalChips + insurancePayout
+
         dispatch({
           type: ACTIONS.SPLIT_RESOLVE,
           payload: {
             splitHands: resolvedHands,
-            chips: totalChips + insurancePayout,
+            chips: finalChips,
             stats: updatedStats,
             message,
           },
         })
+
+        // Track detailed stats for each split hand
+        if (currentDetailedStats) {
+          let ds = currentDetailedStats
+          for (let i = 0; i < resolvedHands.length; i++) {
+            const hand = resolvedHands[i]
+            const handResult = hand.result!
+            let handPayout = 0
+            if (handResult === 'win') handPayout = getWinPayout(hand.bet)
+            else if (handResult === 'push') handPayout = getPushPayout(hand.bet)
+            ds = updateDetailedStatsForResult(ds, handResult, hand.bet, handPayout, finalChips, {
+              isSplit: true,
+              insuranceTaken: i === 0 && currentInsuranceBet > 0,
+              insuranceWon: i === 0 && insurancePayout > 0,
+            })
+          }
+          dispatch({
+            type: ACTIONS.RESTORE_STATE,
+            payload: { detailedStats: ds } as Partial<GameState>,
+          })
+        }
       }
     }
     setTimeout(() => dealerPlay(dHand, dDeck), DEALER_PLAY_INITIAL_DELAY)
@@ -356,7 +459,7 @@ export function useGameEngine() {
         } else {
           // All hands done — go to dealer
           dispatch({ type: ACTIONS.SPLIT_STAND })
-          resolveSplitGame(updatedHands, state.dealerHand, newDeck, state.chips, state.stats, state.insuranceBet)
+          resolveSplitGame(updatedHands, state.dealerHand, newDeck, state.chips, state.stats, state.insuranceBet, state.detailedStats)
         }
       }
       return
@@ -388,6 +491,12 @@ export function useGameEngine() {
           stats: { ...state.stats, losses: state.stats.losses + 1 },
         },
       })
+      dispatch({
+        type: ACTIONS.RESTORE_STATE,
+        payload: {
+          detailedStats: updateDetailedStatsForResult(state.detailedStats, 'lose', state.bet, 0, state.chips, {}),
+        } as Partial<GameState>,
+      })
     } else if (score === 21) {
       // Auto-stand on 21
       dispatch({
@@ -395,14 +504,14 @@ export function useGameEngine() {
         payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN as GamePhase },
       })
       dispatch({ type: ACTIONS.STAND })
-      resolveGame(newHand, state.dealerHand, newDeck, state.bet, state.chips, state.stats, state.insuranceBet)
+      resolveGame(newHand, state.dealerHand, newDeck, state.bet, state.chips, state.stats, state.insuranceBet, state.detailedStats)
     } else {
       dispatch({
         type: ACTIONS.HIT,
         payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN as GamePhase },
       })
     }
-  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.deck, state.playerHand, state.dealerHand, state.bet, state.chips, state.stats, drawCard, resolveGame, resolveSplitGame, GAME_STATES])
+  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.deck, state.playerHand, state.dealerHand, state.bet, state.chips, state.stats, state.detailedStats, drawCard, resolveGame, resolveSplitGame, GAME_STATES])
 
   const stand = useCallback(() => {
     // ── Split stand ──
@@ -415,15 +524,15 @@ export function useGameEngine() {
       const nextIndex = state.activeHandIndex + 1
       if (nextIndex >= updatedHands.length) {
         // All hands done — resolve against dealer
-        resolveSplitGame(updatedHands, state.dealerHand, state.deck, state.chips, state.stats, state.insuranceBet)
+        resolveSplitGame(updatedHands, state.dealerHand, state.deck, state.chips, state.stats, state.insuranceBet, state.detailedStats)
       }
       return
     }
 
     // ── Normal stand ──
     dispatch({ type: ACTIONS.STAND })
-    resolveGame(state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, state.insuranceBet)
-  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, state.insuranceBet, resolveGame, resolveSplitGame, GAME_STATES])
+    resolveGame(state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, state.insuranceBet, state.detailedStats)
+  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, state.detailedStats, state.insuranceBet, resolveGame, resolveSplitGame, GAME_STATES])
 
   const doubleDown = useCallback(() => {
     // ── Split double (double after split) ──
@@ -448,7 +557,7 @@ export function useGameEngine() {
       )
       const nextIndex = state.activeHandIndex + 1
       if (nextIndex >= updatedHands.length) {
-        resolveSplitGame(updatedHands, state.dealerHand, newDeck, state.chips - activeHand.bet, state.stats, state.insuranceBet)
+        resolveSplitGame(updatedHands, state.dealerHand, newDeck, state.chips - activeHand.bet, state.stats, state.insuranceBet, state.detailedStats)
       }
       return
     }
@@ -480,11 +589,17 @@ export function useGameEngine() {
           stats: { ...state.stats, losses: state.stats.losses + 1 },
         },
       })
+      dispatch({
+        type: ACTIONS.RESTORE_STATE,
+        payload: {
+          detailedStats: updateDetailedStatsForResult(state.detailedStats, 'lose', doubledBet, 0, chipsAfterDouble, { isDouble: true }),
+        } as Partial<GameState>,
+      })
     } else {
       // Resolve against dealer with doubled bet
-      resolveGame(newHand, state.dealerHand, newDeck, doubledBet, chipsAfterDouble, state.stats, state.insuranceBet)
+      resolveGame(newHand, state.dealerHand, newDeck, doubledBet, chipsAfterDouble, state.stats, state.insuranceBet, state.detailedStats, { isDouble: true })
     }
-  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.chips, state.bet, state.deck, state.playerHand, state.dealerHand, state.stats, state.insuranceBet, drawCard, resolveGame, resolveSplitGame, GAME_STATES, ALLOW_DOUBLE_AFTER_SPLIT])
+  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.chips, state.bet, state.deck, state.playerHand, state.dealerHand, state.stats, state.detailedStats, state.insuranceBet, drawCard, resolveGame, resolveSplitGame, GAME_STATES, ALLOW_DOUBLE_AFTER_SPLIT])
 
   // ── Split pairs ──
   const splitPairs = useCallback(() => {
@@ -531,9 +646,9 @@ export function useGameEngine() {
 
     if (isAces) {
       // Aces split: one card each, then resolve against dealer
-      resolveSplitGame([hand1, hand2], state.dealerHand, currentDeck, state.chips - state.bet, state.stats, state.insuranceBet)
+      resolveSplitGame([hand1, hand2], state.dealerHand, currentDeck, state.chips - state.bet, state.stats, state.insuranceBet, state.detailedStats)
     }
-  }, [state.phase, state.playerHand, state.chips, state.bet, state.deck, state.dealerHand, state.splitHands, state.stats, drawCard, resolveSplitGame, GAME_STATES, MAX_SPLIT_HANDS])
+  }, [state.phase, state.playerHand, state.chips, state.bet, state.deck, state.dealerHand, state.splitHands, state.stats, state.detailedStats, drawCard, resolveSplitGame, GAME_STATES, MAX_SPLIT_HANDS])
 
   // ── Surrender ──
   const surrender = useCallback(() => {
@@ -541,6 +656,7 @@ export function useGameEngine() {
     if (state.playerHand.length !== 2) return // only before any action
     if (state.isSplit) return // not available after split
 
+    const halfBet = Math.floor(state.bet / 2)
     dispatch({ type: ACTIONS.SURRENDER })
     dispatch({
       type: ACTIONS.RESOLVE,
@@ -551,7 +667,13 @@ export function useGameEngine() {
         stats: { ...state.stats, losses: state.stats.losses + 1 },
       },
     })
-  }, [state.phase, state.playerHand, state.isSplit, state.stats, GAME_STATES])
+    dispatch({
+      type: ACTIONS.RESTORE_STATE,
+      payload: {
+        detailedStats: updateDetailedStatsForResult(state.detailedStats, 'lose', state.bet, halfBet, state.chips + halfBet - state.bet, { isSurrender: true }),
+      } as Partial<GameState>,
+    })
+  }, [state.phase, state.playerHand, state.isSplit, state.stats, state.detailedStats, state.bet, state.chips, GAME_STATES])
 
   // ── Insurance ──
   const maxInsuranceBet = Math.floor(state.bet / 2)
@@ -631,6 +753,7 @@ export function useGameEngine() {
       result: state.result,
       dealerRevealed: state.dealerRevealed,
       stats: state.stats,
+      detailedStats: state.detailedStats,
       playerScore,
       dealerVisibleScore,
       canDouble,

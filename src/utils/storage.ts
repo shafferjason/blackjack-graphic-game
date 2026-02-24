@@ -1,4 +1,4 @@
-import type { GameState, GameStats } from '../types'
+import type { GameState, GameStats, DetailedStats } from '../types'
 
 const STORAGE_KEYS = {
   GAME_STATE: 'blackjack-game-state',
@@ -9,6 +9,7 @@ const STORAGE_KEYS = {
 export interface PersistedGameState {
   chips: number
   stats: GameStats
+  detailedStats?: DetailedStats
   bet: number
   phase: string
   playerHand: GameState['playerHand']
@@ -30,6 +31,7 @@ export function saveGameState(state: GameState): void {
     const persisted: PersistedGameState = {
       chips: state.chips,
       stats: state.stats,
+      detailedStats: state.detailedStats,
       bet: state.bet,
       phase: state.phase,
       playerHand: state.playerHand,

@@ -1,5 +1,26 @@
-import { GAME_STATES, DECK_PENETRATION } from '../constants'
-import type { GameState, GameAction, GamePhase, Card } from '../types'
+import { GAME_STATES, DECK_PENETRATION, STARTING_BANKROLL } from '../constants'
+import type { GameState, GameAction, GamePhase, Card, DetailedStats } from '../types'
+
+export function createInitialDetailedStats(startingChips: number): DetailedStats {
+  return {
+    totalHandsPlayed: 0,
+    totalBetAmount: 0,
+    totalPayoutAmount: 0,
+    blackjackCount: 0,
+    doubleCount: 0,
+    splitCount: 0,
+    surrenderCount: 0,
+    insuranceTaken: 0,
+    insuranceWon: 0,
+    currentWinStreak: 0,
+    currentLossStreak: 0,
+    biggestWinStreak: 0,
+    biggestLossStreak: 0,
+    startingChips,
+    chipHistory: [],
+    resultHistory: [],
+  }
+}
 
 // ── Action types ──
 export const ACTIONS = {
@@ -62,6 +83,7 @@ export function createInitialState(startingBankroll: number): GameState {
     result: null,
     dealerRevealed: false,
     stats: { wins: 0, losses: 0, pushes: 0 },
+    detailedStats: createInitialDetailedStats(startingBankroll),
     splitHands: [],
     activeHandIndex: 0,
     isSplit: false,

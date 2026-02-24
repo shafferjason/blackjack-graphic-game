@@ -9,6 +9,7 @@ import BettingControls from './components/BettingControls'
 import ActionControls from './components/ActionControls'
 import ShoeIndicator from './components/ShoeIndicator'
 import SettingsPanel from './components/SettingsPanel'
+import StatsDashboard from './components/StatsDashboard'
 import './App.css'
 
 function App() {
@@ -33,7 +34,10 @@ function App() {
           <span className="suit-icon">&#9824;</span> Blackjack <span className="suit-icon red">&#9829;</span>
         </h1>
         <Scoreboard stats={state.stats} />
-        <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
+        <div className="header-actions">
+          <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} />
+          <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
+        </div>
       </header>
 
       <main className="table">
