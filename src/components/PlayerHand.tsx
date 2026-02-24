@@ -7,15 +7,21 @@ interface PlayerHandProps {
 }
 
 export default function PlayerHand({ hand, playerScore }: PlayerHandProps) {
+  const scoreText = hand.length > 0
+    ? playerScore > 21
+      ? `Your score: ${playerScore}, bust`
+      : `Your score: ${playerScore}`
+    : 'Your hand empty'
+
   return (
-    <section className="hand-area">
+    <section className="hand-area" aria-label="Your hand">
       <div className="hand-header">
         <span className="hand-title">You</span>
         {hand.length > 0 && (
-          <span className={`score-pill ${playerScore > 21 ? 'bust' : ''}`}>{playerScore}</span>
+          <span className={`score-pill ${playerScore > 21 ? 'bust' : ''}`} aria-live="polite" aria-label={scoreText}>{playerScore}</span>
         )}
       </div>
-      <div className="cards-row">
+      <div className="cards-row" role="list" aria-label="Your cards">
         {hand.map((card, i) => (
           <Card
             key={card.id}
@@ -26,8 +32,8 @@ export default function PlayerHand({ hand, playerScore }: PlayerHandProps) {
         ))}
         {hand.length === 0 && (
           <>
-            <div className="card-slot" />
-            <div className="card-slot" />
+            <div className="card-slot" aria-hidden="true" />
+            <div className="card-slot" aria-hidden="true" />
           </>
         )}
       </div>

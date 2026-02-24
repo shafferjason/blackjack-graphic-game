@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useGameSettings } from '../config/GameSettingsContext'
 import type { CardBackTheme, TableFeltTheme } from '../types'
 
@@ -11,6 +11,21 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
   const [open, setOpen] = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const settings = useGameSettings()
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Focus close button when dialog opens and handle Escape key
+  useEffect(() => {
+    if (!open) return
+    closeButtonRef.current?.focus()
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        setShowResetConfirm(false)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   const {
     NUM_DECKS,
@@ -49,16 +64,17 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
         className="settings-toggle"
         onClick={() => setOpen(!open)}
         title="House Rules"
+        aria-label="Open house rules settings"
       >
         &#9881;
       </button>
 
       {open && (
-        <div className="settings-overlay" onClick={() => { setOpen(false); setShowResetConfirm(false) }}>
+        <div className="settings-overlay" onClick={() => { setOpen(false); setShowResetConfirm(false) }} role="dialog" aria-modal="true" aria-label="House Rules Settings">
           <div className="settings-panel" onClick={e => e.stopPropagation()}>
             <div className="settings-header">
               <h2>House Rules</h2>
-              <button className="settings-close" onClick={() => { setOpen(false); setShowResetConfirm(false) }}>&times;</button>
+              <button ref={closeButtonRef} className="settings-close" onClick={() => { setOpen(false); setShowResetConfirm(false) }} aria-label="Close settings">&times;</button>
             </div>
 
             {isPlaying && (
@@ -69,7 +85,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
 
             <div className="settings-body">
               {/* Number of Decks */}
-              <div className="setting-row">
+              <div className="setting-row" role="group" aria-label="Number of Decks">
                 <label className="setting-label">Number of Decks</label>
                 <div className="setting-options">
                   {[1, 2, 6, 8].map(n => (
@@ -77,6 +93,8 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                       key={n}
                       className={`setting-chip ${NUM_DECKS === n ? 'setting-chip-active' : ''}`}
                       onClick={() => updateSetting('NUM_DECKS', n)}
+                      aria-pressed={NUM_DECKS === n}
+                      aria-label={`${n} deck${n > 1 ? 's' : ''}`}
                     >
                       {n}
                     </button>
@@ -85,18 +103,20 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
               </div>
 
               {/* Dealer Soft 17 */}
-              <div className="setting-row">
+              <div className="setting-row" role="group" aria-label="Dealer on Soft 17">
                 <label className="setting-label">Dealer on Soft 17</label>
                 <div className="setting-options">
                   <button
                     className={`setting-chip ${!DEALER_HITS_SOFT_17 ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('DEALER_HITS_SOFT_17', false)}
+                    aria-pressed={!DEALER_HITS_SOFT_17}
                   >
                     Stands
                   </button>
                   <button
                     className={`setting-chip ${DEALER_HITS_SOFT_17 ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('DEALER_HITS_SOFT_17', true)}
+                    aria-pressed={DEALER_HITS_SOFT_17}
                   >
                     Hits
                   </button>
@@ -104,18 +124,20 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
               </div>
 
               {/* Blackjack Payout */}
-              <div className="setting-row">
+              <div className="setting-row" role="group" aria-label="Blackjack Payout">
                 <label className="setting-label">Blackjack Payout</label>
                 <div className="setting-options">
                   <button
                     className={`setting-chip ${BLACKJACK_PAYOUT_RATIO === 1.5 ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('BLACKJACK_PAYOUT_RATIO', 1.5)}
+                    aria-pressed={BLACKJACK_PAYOUT_RATIO === 1.5}
                   >
                     3:2
                   </button>
                   <button
                     className={`setting-chip ${BLACKJACK_PAYOUT_RATIO === 1.2 ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('BLACKJACK_PAYOUT_RATIO', 1.2)}
+                    aria-pressed={BLACKJACK_PAYOUT_RATIO === 1.2}
                   >
                     6:5
                   </button>
@@ -123,18 +145,20 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
               </div>
 
               {/* Double After Split */}
-              <div className="setting-row">
+              <div className="setting-row" role="group" aria-label="Double After Split">
                 <label className="setting-label">Double After Split</label>
                 <div className="setting-options">
                   <button
                     className={`setting-chip ${ALLOW_DOUBLE_AFTER_SPLIT ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('ALLOW_DOUBLE_AFTER_SPLIT', true)}
+                    aria-pressed={ALLOW_DOUBLE_AFTER_SPLIT}
                   >
                     Allowed
                   </button>
                   <button
                     className={`setting-chip ${!ALLOW_DOUBLE_AFTER_SPLIT ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('ALLOW_DOUBLE_AFTER_SPLIT', false)}
+                    aria-pressed={!ALLOW_DOUBLE_AFTER_SPLIT}
                   >
                     Not Allowed
                   </button>
@@ -142,18 +166,20 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
               </div>
 
               {/* Surrender */}
-              <div className="setting-row">
+              <div className="setting-row" role="group" aria-label="Surrender">
                 <label className="setting-label">Surrender</label>
                 <div className="setting-options">
                   <button
                     className={`setting-chip ${ALLOW_SURRENDER ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('ALLOW_SURRENDER', true)}
+                    aria-pressed={ALLOW_SURRENDER}
                   >
                     Allowed
                   </button>
                   <button
                     className={`setting-chip ${!ALLOW_SURRENDER ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('ALLOW_SURRENDER', false)}
+                    aria-pressed={!ALLOW_SURRENDER}
                   >
                     Not Allowed
                   </button>
@@ -161,7 +187,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
               </div>
 
               {/* Card Back Theme */}
-              <div className="setting-row">
+              <div className="setting-row" role="group" aria-label="Card Back Design">
                 <label className="setting-label">Card Back Design</label>
                 <div className="setting-options">
                   {cardBackThemes.map(t => (
@@ -169,8 +195,10 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                       key={t.value}
                       className={`setting-chip card-back-chip ${CARD_BACK_THEME === t.value ? 'setting-chip-active' : ''}`}
                       onClick={() => updateSetting('CARD_BACK_THEME', t.value)}
+                      aria-pressed={CARD_BACK_THEME === t.value}
+                      aria-label={`${t.label} card back`}
                     >
-                      <span className="card-back-swatch" style={{ background: t.color }} />
+                      <span className="card-back-swatch" style={{ background: t.color }} aria-hidden="true" />
                       {t.label}
                     </button>
                   ))}
@@ -178,7 +206,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
               </div>
 
               {/* Table Felt Color */}
-              <div className="setting-row">
+              <div className="setting-row" role="group" aria-label="Table Felt Color">
                 <label className="setting-label">Table Felt Color</label>
                 <div className="setting-options">
                   {feltThemes.map(t => (
@@ -186,8 +214,10 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                       key={t.value}
                       className={`setting-chip card-back-chip ${TABLE_FELT_THEME === t.value ? 'setting-chip-active' : ''}`}
                       onClick={() => updateSetting('TABLE_FELT_THEME', t.value)}
+                      aria-pressed={TABLE_FELT_THEME === t.value}
+                      aria-label={`${t.label} table felt`}
                     >
-                      <span className="card-back-swatch" style={{ background: t.color }} />
+                      <span className="card-back-swatch" style={{ background: t.color }} aria-hidden="true" />
                       {t.label}
                     </button>
                   ))}

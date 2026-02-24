@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { GameStats, DetailedStats, GameResult, Achievement } from '../types'
 
 interface StatsDashboardProps {
@@ -148,6 +148,18 @@ function AchievementsGrid({ achievements }: { achievements: Achievement[] }) {
 
 export default function StatsDashboard({ stats, detailedStats, chips, achievements }: StatsDashboardProps) {
   const [open, setOpen] = useState(false)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  // Focus close button when dialog opens and handle Escape key
+  useEffect(() => {
+    if (!open) return
+    closeButtonRef.current?.focus()
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   const totalHands = detailedStats.totalHandsPlayed
   const totalWagered = detailedStats.totalBetAmount
@@ -168,11 +180,11 @@ export default function StatsDashboard({ stats, detailedStats, chips, achievemen
       </button>
 
       {open && (
-        <div className="stats-overlay" onClick={() => setOpen(false)}>
+        <div className="stats-overlay" onClick={() => setOpen(false)} role="dialog" aria-modal="true" aria-label="Statistics">
           <div className="stats-panel" onClick={e => e.stopPropagation()}>
             <div className="stats-header">
               <h2>Statistics</h2>
-              <button className="settings-close" onClick={() => setOpen(false)}>&times;</button>
+              <button ref={closeButtonRef} className="settings-close" onClick={() => setOpen(false)} aria-label="Close statistics">&times;</button>
             </div>
 
             <div className="stats-body">

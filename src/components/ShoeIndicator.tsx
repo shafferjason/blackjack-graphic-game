@@ -18,9 +18,17 @@ export default function ShoeIndicator({ cardsRemaining, shoeSize, cutCardReached
     : '#ef4444'
 
   return (
-    <div className="shoe-indicator" title={`${cardsRemaining} of ${shoeSize} cards remaining`}>
+    <div
+      className="shoe-indicator"
+      title={`${cardsRemaining} of ${shoeSize} cards remaining`}
+      role="meter"
+      aria-label={`Shoe: ${cardsRemaining} of ${shoeSize} cards remaining${cutCardReached ? ', reshuffle pending' : ''}`}
+      aria-valuenow={cardsRemaining}
+      aria-valuemin={0}
+      aria-valuemax={shoeSize}
+    >
       <div className="shoe-label">Shoe</div>
-      <div className="shoe-track">
+      <div className="shoe-track" aria-hidden="true">
         <div
           className="shoe-fill"
           style={{
@@ -35,7 +43,7 @@ export default function ShoeIndicator({ cardsRemaining, shoeSize, cutCardReached
         />
       </div>
       <div className="shoe-count">{cardsRemaining}</div>
-      {cutCardReached && <div className="shoe-reshuffle">Reshuffle</div>}
+      {cutCardReached && <div className="shoe-reshuffle" aria-live="polite">Reshuffle</div>}
     </div>
   )
 }

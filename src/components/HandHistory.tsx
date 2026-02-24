@@ -76,7 +76,7 @@ function HandReplay({ entry, onClose }: { entry: HandHistoryEntry; onClose: () =
     <div className="hh-replay">
       <div className="hh-replay-header">
         <h3>Hand #{entry.id} Replay</h3>
-        <button className="settings-close" onClick={onClose}>&times;</button>
+        <button className="settings-close" onClick={onClose} aria-label="Close replay">&times;</button>
       </div>
 
       <div className="hh-replay-body">
@@ -152,6 +152,7 @@ function HandReplay({ entry, onClose }: { entry: HandHistoryEntry; onClose: () =
             className="btn btn-outline hh-replay-btn"
             disabled={!canPrev}
             onClick={() => setStepIndex(s => s - 1)}
+            aria-label="Previous step"
           >
             &larr; Prev
           </button>
@@ -159,6 +160,7 @@ function HandReplay({ entry, onClose }: { entry: HandHistoryEntry; onClose: () =
             className="btn btn-outline hh-replay-btn"
             disabled={!canNext}
             onClick={() => setStepIndex(s => s + 1)}
+            aria-label="Next step"
           >
             Next &rarr;
           </button>
@@ -172,6 +174,8 @@ export default function HandHistory({ history }: HandHistoryProps) {
   const [open, setOpen] = useState(false)
   const [replayEntry, setReplayEntry] = useState<HandHistoryEntry | null>(null)
   const listRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
 
   // Auto-scroll to bottom when new entries arrive
   useEffect(() => {
@@ -179,6 +183,20 @@ export default function HandHistory({ history }: HandHistoryProps) {
       listRef.current.scrollTop = listRef.current.scrollHeight
     }
   }, [open, history.length])
+
+  // Focus close button when dialog opens and handle Escape key
+  useEffect(() => {
+    if (!open) return
+    closeButtonRef.current?.focus()
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setOpen(false)
+        setReplayEntry(null)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   const reversed = [...history].reverse()
 
@@ -194,11 +212,11 @@ export default function HandHistory({ history }: HandHistoryProps) {
       </button>
 
       {open && (
-        <div className="stats-overlay" onClick={() => { setOpen(false); setReplayEntry(null) }}>
-          <div className="hh-panel" onClick={e => e.stopPropagation()}>
+        <div className="stats-overlay" onClick={() => { setOpen(false); setReplayEntry(null) }} role="dialog" aria-modal="true" aria-label="Hand History">
+          <div className="hh-panel" onClick={e => e.stopPropagation()} ref={panelRef}>
             <div className="stats-header">
               <h2>Hand History</h2>
-              <button className="settings-close" onClick={() => { setOpen(false); setReplayEntry(null) }}>&times;</button>
+              <button ref={closeButtonRef} className="settings-close" onClick={() => { setOpen(false); setReplayEntry(null) }} aria-label="Close hand history">&times;</button>
             </div>
 
             {replayEntry ? (
@@ -250,6 +268,7 @@ export default function HandHistory({ history }: HandHistoryProps) {
                             <button
                               className="hh-replay-trigger"
                               onClick={() => setReplayEntry(entry)}
+                              aria-label={`Replay hand #${entry.id}`}
                             >
                               Replay
                             </button>

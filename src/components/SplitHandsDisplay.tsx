@@ -10,22 +10,25 @@ interface SplitHandsDisplayProps {
 
 export default function SplitHandsDisplay({ splitHands, activeHandIndex, isPlaying }: SplitHandsDisplayProps) {
   return (
-    <div className="split-hands-container">
+    <div className="split-hands-container" role="region" aria-label="Split hands">
       {splitHands.map((hand, i) => {
         const score = calculateScore(hand.cards)
         const isActive = isPlaying && i === activeHandIndex
         const isBust = score > 21
         const resultClass = hand.result === 'win' ? 'split-win' : hand.result === 'lose' ? 'split-lose' : hand.result === 'push' ? 'split-push' : ''
+        const handLabel = `Hand ${i + 1}${isActive ? ', currently playing' : ''}${isBust ? ', bust' : ''}, score: ${score}`
 
         return (
           <section
             key={i}
             className={`split-hand ${isActive ? 'split-hand-active' : ''} ${resultClass}`}
+            aria-label={handLabel}
+            aria-current={isActive ? 'true' : undefined}
           >
             <div className="hand-header">
               <span className="hand-title">Hand {i + 1}</span>
               {hand.cards.length > 0 && (
-                <span className={`score-pill ${isBust ? 'bust' : ''}`}>{score}</span>
+                <span className={`score-pill ${isBust ? 'bust' : ''}`} aria-label={`Score: ${score}${isBust ? ', bust' : ''}`}>{score}</span>
               )}
               {hand.result && (
                 <span className={`split-result-badge split-result-${hand.result}`}>
@@ -33,7 +36,7 @@ export default function SplitHandsDisplay({ splitHands, activeHandIndex, isPlayi
                 </span>
               )}
             </div>
-            <div className="cards-row">
+            <div className="cards-row" role="list" aria-label={`Hand ${i + 1} cards`}>
               {hand.cards.map((card, ci) => (
                 <Card
                   key={card.id}
@@ -43,7 +46,7 @@ export default function SplitHandsDisplay({ splitHands, activeHandIndex, isPlayi
                 />
               ))}
             </div>
-            <div className="split-bet-tag">Bet: ${hand.bet}</div>
+            <div className="split-bet-tag" aria-label={`Bet: $${hand.bet}`}>Bet: ${hand.bet}</div>
           </section>
         )
       })}

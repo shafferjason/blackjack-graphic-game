@@ -124,6 +124,35 @@ function App() {
     && state.gameState !== GAME_STATES.GAME_OVER
     && state.gameState !== GAME_STATES.RESOLVING
 
+  // ── Screen reader announcements for card deals ──
+  const [srAnnouncement, setSrAnnouncement] = useState('')
+  const prevPlayerCountRef = useRef(state.playerHand.length)
+  const prevDealerCountRef = useRef(state.dealerHand.length)
+
+  useEffect(() => {
+    const playerCount = state.playerHand.length
+    const dealerCount = state.dealerHand.length
+    const suitNames: Record<string, string> = { hearts: 'Hearts', diamonds: 'Diamonds', clubs: 'Clubs', spades: 'Spades' }
+    const rankNames: Record<string, string> = { A: 'Ace', J: 'Jack', Q: 'Queen', K: 'King' }
+
+    if (playerCount > prevPlayerCountRef.current && playerCount > 0) {
+      const newCard = state.playerHand[playerCount - 1]
+      const rank = rankNames[newCard.rank] || newCard.rank
+      const suit = suitNames[newCard.suit]
+      setSrAnnouncement(`You received ${rank} of ${suit}. Your score: ${state.playerScore}`)
+    }
+
+    if (dealerCount > prevDealerCountRef.current && dealerCount > 0 && state.dealerRevealed) {
+      const newCard = state.dealerHand[dealerCount - 1]
+      const rank = rankNames[newCard.rank] || newCard.rank
+      const suit = suitNames[newCard.suit]
+      setSrAnnouncement(`Dealer received ${rank} of ${suit}. Dealer score: ${state.dealerVisibleScore}`)
+    }
+
+    prevPlayerCountRef.current = playerCount
+    prevDealerCountRef.current = dealerCount
+  }, [state.playerHand, state.dealerHand, state.playerScore, state.dealerVisibleScore, state.dealerRevealed])
+
   const payoutLabel = BLACKJACK_PAYOUT_RATIO === 1.5 ? '3:2' : '6:5'
   const soft17Label = DEALER_HITS_SOFT_17 ? 'Dealer hits soft 17' : 'Dealer stands on 17'
   const deckLabel = NUM_DECKS === 1 ? 'Single deck' : `${NUM_DECKS}-deck shoe`
@@ -132,10 +161,10 @@ function App() {
     <div className="app">
       <header className="header">
         <h1>
-          <span className="suit-icon">&#9824;</span> Blackjack <span className="suit-icon red">&#9829;</span>
+          <span className="suit-icon" aria-hidden="true">&#9824;</span> Blackjack <span className="suit-icon red" aria-hidden="true">&#9829;</span>
         </h1>
         <Scoreboard stats={state.stats} />
-        <div className="header-actions">
+        <nav className="header-actions" aria-label="Game tools">
           <HandHistory history={state.handHistory} />
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
@@ -143,13 +172,15 @@ function App() {
             className="sound-toggle"
             onClick={toggleMute}
             title={muted ? 'Unmute sounds' : 'Mute sounds'}
+            aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
+            aria-pressed={!muted}
           >
             {muted ? '\u{1F507}' : '\u{1F50A}'}
           </button>
-        </div>
+        </nav>
       </header>
 
-      <main className="table" style={feltStyle}>
+      <main className="table" style={feltStyle} aria-label="Blackjack table">
         <ChipAnimation
           betTrigger={betTrigger}
           winTrigger={winTrigger}
@@ -233,6 +264,11 @@ function App() {
       </footer>
 
       <AchievementToast achievements={state.achievements} />
+
+      {/* Screen reader card deal announcements */}
+      <div className="sr-only" aria-live="polite" aria-atomic="true" role="log">
+        {srAnnouncement}
+      </div>
     </div>
   )
 }

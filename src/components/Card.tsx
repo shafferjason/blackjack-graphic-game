@@ -608,6 +608,24 @@ export interface CardProps {
   animationType?: 'deal' | 'hit' | 'none'
 }
 
+const SUIT_NAMES: Record<Suit, string> = {
+  hearts: 'Hearts',
+  diamonds: 'Diamonds',
+  clubs: 'Clubs',
+  spades: 'Spades',
+}
+
+const RANK_NAMES: Record<string, string> = {
+  A: 'Ace', '2': '2', '3': '3', '4': '4', '5': '5',
+  '6': '6', '7': '7', '8': '8', '9': '9', '10': '10',
+  J: 'Jack', Q: 'Queen', K: 'King',
+}
+
+function getCardLabel(card: CardType, hidden?: boolean): string {
+  if (hidden) return 'Face-down card'
+  return `${RANK_NAMES[card.rank] || card.rank} of ${SUIT_NAMES[card.suit]}`
+}
+
 function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardProps) {
   const prevHiddenRef = useRef(hidden)
   const [isFlipping, setIsFlipping] = useState(false)
@@ -626,6 +644,8 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
     animationType === 'deal' ? 'deal-animate' :
     animationType === 'hit' ? 'hit-animate' : ''
 
+  const cardLabel = getCardLabel(card, hidden)
+
   // For the 3D-flip dealer hole card
   if (flipReveal) {
     const innerClass = `card-inner${!hidden ? ' flipped' : ''}${isFlipping ? ' flip-reveal' : ''}`
@@ -633,6 +653,8 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
       <div
         className={`card-wrapper ${animClass}`}
         style={{ '--deal-i': index } as React.CSSProperties}
+        role="listitem"
+        aria-label={cardLabel}
       >
         <div className={innerClass}>
           {/* Front face (the actual card) - shown when not flipped */}
@@ -654,6 +676,8 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
       <div
         className={`card-wrapper ${animClass}`}
         style={{ '--deal-i': index } as React.CSSProperties}
+        role="listitem"
+        aria-label="Face-down card"
       >
         <CardBack />
       </div>
@@ -664,6 +688,8 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
     <div
       className={`card-wrapper ${animClass}`}
       style={{ '--deal-i': index } as React.CSSProperties}
+      role="listitem"
+      aria-label={cardLabel}
     >
       <CardFace card={card} />
     </div>

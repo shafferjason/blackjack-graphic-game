@@ -5,7 +5,7 @@ interface ChipStackProps {
 
 export default function ChipStack({ chips, bet }: ChipStackProps) {
   return (
-    <div className="chip-stack">
+    <div className="chip-stack" aria-live="polite" aria-label={`Bankroll: $${chips}${bet > 0 ? `, Current bet: $${bet}` : ''}`}>
       <div className="chip-total">
         <span className="chip-coin">$</span>
         <span>{chips}</span>

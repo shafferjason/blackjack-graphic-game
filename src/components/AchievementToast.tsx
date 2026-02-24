@@ -44,10 +44,10 @@ export default function AchievementToast({ achievements }: AchievementToastProps
   if (toasts.length === 0) return null
 
   return (
-    <div className="achievement-toast-container">
+    <div className="achievement-toast-container" role="log" aria-label="Achievement notifications" aria-live="assertive">
       {toasts.slice(0, 3).map(t => (
-        <div key={t.key} className="achievement-toast">
-          <span className="achievement-toast-icon">{t.achievement.icon}</span>
+        <div key={t.key} className="achievement-toast" role="alert">
+          <span className="achievement-toast-icon" aria-hidden="true">{t.achievement.icon}</span>
           <div className="achievement-toast-text">
             <span className="achievement-toast-title">Achievement Unlocked!</span>
             <span className="achievement-toast-name">{t.achievement.name}</span>
