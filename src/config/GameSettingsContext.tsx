@@ -10,6 +10,7 @@ const DEFAULT_HOUSE_RULES: HouseRules = {
   BLACKJACK_PAYOUT_RATIO: constants.BLACKJACK_PAYOUT_RATIO,
   ALLOW_DOUBLE_AFTER_SPLIT: constants.ALLOW_DOUBLE_AFTER_SPLIT,
   ALLOW_SURRENDER: constants.ALLOW_SURRENDER,
+  CARD_BACK_THEME: constants.CARD_BACK_THEME,
 }
 
 function loadHouseRules(): HouseRules {
@@ -49,7 +50,8 @@ export const GameSettingsProvider = ({ children }: { children: ReactNode }) => {
       BLACKJACK_PAYOUT_RATIO: (overrides.BLACKJACK_PAYOUT_RATIO as number) ?? DEFAULT_HOUSE_RULES.BLACKJACK_PAYOUT_RATIO,
       ALLOW_DOUBLE_AFTER_SPLIT: (overrides.ALLOW_DOUBLE_AFTER_SPLIT as boolean) ?? DEFAULT_HOUSE_RULES.ALLOW_DOUBLE_AFTER_SPLIT,
       ALLOW_SURRENDER: (overrides.ALLOW_SURRENDER as boolean) ?? DEFAULT_HOUSE_RULES.ALLOW_SURRENDER,
-    }
+      CARD_BACK_THEME: (overrides.CARD_BACK_THEME as string) ?? DEFAULT_HOUSE_RULES.CARD_BACK_THEME,
+    } as HouseRules
     saveHouseRules(rules)
   }, [overrides])
 

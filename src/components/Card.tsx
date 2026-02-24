@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import './Card.css'
-import type { Card as CardType, Suit } from '../types'
+import type { Card as CardType, CardBackTheme, Suit } from '../types'
+import { useGameSettings } from '../config/GameSettingsContext'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -447,12 +448,152 @@ function CardFace({ card }: { card: CardType }) {
   )
 }
 
-function CardBack() {
+interface CardBackColors {
+  bg1: string
+  bg2: string
+  border: string
+  borderInner: string
+  pattern: string
+  patternAlt: string
+  accent: string
+  accentLight: string
+  diamond: string
+  logoFill: string
+  logoStroke: string
+}
+
+const CARD_BACK_THEMES: Record<CardBackTheme, CardBackColors> = {
+  'classic-blue': {
+    bg1: '#1a3a5c', bg2: '#0f2444',
+    border: '#2a5a8c', borderInner: '#3a6a9c',
+    pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)',
+    accent: '#4a8abe', accentLight: '#6aacde',
+    diamond: '#3a7ab8', logoFill: '#d4a644', logoStroke: '#a07828',
+  },
+  'casino-red': {
+    bg1: '#5c1a1a', bg2: '#44100f',
+    border: '#8c2a2a', borderInner: '#9c3a3a',
+    pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)',
+    accent: '#be4a4a', accentLight: '#de6a6a',
+    diamond: '#b83a3a', logoFill: '#d4a644', logoStroke: '#a07828',
+  },
+  'royal-green': {
+    bg1: '#1a4a2a', bg2: '#0f3018',
+    border: '#2a7a3c', borderInner: '#3a8a4c',
+    pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)',
+    accent: '#4abe6a', accentLight: '#6ade8a',
+    diamond: '#3ab858', logoFill: '#d4a644', logoStroke: '#a07828',
+  },
+  'midnight-gold': {
+    bg1: '#1a1a2e', bg2: '#0f0f1e',
+    border: '#3a3a5e', borderInner: '#4a4a6e',
+    pattern: 'rgba(212,166,68,0.08)', patternAlt: 'rgba(212,166,68,0.04)',
+    accent: '#d4a644', accentLight: '#f0d68a',
+    diamond: '#c9963a', logoFill: '#d4a644', logoStroke: '#8b6914',
+  },
+}
+
+function CardBackSVG({ theme }: { theme: CardBackTheme }) {
+  const c = CARD_BACK_THEMES[theme]
+  const pid = `cb-${theme}`
   return (
-    <div className="card card-back">
-      <div className="card-back-pattern">
-        <div className="card-back-inner" />
-      </div>
+    <svg viewBox="0 0 90 130" className="card-back-svg" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        {/* Crosshatch pattern */}
+        <pattern id={`${pid}-cross`} width="8" height="8" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="0" x2="8" y2="8" stroke={c.pattern} strokeWidth="0.8" />
+          <line x1="8" y1="0" x2="0" y2="8" stroke={c.patternAlt} strokeWidth="0.8" />
+        </pattern>
+        {/* Diamond repeating pattern for border */}
+        <pattern id={`${pid}-diamonds`} width="12" height="12" patternUnits="userSpaceOnUse">
+          <path d="M6,0 L12,6 L6,12 L0,6 Z" fill="none" stroke={c.accent} strokeWidth="0.5" opacity="0.4" />
+        </pattern>
+      </defs>
+
+      {/* Background gradient */}
+      <rect width="90" height="130" rx="10" fill={c.bg1} />
+      <rect width="90" height="130" rx="10" fill={`url(#${pid}-cross)`} />
+
+      {/* Outer decorative border */}
+      <rect x="3" y="3" width="84" height="124" rx="8" fill="none" stroke={c.border} strokeWidth="1.5" />
+
+      {/* Diamond border band */}
+      <rect x="6" y="6" width="78" height="118" rx="6" fill={`url(#${pid}-diamonds)`} stroke={c.borderInner} strokeWidth="0.5" />
+
+      {/* Inner frame */}
+      <rect x="10" y="10" width="70" height="110" rx="5" fill="none" stroke={c.accent} strokeWidth="0.8" opacity="0.5" />
+
+      {/* Corner ornaments - top-left */}
+      <g opacity="0.6">
+        <path d="M14,14 Q14,22 22,22" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M14,14 Q14,19 19,19" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <circle cx="14" cy="14" r="1.5" fill={c.accent} />
+      </g>
+      {/* Corner ornament - top-right */}
+      <g opacity="0.6">
+        <path d="M76,14 Q76,22 68,22" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M76,14 Q76,19 71,19" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <circle cx="76" cy="14" r="1.5" fill={c.accent} />
+      </g>
+      {/* Corner ornament - bottom-left */}
+      <g opacity="0.6">
+        <path d="M14,116 Q14,108 22,108" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M14,116 Q14,111 19,111" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <circle cx="14" cy="116" r="1.5" fill={c.accent} />
+      </g>
+      {/* Corner ornament - bottom-right */}
+      <g opacity="0.6">
+        <path d="M76,116 Q76,108 68,108" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M76,116 Q76,111 71,111" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <circle cx="76" cy="116" r="1.5" fill={c.accent} />
+      </g>
+
+      {/* Center medallion background */}
+      <ellipse cx="45" cy="65" rx="22" ry="28" fill={c.bg2} stroke={c.accent} strokeWidth="0.8" opacity="0.6" />
+      <ellipse cx="45" cy="65" rx="18" ry="24" fill="none" stroke={c.accentLight} strokeWidth="0.4" opacity="0.4" />
+
+      {/* Casino spade logo in center */}
+      <g transform="translate(45,58)">
+        {/* Spade shape */}
+        <path
+          d="M0,-14 C-2,-12 -10,-4 -10,2 C-10,7 -6,10 -2,10 C-0.5,10 0.5,9.5 0,8
+             C-0.5,9.5 0.5,10 2,10 C6,10 10,7 10,2 C10,-4 2,-12 0,-14 Z"
+          fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8"
+        />
+        {/* Spade stem */}
+        <rect x="-1.5" y="8" width="3" height="8" rx="1" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.5" />
+        {/* Stem base flourish */}
+        <path d="M-5,16 Q-2,13 0,16 Q2,13 5,16" fill="none" stroke={c.logoFill} strokeWidth="0.8" />
+      </g>
+
+      {/* Decorative scrollwork - top */}
+      <g opacity="0.5">
+        <path d="M30,28 Q37,24 45,28 Q53,24 60,28" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
+        <path d="M33,31 Q39,28 45,31 Q51,28 57,31" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
+      </g>
+      {/* Decorative scrollwork - bottom */}
+      <g opacity="0.5">
+        <path d="M30,102 Q37,106 45,102 Q53,106 60,102" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
+        <path d="M33,99 Q39,102 45,99 Q51,102 57,99" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
+      </g>
+
+      {/* Small suit symbols in corners of inner area */}
+      <text x="18" y="34" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2660'}</text>
+      <text x="72" y="34" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2665'}</text>
+      <text x="18" y="104" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2666'}</text>
+      <text x="72" y="104" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2663'}</text>
+
+      {/* Subtle radial glow on center */}
+      <ellipse cx="45" cy="65" rx="16" ry="20" fill={c.accent} opacity="0.04" />
+    </svg>
+  )
+}
+
+function CardBack() {
+  const { CARD_BACK_THEME } = useGameSettings()
+  return (
+    <div className={`card card-back card-back-${CARD_BACK_THEME}`}>
+      <CardBackSVG theme={CARD_BACK_THEME} />
     </div>
   )
 }

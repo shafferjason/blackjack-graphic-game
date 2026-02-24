@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useGameSettings } from '../config/GameSettingsContext'
+import type { CardBackTheme } from '../types'
 
 interface SettingsPanelProps {
   isPlaying: boolean
@@ -17,8 +18,16 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
     BLACKJACK_PAYOUT_RATIO,
     ALLOW_DOUBLE_AFTER_SPLIT,
     ALLOW_SURRENDER,
+    CARD_BACK_THEME,
     updateSetting,
   } = settings
+
+  const cardBackThemes: { value: CardBackTheme; label: string; color: string }[] = [
+    { value: 'classic-blue', label: 'Blue', color: '#1a3a5c' },
+    { value: 'casino-red', label: 'Red', color: '#5c1a1a' },
+    { value: 'royal-green', label: 'Green', color: '#1a4a2a' },
+    { value: 'midnight-gold', label: 'Gold', color: '#1a1a2e' },
+  ]
 
   const handleResetEverything = () => {
     onResetEverything()
@@ -140,6 +149,23 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                   >
                     Not Allowed
                   </button>
+                </div>
+              </div>
+
+              {/* Card Back Theme */}
+              <div className="setting-row">
+                <label className="setting-label">Card Back Design</label>
+                <div className="setting-options">
+                  {cardBackThemes.map(t => (
+                    <button
+                      key={t.value}
+                      className={`setting-chip card-back-chip ${CARD_BACK_THEME === t.value ? 'setting-chip-active' : ''}`}
+                      onClick={() => updateSetting('CARD_BACK_THEME', t.value)}
+                    >
+                      <span className="card-back-swatch" style={{ background: t.color }} />
+                      {t.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 

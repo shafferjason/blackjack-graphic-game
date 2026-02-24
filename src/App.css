@@ -752,6 +752,22 @@
   color: #0a0f1a;
 }
 
+/* Card back theme swatch */
+.card-back-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-back-swatch {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
+}
+
 /* Reset Everything */
 .reset-section {
   margin-top: 8px;

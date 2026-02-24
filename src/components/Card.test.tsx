@@ -1,10 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import Card from './Card'
+import { GameSettingsProvider } from '../config/GameSettingsContext'
+
+const wrap = (ui: React.ReactElement) => render(<GameSettingsProvider>{ui}</GameSettingsProvider>)
 
 describe('Card component', () => {
   it('renders card back when hidden', () => {
-    const { container } = render(<Card card={{ suit: 'hearts', rank: 'K', id: 1 }} hidden index={0} />)
+    const { container } = wrap(<Card card={{ suit: 'hearts', rank: 'K', id: 1 }} hidden index={0} />)
     expect(container.querySelector('.card-back')).toBeInTheDocument()
     expect(container.querySelector('.card-face')).not.toBeInTheDocument()
   })
@@ -49,10 +52,10 @@ describe('Card component', () => {
     expect(container.querySelectorAll('.pip')).toHaveLength(7)
   })
 
-  it('sets --i css variable from index prop', () => {
+  it('sets --deal-i css variable from index prop', () => {
     const { container } = render(<Card card={{ suit: 'hearts', rank: '5', id: 1 }} index={3} />)
-    const card = container.querySelector('.card') as HTMLElement
-    expect(card.style.getPropertyValue('--i')).toBe('3')
+    const wrapper = container.querySelector('.card-wrapper') as HTMLElement
+    expect(wrapper.style.getPropertyValue('--deal-i')).toBe('3')
   })
 
   it('renders face SVG for Jack', () => {

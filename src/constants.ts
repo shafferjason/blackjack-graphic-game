@@ -31,6 +31,7 @@ export const MAX_SPLIT_HANDS = 3
 export const DEALER_HITS_SOFT_17 = false    // false = stand on soft 17 (S17)
 export const ALLOW_DOUBLE_AFTER_SPLIT = false
 export const ALLOW_SURRENDER = true
+export const CARD_BACK_THEME = 'classic-blue' as const
 
 // ── Game state machine ──
 export const GAME_STATES: Record<string, GamePhase> = {

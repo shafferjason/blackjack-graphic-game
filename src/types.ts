@@ -151,6 +151,9 @@ export interface Achievement {
   unlockedAt: number | null // timestamp or null if locked
 }
 
+// ── Card Back Themes ──
+export type CardBackTheme = 'classic-blue' | 'casino-red' | 'royal-green' | 'midnight-gold'
+
 // ── House Rules (configurable) ──
 export interface HouseRules {
   NUM_DECKS: number
@@ -158,6 +161,7 @@ export interface HouseRules {
   BLACKJACK_PAYOUT_RATIO: number
   ALLOW_DOUBLE_AFTER_SPLIT: boolean
   ALLOW_SURRENDER: boolean
+  CARD_BACK_THEME: CardBackTheme
 }
 
 // ── Game Settings ──
@@ -179,6 +183,7 @@ export interface GameSettings {
   DEALER_HITS_SOFT_17: boolean
   ALLOW_DOUBLE_AFTER_SPLIT: boolean
   ALLOW_SURRENDER: boolean
+  CARD_BACK_THEME: CardBackTheme
   updateSetting: (key: string, value: unknown) => void
   resetSettings: () => void
 }

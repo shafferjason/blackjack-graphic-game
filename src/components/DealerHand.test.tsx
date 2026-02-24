@@ -1,15 +1,18 @@
 import { describe, it, expect } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import DealerHand from './DealerHand'
+import { GameSettingsProvider } from '../config/GameSettingsContext'
+
+const wrap = (ui: React.ReactElement) => render(<GameSettingsProvider>{ui}</GameSettingsProvider>)
 
 describe('DealerHand component', () => {
   it('renders "Dealer" header', () => {
-    render(<DealerHand hand={[]} dealerRevealed={false} dealerVisibleScore={0} />)
+    wrap(<DealerHand hand={[]} dealerRevealed={false} dealerVisibleScore={0} />)
     expect(screen.getByText('Dealer')).toBeInTheDocument()
   })
 
   it('renders empty card slots when hand is empty', () => {
-    const { container } = render(<DealerHand hand={[]} dealerRevealed={false} dealerVisibleScore={0} />)
+    const { container } = wrap(<DealerHand hand={[]} dealerRevealed={false} dealerVisibleScore={0} />)
     expect(container.querySelectorAll('.card-slot')).toHaveLength(2)
   })
 
@@ -18,7 +21,7 @@ describe('DealerHand component', () => {
       { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
       { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
-    render(<DealerHand hand={hand} dealerRevealed={false} dealerVisibleScore={10} />)
+    wrap(<DealerHand hand={hand} dealerRevealed={false} dealerVisibleScore={10} />)
     expect(screen.getByText('10 + ?')).toBeInTheDocument()
   })
 
@@ -27,7 +30,7 @@ describe('DealerHand component', () => {
       { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
       { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
-    render(<DealerHand hand={hand} dealerRevealed={true} dealerVisibleScore={15} />)
+    wrap(<DealerHand hand={hand} dealerRevealed={true} dealerVisibleScore={15} />)
     expect(screen.getByText('15')).toBeInTheDocument()
   })
 
@@ -36,7 +39,7 @@ describe('DealerHand component', () => {
       { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
       { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
-    const { container } = render(<DealerHand hand={hand} dealerRevealed={false} dealerVisibleScore={10} />)
+    const { container } = wrap(<DealerHand hand={hand} dealerRevealed={false} dealerVisibleScore={10} />)
     expect(container.querySelector('.card-back')).toBeInTheDocument()
   })
 
@@ -45,8 +48,10 @@ describe('DealerHand component', () => {
       { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
       { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
-    const { container } = render(<DealerHand hand={hand} dealerRevealed={true} dealerVisibleScore={15} />)
-    expect(container.querySelector('.card-back')).not.toBeInTheDocument()
+    const { container } = wrap(<DealerHand hand={hand} dealerRevealed={true} dealerVisibleScore={15} />)
+    // Both card faces should be rendered
     expect(container.querySelectorAll('.card-face')).toHaveLength(2)
+    // The flip container has flipped to show the face
+    expect(container.querySelector('.card-inner.flipped')).toBeInTheDocument()
   })
 })
