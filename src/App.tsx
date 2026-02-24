@@ -11,6 +11,7 @@ import ShoeIndicator from './components/ShoeIndicator'
 import SettingsPanel from './components/SettingsPanel'
 import StatsDashboard from './components/StatsDashboard'
 import HandHistory from './components/HandHistory'
+import AchievementToast from './components/AchievementToast'
 import './App.css'
 
 function App() {
@@ -37,7 +38,7 @@ function App() {
         <Scoreboard stats={state.stats} />
         <div className="header-actions">
           <HandHistory history={state.handHistory} />
-          <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} />
+          <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
         </div>
       </header>
@@ -110,6 +111,8 @@ function App() {
       <footer className="footer">
         <span>Blackjack pays {payoutLabel} &middot; {soft17Label} &middot; {deckLabel}</span>
       </footer>
+
+      <AchievementToast achievements={state.achievements} />
     </div>
   )
 }

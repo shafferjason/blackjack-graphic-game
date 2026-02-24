@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import type { GameStats, DetailedStats, GameResult } from '../types'
+import type { GameStats, DetailedStats, GameResult, Achievement } from '../types'
 
 interface StatsDashboardProps {
   stats: GameStats
   detailedStats: DetailedStats
   chips: number
+  achievements: Achievement[]
 }
 
 function WinRateBar({ stats }: { stats: GameStats }) {
@@ -120,7 +121,32 @@ function ResultStrip({ resultHistory }: { resultHistory: GameResult[] }) {
   )
 }
 
-export default function StatsDashboard({ stats, detailedStats, chips }: StatsDashboardProps) {
+function AchievementsGrid({ achievements }: { achievements: Achievement[] }) {
+  const unlocked = achievements.filter(a => a.unlockedAt)
+  const locked = achievements.filter(a => !a.unlockedAt)
+
+  return (
+    <div className="stats-chart-section">
+      <div className="stats-chart-label">Achievements ({unlocked.length}/{achievements.length})</div>
+      <div className="achievements-grid">
+        {unlocked.map(a => (
+          <div key={a.id} className="achievement-badge unlocked" title={a.description}>
+            <span className="achievement-badge-icon">{a.icon}</span>
+            <span className="achievement-badge-name">{a.name}</span>
+          </div>
+        ))}
+        {locked.map(a => (
+          <div key={a.id} className="achievement-badge locked" title={a.description}>
+            <span className="achievement-badge-icon">?</span>
+            <span className="achievement-badge-name">{a.description}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function StatsDashboard({ stats, detailedStats, chips, achievements }: StatsDashboardProps) {
   const [open, setOpen] = useState(false)
 
   const totalHands = detailedStats.totalHandsPlayed
@@ -238,6 +264,8 @@ export default function StatsDashboard({ stats, detailedStats, chips }: StatsDas
                   )}
                 </div>
               </div>
+
+              <AchievementsGrid achievements={achievements} />
             </div>
           </div>
         </div>

@@ -142,6 +142,15 @@ export interface HandHistoryEntry {
   steps: HandHistoryStep[]
 }
 
+// ── Achievements ──
+export interface Achievement {
+  id: string
+  name: string
+  description: string
+  icon: string
+  unlockedAt: number | null // timestamp or null if locked
+}
+
 // ── House Rules (configurable) ──
 export interface HouseRules {
   NUM_DECKS: number

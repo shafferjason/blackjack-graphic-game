@@ -1,9 +1,10 @@
-import type { GameState, GameStats, DetailedStats, HandHistoryEntry } from '../types'
+import type { GameState, GameStats, DetailedStats, HandHistoryEntry, Achievement } from '../types'
 
 const STORAGE_KEYS = {
   GAME_STATE: 'blackjack-game-state',
   HOUSE_RULES: 'blackjack-house-rules',
   HAND_HISTORY: 'blackjack-hand-history',
+  ACHIEVEMENTS: 'blackjack-achievements',
 } as const
 
 const MAX_HAND_HISTORY = 200
@@ -96,11 +97,35 @@ export function loadHandHistory(): HandHistoryEntry[] {
   return []
 }
 
+export function saveAchievements(achievements: Achievement[]): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.ACHIEVEMENTS, JSON.stringify(achievements))
+  } catch {
+    // ignore storage errors (quota exceeded, etc.)
+  }
+}
+
+export function loadAchievements(): Achievement[] | null {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.ACHIEVEMENTS)
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        return parsed
+      }
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return null
+}
+
 export function clearAllStorage(): void {
   try {
     localStorage.removeItem(STORAGE_KEYS.GAME_STATE)
     localStorage.removeItem(STORAGE_KEYS.HOUSE_RULES)
     localStorage.removeItem(STORAGE_KEYS.HAND_HISTORY)
+    localStorage.removeItem(STORAGE_KEYS.ACHIEVEMENTS)
   } catch {
     // ignore storage errors
   }
