@@ -8,13 +8,23 @@ import SplitHandsDisplay from './components/SplitHandsDisplay'
 import BettingControls from './components/BettingControls'
 import ActionControls from './components/ActionControls'
 import ShoeIndicator from './components/ShoeIndicator'
+import SettingsPanel from './components/SettingsPanel'
 import './App.css'
 
 function App() {
-  const { GAME_STATES } = useGameSettings()
+  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO } = useGameSettings()
   const { state, actions } = useGameEngine()
 
   const isSplitActive = state.isSplit && state.splitHands.length > 0
+
+  const isPlaying = state.gameState !== GAME_STATES.BETTING
+    && state.gameState !== GAME_STATES.IDLE
+    && state.gameState !== GAME_STATES.GAME_OVER
+    && state.gameState !== GAME_STATES.RESOLVING
+
+  const payoutLabel = BLACKJACK_PAYOUT_RATIO === 1.5 ? '3:2' : '6:5'
+  const soft17Label = DEALER_HITS_SOFT_17 ? 'Dealer hits soft 17' : 'Dealer stands on 17'
+  const deckLabel = NUM_DECKS === 1 ? 'Single deck' : `${NUM_DECKS}-deck shoe`
 
   return (
     <div className="app">
@@ -23,6 +33,7 @@ function App() {
           <span className="suit-icon">&#9824;</span> Blackjack <span className="suit-icon red">&#9829;</span>
         </h1>
         <Scoreboard stats={state.stats} />
+        <SettingsPanel isPlaying={isPlaying} />
       </header>
 
       <main className="table">
@@ -74,6 +85,7 @@ function App() {
               canDouble={state.canDouble}
               canSplit={state.canSplit}
               canSurrender={state.canSurrender}
+              canDoubleAfterSplit={state.canDoubleAfterSplit}
               maxInsuranceBet={state.maxInsuranceBet}
               onHit={actions.hit}
               onStand={actions.stand}
@@ -90,7 +102,7 @@ function App() {
       </main>
 
       <footer className="footer">
-        <span>Blackjack pays 3:2 &middot; Dealer stands on 17 &middot; 6-deck shoe</span>
+        <span>Blackjack pays {payoutLabel} &middot; {soft17Label} &middot; {deckLabel}</span>
       </footer>
     </div>
   )

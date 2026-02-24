@@ -27,6 +27,11 @@ export const DECK_PENETRATION = 0.75
 // ── Split rules ──
 export const MAX_SPLIT_HANDS = 3
 
+// ── Configurable house rules (defaults) ──
+export const DEALER_HITS_SOFT_17 = false    // false = stand on soft 17 (S17)
+export const ALLOW_DOUBLE_AFTER_SPLIT = false
+export const ALLOW_SURRENDER = true
+
 // ── Game state machine ──
 export const GAME_STATES: Record<string, GamePhase> = {
   IDLE: 'idle',

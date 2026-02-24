@@ -12,6 +12,7 @@ export const ACTIONS = {
   SPLIT: 'SPLIT',
   SPLIT_HIT: 'SPLIT_HIT',
   SPLIT_STAND: 'SPLIT_STAND',
+  SPLIT_DOUBLE: 'SPLIT_DOUBLE',
   SPLIT_RESOLVE: 'SPLIT_RESOLVE',
   INSURE: 'INSURE',
   SURRENDER: 'SURRENDER',
@@ -27,7 +28,7 @@ const VALID_ACTIONS: Record<string, string[]> = {
   [GAME_STATES.BETTING]:         [ACTIONS.PLACE_BET, ACTIONS.CLEAR_BET, ACTIONS.DEAL, ACTIONS.RESET],
   [GAME_STATES.DEALING]:         [ACTIONS.RESOLVE],
   [GAME_STATES.PLAYER_TURN]:     [ACTIONS.HIT, ACTIONS.STAND, ACTIONS.DOUBLE, ACTIONS.SPLIT, ACTIONS.INSURE, ACTIONS.SURRENDER],
-  [GAME_STATES.SPLITTING]:       [ACTIONS.SPLIT_HIT, ACTIONS.SPLIT_STAND, ACTIONS.SPLIT_RESOLVE],
+  [GAME_STATES.SPLITTING]:       [ACTIONS.SPLIT_HIT, ACTIONS.SPLIT_STAND, ACTIONS.SPLIT_RESOLVE, ACTIONS.SPLIT_DOUBLE],
   [GAME_STATES.DOUBLING]:        [ACTIONS.RESOLVE],
   [GAME_STATES.INSURANCE_OFFER]: [ACTIONS.INSURE, ACTIONS.RESOLVE],
   [GAME_STATES.SURRENDERING]:    [ACTIONS.RESOLVE],
@@ -192,6 +193,34 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         deck: newDeck,
         splitHands: updatedHands,
         playerHand: hand,
+      }
+    }
+
+    case ACTIONS.SPLIT_DOUBLE: {
+      const { hand, deck: newDeck, bet: doubleBet } = action.payload
+      const updatedHands = state.splitHands.map((h, i) =>
+        i === state.activeHandIndex ? { ...h, cards: hand, bet: doubleBet, stood: true } : h
+      )
+      const nextIndex = state.activeHandIndex + 1
+      if (nextIndex < updatedHands.length) {
+        return {
+          ...state,
+          deck: newDeck,
+          splitHands: updatedHands,
+          activeHandIndex: nextIndex,
+          playerHand: updatedHands[nextIndex].cards,
+          chips: state.chips - state.splitHands[state.activeHandIndex].bet,
+          message: `Playing hand ${nextIndex + 1}...`,
+        }
+      }
+      return {
+        ...state,
+        deck: newDeck,
+        splitHands: updatedHands,
+        chips: state.chips - state.splitHands[state.activeHandIndex].bet,
+        dealerRevealed: true,
+        phase: GAME_STATES.DEALER_TURN as GamePhase,
+        message: 'Dealer is playing...',
       }
     }
 

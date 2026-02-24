@@ -8,6 +8,7 @@ interface ActionControlsProps {
   canDouble: boolean
   canSplit: boolean
   canSurrender: boolean
+  canDoubleAfterSplit: boolean
   maxInsuranceBet: number
   onHit: () => void
   onStand: () => void
@@ -20,7 +21,7 @@ interface ActionControlsProps {
   onReset: () => void
 }
 
-export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, canSurrender, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onSurrender, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset }: ActionControlsProps) {
+export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, canSurrender, canDoubleAfterSplit, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onSurrender, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset }: ActionControlsProps) {
   const { GAME_STATES } = useGameSettings()
 
   if (gameState === GAME_STATES.INSURANCE_OFFER) {
@@ -69,6 +70,9 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
         <div className="play-buttons">
           <button className="btn btn-hit" onClick={onHit}>Hit</button>
           <button className="btn btn-stand" onClick={onStand}>Stand</button>
+          {canDoubleAfterSplit && (
+            <button className="btn btn-double" onClick={onDoubleDown} disabled={chips < bet}>Double</button>
+          )}
         </div>
       </div>
     )

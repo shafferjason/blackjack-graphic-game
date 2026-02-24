@@ -11,6 +11,7 @@ const defaultProps = {
   canDouble: true,
   canSplit: false,
   canSurrender: true,
+  canDoubleAfterSplit: false,
   maxInsuranceBet: 50,
   onHit: vi.fn(),
   onStand: vi.fn(),

@@ -74,6 +74,7 @@ export type GameAction =
   | { type: 'SPLIT'; payload: { splitHands: SplitHand[]; deck: Deck } }
   | { type: 'SPLIT_HIT'; payload: { hand: Hand; deck: Deck } }
   | { type: 'SPLIT_STAND' }
+  | { type: 'SPLIT_DOUBLE'; payload: { hand: Hand; deck: Deck; bet: number } }
   | { type: 'SPLIT_RESOLVE'; payload: { splitHands: SplitHand[]; chips: number; stats: GameStats; message: string } }
   | { type: 'INSURE'; payload: { amount: number } }
   | { type: 'SURRENDER' }
@@ -89,6 +90,15 @@ export interface ResolvePayload {
   dealerRevealed?: boolean
   stats?: GameStats
   phase?: GamePhase
+}
+
+// ── House Rules (configurable) ──
+export interface HouseRules {
+  NUM_DECKS: number
+  DEALER_HITS_SOFT_17: boolean
+  BLACKJACK_PAYOUT_RATIO: number
+  ALLOW_DOUBLE_AFTER_SPLIT: boolean
+  ALLOW_SURRENDER: boolean
 }
 
 // ── Game Settings ──
@@ -107,5 +117,8 @@ export interface GameSettings {
   DECK_PENETRATION: number
   MAX_SPLIT_HANDS: number
   GAME_STATES: Record<string, GamePhase>
+  DEALER_HITS_SOFT_17: boolean
+  ALLOW_DOUBLE_AFTER_SPLIT: boolean
+  ALLOW_SURRENDER: boolean
   updateSetting: (key: string, value: unknown) => void
 }
