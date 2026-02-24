@@ -26,6 +26,8 @@ export default function DealerHand({ hand, dealerRevealed, dealerVisibleScore }:
             card={card}
             hidden={i === 1 && !dealerRevealed}
             index={i}
+            flipReveal={i === 1}
+            animationType={i < 4 ? 'deal' : 'hit'}
           />
         ))}
         {hand.length === 0 && (

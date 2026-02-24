@@ -21,6 +21,7 @@ export default function PlayerHand({ hand, playerScore }: PlayerHandProps) {
             key={card.id}
             card={card}
             index={i}
+            animationType={i < 2 ? 'deal' : 'hit'}
           />
         ))}
         {hand.length === 0 && (

@@ -35,7 +35,12 @@ export default function SplitHandsDisplay({ splitHands, activeHandIndex, isPlayi
             </div>
             <div className="cards-row">
               {hand.cards.map((card, ci) => (
-                <Card key={card.id} card={card} index={ci} />
+                <Card
+                  key={card.id}
+                  card={card}
+                  index={ci}
+                  animationType={ci < 2 ? 'none' : 'hit'}
+                />
               ))}
             </div>
             <div className="split-bet-tag">Bet: ${hand.bet}</div>

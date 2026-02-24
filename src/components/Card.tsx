@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import './Card.css'
 import type { Card as CardType, Suit } from '../types'
 
@@ -407,30 +408,14 @@ const FACE_COMPONENTS: Record<string, React.FC<{ suit: Suit }>> = {
   K: KingSVG,
 }
 
-interface CardProps {
-  card: CardType
-  hidden?: boolean
-  index?: number
-}
-
-function Card({ card, hidden, index }: CardProps) {
-  if (hidden) {
-    return (
-      <div className="card card-back" style={{ '--i': index } as React.CSSProperties}>
-        <div className="card-back-pattern">
-          <div className="card-back-inner" />
-        </div>
-      </div>
-    )
-  }
-
+function CardFace({ card }: { card: CardType }) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const color = SUIT_COLORS[card.suit]
   const isFace = ['J', 'Q', 'K'].includes(card.rank)
   const FaceComponent = FACE_COMPONENTS[card.rank]
 
   return (
-    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''}`} style={{ '--i': index } as React.CSSProperties}>
+    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''}`}>
       <div className="card-corner top-left">
         <span className="card-rank">{card.rank}</span>
         <span className="card-suit">{symbol}</span>
@@ -458,6 +443,88 @@ function Card({ card, hidden, index }: CardProps) {
         <span className="badge-rank">{card.rank}</span>
         <span className="badge-suit">{symbol}</span>
       </div>
+    </div>
+  )
+}
+
+function CardBack() {
+  return (
+    <div className="card card-back">
+      <div className="card-back-pattern">
+        <div className="card-back-inner" />
+      </div>
+    </div>
+  )
+}
+
+export interface CardProps {
+  card: CardType
+  hidden?: boolean
+  index?: number
+  /** Use 3D flip to reveal (for dealer hole card) */
+  flipReveal?: boolean
+  /** Animation style: 'deal' for initial deal, 'hit' for subsequent cards, 'none' to skip */
+  animationType?: 'deal' | 'hit' | 'none'
+}
+
+function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardProps) {
+  const prevHiddenRef = useRef(hidden)
+  const [isFlipping, setIsFlipping] = useState(false)
+
+  // Detect transition from hidden -> revealed to trigger flip animation
+  useEffect(() => {
+    if (prevHiddenRef.current === true && hidden === false && flipReveal) {
+      setIsFlipping(true)
+      const timer = setTimeout(() => setIsFlipping(false), 700)
+      return () => clearTimeout(timer)
+    }
+    prevHiddenRef.current = hidden
+  }, [hidden, flipReveal])
+
+  const animClass =
+    animationType === 'deal' ? 'deal-animate' :
+    animationType === 'hit' ? 'hit-animate' : ''
+
+  // For the 3D-flip dealer hole card
+  if (flipReveal) {
+    const innerClass = `card-inner${!hidden ? ' flipped' : ''}${isFlipping ? ' flip-reveal' : ''}`
+    return (
+      <div
+        className={`card-wrapper ${animClass}`}
+        style={{ '--deal-i': index } as React.CSSProperties}
+      >
+        <div className={innerClass}>
+          {/* Front face (the actual card) - shown when not flipped */}
+          <div className="card-front">
+            <CardFace card={card} />
+          </div>
+          {/* Back face - shown when flipped (hidden) */}
+          <div className="card-back-face">
+            <CardBack />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Standard card (no flip needed)
+  if (hidden) {
+    return (
+      <div
+        className={`card-wrapper ${animClass}`}
+        style={{ '--deal-i': index } as React.CSSProperties}
+      >
+        <CardBack />
+      </div>
+    )
+  }
+
+  return (
+    <div
+      className={`card-wrapper ${animClass}`}
+      style={{ '--deal-i': index } as React.CSSProperties}
+    >
+      <CardFace card={card} />
     </div>
   )
 }
