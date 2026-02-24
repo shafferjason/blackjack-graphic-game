@@ -35,6 +35,14 @@ export type GamePhase =
 // ── Result ──
 export type GameResult = 'win' | 'lose' | 'push' | 'blackjack'
 
+// ── Split Hand ──
+export interface SplitHand {
+  cards: Hand
+  bet: number
+  result: GameResult | null
+  stood: boolean
+}
+
 // ── Game State ──
 export interface GameState {
   phase: GamePhase
@@ -47,6 +55,9 @@ export interface GameState {
   result: GameResult | null
   dealerRevealed: boolean
   stats: GameStats
+  splitHands: SplitHand[]
+  activeHandIndex: number
+  isSplit: boolean
 }
 
 // ── Game Actions ──
@@ -57,7 +68,10 @@ export type GameAction =
   | { type: 'HIT'; payload: { playerHand: Hand; deck: Deck; phase?: GamePhase } }
   | { type: 'STAND' }
   | { type: 'DOUBLE'; payload: { playerHand: Hand; deck: Deck } }
-  | { type: 'SPLIT' }
+  | { type: 'SPLIT'; payload: { splitHands: SplitHand[]; deck: Deck } }
+  | { type: 'SPLIT_HIT'; payload: { hand: Hand; deck: Deck } }
+  | { type: 'SPLIT_STAND' }
+  | { type: 'SPLIT_RESOLVE'; payload: { splitHands: SplitHand[]; chips: number; stats: GameStats; message: string } }
   | { type: 'INSURE' }
   | { type: 'SURRENDER' }
   | { type: 'DEALER_DRAW'; payload: { dealerHand: Hand; deck: Deck } }
@@ -88,6 +102,7 @@ export interface GameSettings {
   CARD_DEAL_STAGGER_MS: number
   NUM_DECKS: number
   DECK_PENETRATION: number
+  MAX_SPLIT_HANDS: number
   GAME_STATES: Record<string, GamePhase>
   updateSetting: (key: string, value: unknown) => void
 }

@@ -24,6 +24,9 @@ export const CARD_DEAL_STAGGER_MS = 100
 export const NUM_DECKS = 6
 export const DECK_PENETRATION = 0.75
 
+// ── Split rules ──
+export const MAX_SPLIT_HANDS = 3
+
 // ── Game state machine ──
 export const GAME_STATES: Record<string, GamePhase> = {
   IDLE: 'idle',

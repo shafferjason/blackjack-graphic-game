@@ -4,7 +4,7 @@ import { cardValue, calculateScore, isBlackjack } from '../utils/scoring'
 import { getBlackjackPayout, getWinPayout, getPushPayout } from '../utils/payout'
 import { useGameSettings } from '../config/GameSettingsContext'
 import { gameReducer, createInitialState, ACTIONS } from '../state/gameReducer'
-import type { Card, Hand, Deck, GameStats, GameResult, GamePhase } from '../types'
+import type { Card, Hand, Deck, GameStats, GameResult, GamePhase, SplitHand } from '../types'
 
 export function useGameEngine() {
   const {
@@ -13,6 +13,7 @@ export function useGameEngine() {
     DEALER_STAND_THRESHOLD,
     DEALER_PLAY_INITIAL_DELAY,
     DEALER_DRAW_DELAY,
+    MAX_SPLIT_HANDS,
   } = useGameSettings()
 
   const [state, dispatch] = useReducer(gameReducer, STARTING_BANKROLL, createInitialState)
@@ -149,7 +150,105 @@ export function useGameEngine() {
     setTimeout(() => dealerPlay(dHand, dDeck), DEALER_PLAY_INITIAL_DELAY)
   }, [drawCard, DEALER_STAND_THRESHOLD, DEALER_DRAW_DELAY, DEALER_PLAY_INITIAL_DELAY])
 
+  // ── Resolve all split hands against dealer ──
+  const resolveSplitGame = useCallback((hands: SplitHand[], dHand: Hand, dDeck: Deck, currentChips: number, currentStats: GameStats) => {
+    const dealerPlay = (dh: Hand, dd: Deck) => {
+      const dealerScore = calculateScore(dh)
+
+      if (dealerScore < DEALER_STAND_THRESHOLD) {
+        const { card, newDeck } = drawCard(dd)
+        card.id = ++cardIdRef.current
+        const newDh = [...dh, card]
+        dispatch({
+          type: ACTIONS.DEALER_DRAW,
+          payload: { dealerHand: [...newDh], deck: newDeck },
+        })
+        setTimeout(() => dealerPlay(newDh, newDeck), DEALER_DRAW_DELAY)
+      } else {
+        let totalChips = currentChips
+        const updatedStats = { ...currentStats }
+        const resolvedHands: SplitHand[] = []
+        const results: string[] = []
+
+        for (let i = 0; i < hands.length; i++) {
+          const hand = hands[i]
+          const playerScore = calculateScore(hand.cards)
+          let result: GameResult
+
+          if (playerScore > 21) {
+            result = 'lose'
+            updatedStats.losses++
+            results.push(`Hand ${i + 1}: Bust`)
+          } else if (dealerScore > 21) {
+            result = 'win'
+            totalChips += getWinPayout(hand.bet)
+            updatedStats.wins++
+            results.push(`Hand ${i + 1}: Win`)
+          } else if (playerScore > dealerScore) {
+            result = 'win'
+            totalChips += getWinPayout(hand.bet)
+            updatedStats.wins++
+            results.push(`Hand ${i + 1}: Win`)
+          } else if (dealerScore > playerScore) {
+            result = 'lose'
+            updatedStats.losses++
+            results.push(`Hand ${i + 1}: Lose`)
+          } else {
+            result = 'push'
+            totalChips += getPushPayout(hand.bet)
+            updatedStats.pushes++
+            results.push(`Hand ${i + 1}: Push`)
+          }
+          resolvedHands.push({ ...hand, result })
+        }
+
+        dispatch({
+          type: ACTIONS.SPLIT_RESOLVE,
+          payload: {
+            splitHands: resolvedHands,
+            chips: totalChips,
+            stats: updatedStats,
+            message: results.join(' | '),
+          },
+        })
+      }
+    }
+    setTimeout(() => dealerPlay(dHand, dDeck), DEALER_PLAY_INITIAL_DELAY)
+  }, [drawCard, DEALER_STAND_THRESHOLD, DEALER_DRAW_DELAY, DEALER_PLAY_INITIAL_DELAY])
+
   const hit = useCallback(() => {
+    // ── Split hit ──
+    if (state.isSplit && state.phase === GAME_STATES.SPLITTING) {
+      const activeHand = state.splitHands[state.activeHandIndex]
+      const { card, newDeck } = drawCard(state.deck)
+      card.id = ++cardIdRef.current
+      const newCards = [...activeHand.cards, card]
+      const score = calculateScore(newCards)
+
+      dispatch({
+        type: ACTIONS.SPLIT_HIT,
+        payload: { hand: newCards, deck: newDeck },
+      })
+
+      if (score >= 21) {
+        // Auto-stand on 21 or bust
+        const updatedHands = state.splitHands.map((h, i) =>
+          i === state.activeHandIndex ? { ...h, cards: newCards, stood: true } : h
+        )
+        const nextIndex = state.activeHandIndex + 1
+        if (nextIndex < updatedHands.length) {
+          // Advance to next hand via stand
+          dispatch({ type: ACTIONS.SPLIT_STAND })
+        } else {
+          // All hands done — go to dealer
+          dispatch({ type: ACTIONS.SPLIT_STAND })
+          resolveSplitGame(updatedHands, state.dealerHand, newDeck, state.chips, state.stats)
+        }
+      }
+      return
+    }
+
+    // ── Normal hit ──
     if (state.phase !== GAME_STATES.PLAYER_TURN) return
     const { card, newDeck } = drawCard(state.deck)
     card.id = ++cardIdRef.current
@@ -189,12 +288,28 @@ export function useGameEngine() {
         payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN as GamePhase },
       })
     }
-  }, [state.phase, state.deck, state.playerHand, state.dealerHand, state.bet, state.stats, drawCard, resolveGame, GAME_STATES])
+  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.deck, state.playerHand, state.dealerHand, state.bet, state.chips, state.stats, drawCard, resolveGame, resolveSplitGame, GAME_STATES])
 
   const stand = useCallback(() => {
+    // ── Split stand ──
+    if (state.isSplit && state.phase === GAME_STATES.SPLITTING) {
+      const updatedHands = state.splitHands.map((h, i) =>
+        i === state.activeHandIndex ? { ...h, stood: true } : h
+      )
+      dispatch({ type: ACTIONS.SPLIT_STAND })
+
+      const nextIndex = state.activeHandIndex + 1
+      if (nextIndex >= updatedHands.length) {
+        // All hands done — resolve against dealer
+        resolveSplitGame(updatedHands, state.dealerHand, state.deck, state.chips, state.stats)
+      }
+      return
+    }
+
+    // ── Normal stand ──
     dispatch({ type: ACTIONS.STAND })
     resolveGame(state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats)
-  }, [state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, resolveGame])
+  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, resolveGame, resolveSplitGame, GAME_STATES])
 
   const doubleDown = useCallback(() => {
     if (state.phase !== GAME_STATES.PLAYER_TURN) return
@@ -229,6 +344,55 @@ export function useGameEngine() {
     }
   }, [state.phase, state.chips, state.bet, state.deck, state.playerHand, state.dealerHand, state.stats, drawCard, resolveGame, GAME_STATES])
 
+  // ── Split pairs ──
+  const splitPairs = useCallback(() => {
+    if (state.phase !== GAME_STATES.PLAYER_TURN) return
+    if (state.playerHand.length !== 2) return
+    if (state.chips < state.bet) return // can't afford split bet
+
+    const [card1, card2] = state.playerHand
+    // Cards must share same rank (or both be 10-value for split)
+    if (card1.rank !== card2.rank) return
+
+    // Re-split limit: check if already at max hands
+    if (state.splitHands.length >= MAX_SPLIT_HANDS) return
+
+    let currentDeck = state.deck
+    const isAces = card1.rank === 'A'
+
+    // Draw one card for each split hand
+    const draw1 = drawCard(currentDeck)
+    draw1.card.id = ++cardIdRef.current
+    currentDeck = draw1.newDeck
+
+    const draw2 = drawCard(currentDeck)
+    draw2.card.id = ++cardIdRef.current
+    currentDeck = draw2.newDeck
+
+    const hand1: SplitHand = {
+      cards: [card1, draw1.card],
+      bet: state.bet,
+      result: null,
+      stood: isAces, // Aces get one card only, auto-stand
+    }
+    const hand2: SplitHand = {
+      cards: [card2, draw2.card],
+      bet: state.bet,
+      result: null,
+      stood: isAces,
+    }
+
+    dispatch({
+      type: ACTIONS.SPLIT,
+      payload: { splitHands: [hand1, hand2], deck: currentDeck },
+    })
+
+    if (isAces) {
+      // Aces split: one card each, then resolve against dealer
+      resolveSplitGame([hand1, hand2], state.dealerHand, currentDeck, state.chips - state.bet, state.stats)
+    }
+  }, [state.phase, state.playerHand, state.chips, state.bet, state.deck, state.dealerHand, state.splitHands, state.stats, drawCard, resolveSplitGame, GAME_STATES, MAX_SPLIT_HANDS])
+
   const newRound = useCallback(() => {
     dispatch({ type: ACTIONS.NEW_ROUND })
   }, [])
@@ -255,6 +419,12 @@ export function useGameEngine() {
     && state.playerHand.length === 2
     && state.chips >= state.bet
 
+  const canSplit = state.phase === GAME_STATES.PLAYER_TURN
+    && state.playerHand.length === 2
+    && state.playerHand[0].rank === state.playerHand[1].rank
+    && state.chips >= state.bet
+    && state.splitHands.length < MAX_SPLIT_HANDS
+
   return {
     state: {
       playerHand: state.playerHand,
@@ -269,6 +439,10 @@ export function useGameEngine() {
       playerScore,
       dealerVisibleScore,
       canDouble,
+      canSplit,
+      splitHands: state.splitHands,
+      activeHandIndex: state.activeHandIndex,
+      isSplit: state.isSplit,
     },
     actions: {
       placeBet,
@@ -277,6 +451,7 @@ export function useGameEngine() {
       hit,
       stand,
       doubleDown,
+      splitPairs,
       newRound,
       resetGame,
     },

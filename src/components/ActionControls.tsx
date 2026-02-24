@@ -6,14 +6,16 @@ interface ActionControlsProps {
   chips: number
   bet: number
   canDouble: boolean
+  canSplit: boolean
   onHit: () => void
   onStand: () => void
   onDoubleDown: () => void
+  onSplit: () => void
   onNewRound: () => void
   onReset: () => void
 }
 
-export default function ActionControls({ gameState, chips, bet, canDouble, onHit, onStand, onDoubleDown, onNewRound, onReset }: ActionControlsProps) {
+export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, onHit, onStand, onDoubleDown, onSplit, onNewRound, onReset }: ActionControlsProps) {
   const { GAME_STATES } = useGameSettings()
 
   if (gameState === GAME_STATES.PLAYER_TURN) {
@@ -27,6 +29,22 @@ export default function ActionControls({ gameState, chips, bet, canDouble, onHit
           <button className="btn btn-hit" onClick={onHit}>Hit</button>
           <button className="btn btn-stand" onClick={onStand}>Stand</button>
           <button className="btn btn-double" onClick={onDoubleDown} disabled={!canDouble}>Double</button>
+          <button className="btn btn-split" onClick={onSplit} disabled={!canSplit}>Split</button>
+        </div>
+      </div>
+    )
+  }
+
+  if (gameState === GAME_STATES.SPLITTING) {
+    return (
+      <div className="play-panel">
+        <div className="chip-info">
+          <span className="chip-coin">$</span>{chips}
+          <span className="bet-tag">Bet: ${bet} x2</span>
+        </div>
+        <div className="play-buttons">
+          <button className="btn btn-hit" onClick={onHit}>Hit</button>
+          <button className="btn btn-stand" onClick={onStand}>Stand</button>
         </div>
       </div>
     )

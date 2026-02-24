@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { gameReducer, createInitialState, ACTIONS, VALID_ACTIONS } from './gameReducer'
 import { GAME_STATES } from '../constants'
-import type { GameState, GameAction } from '../types'
+import type { GameState, GameAction, SplitHand } from '../types'
 
 describe('createInitialState', () => {
   it('creates state with given bankroll', () => {
@@ -15,6 +15,9 @@ describe('createInitialState', () => {
     expect(state.dealerHand).toEqual([])
     expect(state.deck).toEqual([])
     expect(state.stats).toEqual({ wins: 0, losses: 0, pushes: 0 })
+    expect(state.splitHands).toEqual([])
+    expect(state.activeHandIndex).toBe(0)
+    expect(state.isSplit).toBe(false)
   })
 
   it('uses custom bankroll', () => {
@@ -246,6 +249,167 @@ describe('gameReducer — state transitions', () => {
     })
   })
 
+  describe('SPLIT', () => {
+    it('transitions to SPLITTING, deducts additional bet, sets split hands', () => {
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'player_turn',
+        chips: 900,
+        bet: 100,
+        playerHand: [
+          { rank: '8', suit: 'hearts', id: 1 },
+          { rank: '8', suit: 'clubs', id: 2 },
+        ],
+        deck: [
+          { rank: '5', suit: 'diamonds', id: 3 },
+          { rank: 'K', suit: 'spades', id: 4 },
+        ],
+      }
+
+      const splitHands: SplitHand[] = [
+        { cards: [{ rank: '8', suit: 'hearts', id: 1 }, { rank: '5', suit: 'diamonds', id: 3 }], bet: 100, result: null, stood: false },
+        { cards: [{ rank: '8', suit: 'clubs', id: 2 }, { rank: 'K', suit: 'spades', id: 4 }], bet: 100, result: null, stood: false },
+      ]
+
+      const next = gameReducer(state, {
+        type: ACTIONS.SPLIT,
+        payload: { splitHands, deck: [] },
+      })
+
+      expect(next.phase).toBe(GAME_STATES.SPLITTING)
+      expect(next.isSplit).toBe(true)
+      expect(next.splitHands).toEqual(splitHands)
+      expect(next.activeHandIndex).toBe(0)
+      expect(next.chips).toBe(800) // 900 - 100 (additional bet)
+      expect(next.playerHand).toEqual(splitHands[0].cards)
+      expect(next.message).toBe('Playing hand 1...')
+    })
+  })
+
+  describe('SPLIT_HIT', () => {
+    it('updates active split hand cards', () => {
+      const splitHands: SplitHand[] = [
+        { cards: [{ rank: '8', suit: 'hearts', id: 1 }, { rank: '5', suit: 'diamonds', id: 3 }], bet: 100, result: null, stood: false },
+        { cards: [{ rank: '8', suit: 'clubs', id: 2 }, { rank: 'K', suit: 'spades', id: 4 }], bet: 100, result: null, stood: false },
+      ]
+
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'splitting',
+        chips: 800,
+        bet: 100,
+        splitHands,
+        activeHandIndex: 0,
+        isSplit: true,
+        playerHand: splitHands[0].cards,
+      }
+
+      const newHand = [...splitHands[0].cards, { rank: '3' as const, suit: 'clubs' as const, id: 5 }]
+      const next = gameReducer(state, {
+        type: ACTIONS.SPLIT_HIT,
+        payload: { hand: newHand, deck: [] },
+      })
+
+      expect(next.splitHands[0].cards).toEqual(newHand)
+      expect(next.splitHands[1]).toEqual(splitHands[1]) // unchanged
+      expect(next.playerHand).toEqual(newHand)
+    })
+  })
+
+  describe('SPLIT_STAND', () => {
+    it('advances to next hand when more hands remain', () => {
+      const splitHands: SplitHand[] = [
+        { cards: [{ rank: '8', suit: 'hearts', id: 1 }, { rank: '5', suit: 'diamonds', id: 3 }], bet: 100, result: null, stood: false },
+        { cards: [{ rank: '8', suit: 'clubs', id: 2 }, { rank: 'K', suit: 'spades', id: 4 }], bet: 100, result: null, stood: false },
+      ]
+
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'splitting',
+        chips: 800,
+        bet: 100,
+        splitHands,
+        activeHandIndex: 0,
+        isSplit: true,
+        playerHand: splitHands[0].cards,
+      }
+
+      const next = gameReducer(state, { type: ACTIONS.SPLIT_STAND })
+      expect(next.splitHands[0].stood).toBe(true)
+      expect(next.activeHandIndex).toBe(1)
+      expect(next.playerHand).toEqual(splitHands[1].cards)
+      expect(next.message).toBe('Playing hand 2...')
+      expect(next.phase).toBe(GAME_STATES.SPLITTING)
+    })
+
+    it('transitions to DEALER_TURN when all hands are done', () => {
+      const splitHands: SplitHand[] = [
+        { cards: [{ rank: '8', suit: 'hearts', id: 1 }, { rank: '5', suit: 'diamonds', id: 3 }], bet: 100, result: null, stood: true },
+        { cards: [{ rank: '8', suit: 'clubs', id: 2 }, { rank: 'K', suit: 'spades', id: 4 }], bet: 100, result: null, stood: false },
+      ]
+
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'splitting',
+        chips: 800,
+        bet: 100,
+        splitHands,
+        activeHandIndex: 1,
+        isSplit: true,
+        playerHand: splitHands[1].cards,
+      }
+
+      const next = gameReducer(state, { type: ACTIONS.SPLIT_STAND })
+      expect(next.splitHands[1].stood).toBe(true)
+      expect(next.dealerRevealed).toBe(true)
+      expect(next.phase).toBe(GAME_STATES.DEALER_TURN)
+      expect(next.message).toBe('Dealer is playing...')
+    })
+  })
+
+  describe('SPLIT_RESOLVE', () => {
+    it('resolves all split hands and transitions to GAME_OVER', () => {
+      const splitHands: SplitHand[] = [
+        { cards: [{ rank: '8', suit: 'hearts', id: 1 }, { rank: 'K', suit: 'diamonds', id: 3 }], bet: 100, result: null, stood: true },
+        { cards: [{ rank: '8', suit: 'clubs', id: 2 }, { rank: '5', suit: 'spades', id: 4 }], bet: 100, result: null, stood: true },
+      ]
+
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'splitting',
+        chips: 800,
+        bet: 100,
+        splitHands,
+        activeHandIndex: 1,
+        isSplit: true,
+        dealerHand: [{ rank: '10', suit: 'hearts', id: 10 }, { rank: '7', suit: 'clubs', id: 11 }],
+      }
+
+      const resolvedHands: SplitHand[] = [
+        { ...splitHands[0], result: 'win' },
+        { ...splitHands[1], result: 'lose' },
+      ]
+
+      const next = gameReducer(state, {
+        type: ACTIONS.SPLIT_RESOLVE,
+        payload: {
+          splitHands: resolvedHands,
+          chips: 1000, // 800 + 200 (win) + 0 (lose)
+          stats: { wins: 1, losses: 1, pushes: 0 },
+          message: 'Hand 1: Win | Hand 2: Lose',
+        },
+      })
+
+      expect(next.phase).toBe(GAME_STATES.GAME_OVER)
+      expect(next.chips).toBe(1000)
+      expect(next.splitHands[0].result).toBe('win')
+      expect(next.splitHands[1].result).toBe('lose')
+      expect(next.dealerRevealed).toBe(true)
+      expect(next.stats.wins).toBe(1)
+      expect(next.stats.losses).toBe(1)
+    })
+  })
+
   describe('SURRENDER', () => {
     it('returns half bet and transitions to SURRENDERING', () => {
       const state: GameState = {
@@ -320,6 +484,9 @@ describe('gameReducer — state transitions', () => {
       expect(next.dealerHand).toEqual([])
       expect(next.result).toBeNull()
       expect(next.dealerRevealed).toBe(false)
+      expect(next.splitHands).toEqual([])
+      expect(next.isSplit).toBe(false)
+      expect(next.activeHandIndex).toBe(0)
     })
   })
 
@@ -379,6 +546,12 @@ describe('gameReducer — illegal actions', () => {
     expect(next).toBe(state)
   })
 
+  it('ignores SPLIT_HIT outside SPLITTING phase', () => {
+    const state: GameState = { ...createInitialState(1000), phase: 'player_turn' }
+    const next = gameReducer(state, { type: ACTIONS.SPLIT_HIT, payload: { hand: [], deck: [] } })
+    expect(next).toBe(state)
+  })
+
   it('returns state for unknown action type', () => {
     const state = createInitialState(1000)
     const next = gameReducer(state, { type: 'UNKNOWN_ACTION' as never, payload: {} } as unknown as GameAction)
@@ -407,9 +580,16 @@ describe('VALID_ACTIONS mapping', () => {
     expect(VALID_ACTIONS[GAME_STATES.GAME_OVER]).toContain(ACTIONS.RESET)
   })
 
-  it('allows DOUBLE and SURRENDER in PLAYER_TURN', () => {
+  it('allows DOUBLE, SPLIT, and SURRENDER in PLAYER_TURN', () => {
     expect(VALID_ACTIONS[GAME_STATES.PLAYER_TURN]).toContain(ACTIONS.DOUBLE)
+    expect(VALID_ACTIONS[GAME_STATES.PLAYER_TURN]).toContain(ACTIONS.SPLIT)
     expect(VALID_ACTIONS[GAME_STATES.PLAYER_TURN]).toContain(ACTIONS.SURRENDER)
+  })
+
+  it('allows SPLIT_HIT, SPLIT_STAND, and SPLIT_RESOLVE in SPLITTING', () => {
+    expect(VALID_ACTIONS[GAME_STATES.SPLITTING]).toContain(ACTIONS.SPLIT_HIT)
+    expect(VALID_ACTIONS[GAME_STATES.SPLITTING]).toContain(ACTIONS.SPLIT_STAND)
+    expect(VALID_ACTIONS[GAME_STATES.SPLITTING]).toContain(ACTIONS.SPLIT_RESOLVE)
   })
 
   it('covers all game states', () => {

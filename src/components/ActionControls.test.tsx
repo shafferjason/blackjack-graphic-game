@@ -9,9 +9,11 @@ const defaultProps = {
   chips: 900,
   bet: 100,
   canDouble: true,
+  canSplit: false,
   onHit: vi.fn(),
   onStand: vi.fn(),
   onDoubleDown: vi.fn(),
+  onSplit: vi.fn(),
   onNewRound: vi.fn(),
   onReset: vi.fn(),
 }
@@ -49,6 +51,43 @@ describe('ActionControls component', () => {
       />
     )
     expect(screen.getByText('Double')).toBeDisabled()
+  })
+
+  it('shows Split button during PLAYER_TURN', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canSplit={true}
+      />
+    )
+    expect(screen.getByText('Split')).toBeInTheDocument()
+    expect(screen.getByText('Split')).not.toBeDisabled()
+  })
+
+  it('disables Split button when canSplit is false', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canSplit={false}
+      />
+    )
+    expect(screen.getByText('Split')).toBeDisabled()
+  })
+
+  it('calls onSplit when Split is clicked', () => {
+    const onSplit = vi.fn()
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
+        canSplit={true}
+        onSplit={onSplit}
+      />
+    )
+    fireEvent.click(screen.getByText('Split'))
+    expect(onSplit).toHaveBeenCalled()
   })
 
   it('calls onDoubleDown when Double is clicked', () => {
@@ -89,6 +128,17 @@ describe('ActionControls component', () => {
     )
     fireEvent.click(screen.getByText('Stand'))
     expect(onStand).toHaveBeenCalled()
+  })
+
+  it('shows Hit and Stand buttons during SPLITTING', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.SPLITTING as GamePhase}
+      />
+    )
+    expect(screen.getByText('Hit')).toBeInTheDocument()
+    expect(screen.getByText('Stand')).toBeInTheDocument()
   })
 
   it('shows "Dealer is drawing..." during DEALING', () => {

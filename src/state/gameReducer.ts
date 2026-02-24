@@ -10,6 +10,9 @@ export const ACTIONS = {
   STAND: 'STAND',
   DOUBLE: 'DOUBLE',
   SPLIT: 'SPLIT',
+  SPLIT_HIT: 'SPLIT_HIT',
+  SPLIT_STAND: 'SPLIT_STAND',
+  SPLIT_RESOLVE: 'SPLIT_RESOLVE',
   INSURE: 'INSURE',
   SURRENDER: 'SURRENDER',
   DEALER_DRAW: 'DEALER_DRAW',
@@ -24,7 +27,7 @@ const VALID_ACTIONS: Record<string, string[]> = {
   [GAME_STATES.BETTING]:         [ACTIONS.PLACE_BET, ACTIONS.CLEAR_BET, ACTIONS.DEAL, ACTIONS.RESET],
   [GAME_STATES.DEALING]:         [ACTIONS.RESOLVE],
   [GAME_STATES.PLAYER_TURN]:     [ACTIONS.HIT, ACTIONS.STAND, ACTIONS.DOUBLE, ACTIONS.SPLIT, ACTIONS.INSURE, ACTIONS.SURRENDER],
-  [GAME_STATES.SPLITTING]:       [ACTIONS.HIT, ACTIONS.STAND],
+  [GAME_STATES.SPLITTING]:       [ACTIONS.SPLIT_HIT, ACTIONS.SPLIT_STAND, ACTIONS.SPLIT_RESOLVE],
   [GAME_STATES.DOUBLING]:        [ACTIONS.RESOLVE],
   [GAME_STATES.INSURANCE_OFFER]: [ACTIONS.INSURE, ACTIONS.HIT, ACTIONS.STAND],
   [GAME_STATES.SURRENDERING]:    [ACTIONS.RESOLVE],
@@ -51,6 +54,9 @@ export function createInitialState(startingBankroll: number): GameState {
     result: null,
     dealerRevealed: false,
     stats: { wins: 0, losses: 0, pushes: 0 },
+    splitHands: [],
+    activeHandIndex: 0,
+    isSplit: false,
   }
 }
 
@@ -148,13 +154,71 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
     }
 
-    case ACTIONS.SPLIT:
-      // Placeholder for future split implementation
+    case ACTIONS.SPLIT: {
+      const { splitHands, deck } = action.payload
       return {
         ...state,
+        deck,
+        splitHands,
+        activeHandIndex: 0,
+        isSplit: true,
+        chips: state.chips - state.bet, // deduct additional bet for second hand
+        playerHand: splitHands[0].cards,
         phase: GAME_STATES.SPLITTING as GamePhase,
-        message: 'Splitting...',
+        message: 'Playing hand 1...',
       }
+    }
+
+    case ACTIONS.SPLIT_HIT: {
+      const { hand, deck: newDeck } = action.payload
+      const updatedHands = state.splitHands.map((h, i) =>
+        i === state.activeHandIndex ? { ...h, cards: hand } : h
+      )
+      return {
+        ...state,
+        deck: newDeck,
+        splitHands: updatedHands,
+        playerHand: hand,
+      }
+    }
+
+    case ACTIONS.SPLIT_STAND: {
+      const updatedHands = state.splitHands.map((h, i) =>
+        i === state.activeHandIndex ? { ...h, stood: true } : h
+      )
+      const nextIndex = state.activeHandIndex + 1
+      if (nextIndex < updatedHands.length) {
+        return {
+          ...state,
+          splitHands: updatedHands,
+          activeHandIndex: nextIndex,
+          playerHand: updatedHands[nextIndex].cards,
+          message: `Playing hand ${nextIndex + 1}...`,
+        }
+      }
+      // All hands stood — move to dealer turn
+      return {
+        ...state,
+        splitHands: updatedHands,
+        dealerRevealed: true,
+        phase: GAME_STATES.DEALER_TURN as GamePhase,
+        message: 'Dealer is playing...',
+      }
+    }
+
+    case ACTIONS.SPLIT_RESOLVE: {
+      const { splitHands: resolvedHands, chips, stats, message: msg } = action.payload
+      return {
+        ...state,
+        splitHands: resolvedHands,
+        chips,
+        stats,
+        message: msg,
+        result: 'lose', // placeholder; individual results are on splitHands
+        dealerRevealed: true,
+        phase: GAME_STATES.GAME_OVER as GamePhase,
+      }
+    }
 
     case ACTIONS.INSURE:
       // Placeholder for future insurance implementation
@@ -196,6 +260,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         dealerRevealed: false,
         message: 'Place your bet to start!',
         phase: GAME_STATES.BETTING as GamePhase,
+        splitHands: [],
+        activeHandIndex: 0,
+        isSplit: false,
       }
 
     case ACTIONS.RESET: {
