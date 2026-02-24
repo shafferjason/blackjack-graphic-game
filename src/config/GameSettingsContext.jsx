@@ -1,28 +1,17 @@
-import React, { createContext, useContext, useState } from 'react';
-import * as defaults from './defaults';
+import { createContext, useContext, useState } from 'react';
+import * as constants from '../constants';
 
 const GameSettingsContext = createContext(null);
 
 export const GameSettingsProvider = ({ children }) => {
-  const [settings, setSettings] = useState({
-    numDecks: defaults.NUM_DECKS,
-    deckPenetration: defaults.DECK_PENETRATION,
-    dealerHitsSoft17: true, // Example setting
-    blackjackPayout: defaults.BLACKJACK_PAYOUT_RATIO,
-    doubleAfterSplit: true, // Example setting
-    surrenderAllowed: true, // Example setting
-    // ... other settings from defaults
-  });
+  const [overrides, setOverrides] = useState({});
 
-  // Function to update settings
   const updateSetting = (key, value) => {
-    setSettings(prevSettings => ({
-      ...prevSettings,
-      [key]: value,
-    }));
+    setOverrides(prev => ({ ...prev, [key]: value }));
   };
 
-  const value = { ...defaults, ...settings, updateSetting };
+  // Merge compile-time constants with any runtime overrides
+  const value = { ...constants, ...overrides, updateSetting };
 
   return (
     <GameSettingsContext.Provider value={value}>
@@ -33,7 +22,7 @@ export const GameSettingsProvider = ({ children }) => {
 
 export const useGameSettings = () => {
   const context = useContext(GameSettingsContext);
-  if (context === undefined) {
+  if (context === null) {
     throw new Error('useGameSettings must be used within a GameSettingsProvider');
   }
   return context;

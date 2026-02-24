@@ -1,7 +1,8 @@
 import ChipStack from './ChipStack'
-import { CHIP_DENOMINATIONS } from '../constants'
+import { useGameSettings } from '../config/GameSettingsContext'
 
 export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, onDeal }) {
+  const { CHIP_DENOMINATIONS } = useGameSettings()
   return (
     <div className="betting-panel">
       <ChipStack chips={chips} bet={bet} />

@@ -1,5 +1,5 @@
 import { useGameEngine } from './hooks/useGameEngine'
-import { GAME_STATES } from './constants'
+import { useGameSettings } from './config/GameSettingsContext'
 import Scoreboard from './components/Scoreboard'
 import DealerHand from './components/DealerHand'
 import GameBanner from './components/GameBanner'
@@ -9,6 +9,7 @@ import ActionControls from './components/ActionControls'
 import './App.css'
 
 function App() {
+  const { GAME_STATES } = useGameSettings()
   const { state, actions } = useGameEngine()
 
   return (

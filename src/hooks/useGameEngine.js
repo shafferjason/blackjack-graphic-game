@@ -2,15 +2,16 @@ import { useState, useCallback, useRef } from 'react'
 import { createDeck } from '../utils/deck'
 import { cardValue, calculateScore, isBlackjack } from '../utils/scoring'
 import { getBlackjackPayout, getWinPayout, getPushPayout } from '../utils/payout'
-import {
-  GAME_STATES,
-  STARTING_BANKROLL,
-  DEALER_STAND_THRESHOLD,
-  DEALER_PLAY_INITIAL_DELAY,
-  DEALER_DRAW_DELAY,
-} from '../constants'
+import { useGameSettings } from '../config/GameSettingsContext'
 
 export function useGameEngine() {
+  const {
+    GAME_STATES,
+    STARTING_BANKROLL,
+    DEALER_STAND_THRESHOLD,
+    DEALER_PLAY_INITIAL_DELAY,
+    DEALER_DRAW_DELAY,
+  } = useGameSettings()
   const [deck, setDeck] = useState([])
   const [playerHand, setPlayerHand] = useState([])
   const [dealerHand, setDealerHand] = useState([])
@@ -82,7 +83,7 @@ export function useGameEngine() {
     } else {
       setMessage('Hit or Stand?')
     }
-  }, [bet, drawCard])
+  }, [bet, drawCard, GAME_STATES])
 
   const resolveGame = useCallback((pHand, dHand, dDeck, currentBet) => {
     const dealerPlay = (dh, dd) => {
@@ -121,7 +122,7 @@ export function useGameEngine() {
       }
     }
     setTimeout(() => dealerPlay(dHand, dDeck), DEALER_PLAY_INITIAL_DELAY)
-  }, [drawCard])
+  }, [drawCard, DEALER_STAND_THRESHOLD, DEALER_DRAW_DELAY, DEALER_PLAY_INITIAL_DELAY, GAME_STATES])
 
   const hit = useCallback(() => {
     if (gameState !== GAME_STATES.PLAYING) return
@@ -145,14 +146,14 @@ export function useGameEngine() {
       setMessage('Dealer is playing...')
       resolveGame(newHand, dealerHand, newDeck, bet)
     }
-  }, [gameState, deck, playerHand, dealerHand, drawCard, resolveGame, bet])
+  }, [gameState, deck, playerHand, dealerHand, drawCard, resolveGame, bet, GAME_STATES])
 
   const stand = useCallback(() => {
     setDealerRevealed(true)
     setGameState(GAME_STATES.DEALER_TURN)
     setMessage('Dealer is playing...')
     resolveGame(playerHand, dealerHand, deck, bet)
-  }, [playerHand, dealerHand, deck, resolveGame, bet])
+  }, [playerHand, dealerHand, deck, resolveGame, bet, GAME_STATES])
 
   const newRound = useCallback(() => {
     setPlayerHand([])
@@ -163,13 +164,13 @@ export function useGameEngine() {
     setDealerRevealed(false)
     setMessage('Place your bet to start!')
     setGameState(GAME_STATES.BETTING)
-  }, [])
+  }, [GAME_STATES])
 
   const resetGame = useCallback(() => {
     setChips(STARTING_BANKROLL)
     setStats({ wins: 0, losses: 0, pushes: 0 })
     newRound()
-  }, [newRound])
+  }, [newRound, STARTING_BANKROLL])
 
   const playerScore = calculateScore(playerHand)
   const dealerVisibleScore = dealerRevealed

@@ -1,6 +1,7 @@
-import { GAME_STATES } from '../constants'
+import { useGameSettings } from '../config/GameSettingsContext'
 
 export default function ActionControls({ gameState, chips, bet, onHit, onStand, onNewRound, onReset }) {
+  const { GAME_STATES } = useGameSettings()
   if (gameState === GAME_STATES.PLAYING) {
     return (
       <div className="play-panel">
