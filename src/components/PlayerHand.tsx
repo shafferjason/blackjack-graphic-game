@@ -1,6 +1,12 @@
 import Card from './Card'
+import type { Hand } from '../types'
 
-export default function PlayerHand({ hand, playerScore }) {
+interface PlayerHandProps {
+  hand: Hand
+  playerScore: number
+}
+
+export default function PlayerHand({ hand, playerScore }: PlayerHandProps) {
   return (
     <section className="hand-area">
       <div className="hand-header">

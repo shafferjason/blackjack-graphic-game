@@ -1,7 +1,8 @@
 import { SUITS, RANKS } from '../constants'
+import type { Card } from '../types'
 
-export function createDeck() {
-  const deck = []
+export function createDeck(): Card[] {
+  const deck: Card[] = []
   for (const suit of SUITS) {
     for (const rank of RANKS) {
       deck.push({ suit, rank })

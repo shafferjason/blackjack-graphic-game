@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { gameReducer, createInitialState, ACTIONS, VALID_ACTIONS } from './gameReducer'
 import { GAME_STATES } from '../constants'
+import type { GameState, GameAction } from '../types'
 
 describe('createInitialState', () => {
   it('creates state with given bankroll', () => {
@@ -59,9 +60,9 @@ describe('gameReducer — state transitions', () => {
       let state = createInitialState(1000)
       state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 100 } })
 
-      const playerHand = [{ rank: 'K', suit: 'hearts', id: 1 }, { rank: '5', suit: 'clubs', id: 2 }]
-      const dealerHand = [{ rank: '9', suit: 'spades', id: 3 }, { rank: '7', suit: 'diamonds', id: 4 }]
-      const deck = [{ rank: '2', suit: 'hearts' }]
+      const playerHand = [{ rank: 'K' as const, suit: 'hearts' as const, id: 1 }, { rank: '5' as const, suit: 'clubs' as const, id: 2 }]
+      const dealerHand = [{ rank: '9' as const, suit: 'spades' as const, id: 3 }, { rank: '7' as const, suit: 'diamonds' as const, id: 4 }]
+      const deck = [{ rank: '2' as const, suit: 'hearts' as const }]
 
       const next = gameReducer(state, {
         type: ACTIONS.DEAL,
@@ -118,7 +119,7 @@ describe('gameReducer — state transitions', () => {
         payload: {
           message: 'Hit or Stand?',
           result: null,
-          phase: GAME_STATES.PLAYER_TURN,
+          phase: 'player_turn',
         },
       })
 
@@ -128,17 +129,17 @@ describe('gameReducer — state transitions', () => {
 
   describe('HIT', () => {
     it('updates player hand and deck', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.PLAYER_TURN,
+        phase: 'player_turn',
         playerHand: [{ rank: '5', suit: 'hearts', id: 1 }],
         deck: [{ rank: '3', suit: 'clubs' }],
       }
 
-      const newHand = [...state.playerHand, { rank: '3', suit: 'clubs', id: 2 }]
+      const newHand = [...state.playerHand, { rank: '3' as const, suit: 'clubs' as const, id: 2 }]
       const next = gameReducer(state, {
         type: ACTIONS.HIT,
-        payload: { playerHand: newHand, deck: [], phase: GAME_STATES.PLAYER_TURN },
+        payload: { playerHand: newHand, deck: [], phase: 'player_turn' },
       })
 
       expect(next.playerHand).toEqual(newHand)
@@ -149,9 +150,9 @@ describe('gameReducer — state transitions', () => {
 
   describe('STAND', () => {
     it('reveals dealer and transitions to DEALER_TURN', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.PLAYER_TURN,
+        phase: 'player_turn',
       }
 
       const next = gameReducer(state, { type: ACTIONS.STAND })
@@ -163,15 +164,15 @@ describe('gameReducer — state transitions', () => {
 
   describe('DOUBLE', () => {
     it('doubles bet, deducts chips, reveals dealer', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.PLAYER_TURN,
+        phase: 'player_turn',
         chips: 900,
         bet: 100,
         playerHand: [{ rank: '5', suit: 'hearts', id: 1 }, { rank: '6', suit: 'clubs', id: 2 }],
       }
 
-      const newHand = [...state.playerHand, { rank: '10', suit: 'diamonds', id: 3 }]
+      const newHand = [...state.playerHand, { rank: '10' as const, suit: 'diamonds' as const, id: 3 }]
       const next = gameReducer(state, {
         type: ACTIONS.DOUBLE,
         payload: { playerHand: newHand, deck: [] },
@@ -188,9 +189,9 @@ describe('gameReducer — state transitions', () => {
 
   describe('SURRENDER', () => {
     it('returns half bet and transitions to SURRENDERING', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.PLAYER_TURN,
+        phase: 'player_turn',
         chips: 900,
         bet: 100,
       }
@@ -204,9 +205,9 @@ describe('gameReducer — state transitions', () => {
     })
 
     it('floors odd bets on surrender', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.PLAYER_TURN,
+        phase: 'player_turn',
         chips: 975,
         bet: 25,
       }
@@ -219,14 +220,14 @@ describe('gameReducer — state transitions', () => {
 
   describe('DEALER_DRAW', () => {
     it('updates dealer hand and deck', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.DEALER_TURN,
+        phase: 'dealer_turn',
         dealerHand: [{ rank: '7', suit: 'hearts', id: 1 }],
         deck: [{ rank: '9', suit: 'clubs' }],
       }
 
-      const newDealerHand = [...state.dealerHand, { rank: '9', suit: 'clubs', id: 2 }]
+      const newDealerHand = [...state.dealerHand, { rank: '9' as const, suit: 'clubs' as const, id: 2 }]
       const next = gameReducer(state, {
         type: ACTIONS.DEALER_DRAW,
         payload: { dealerHand: newDealerHand, deck: [] },
@@ -239,9 +240,9 @@ describe('gameReducer — state transitions', () => {
 
   describe('NEW_ROUND', () => {
     it('resets hands and bet, keeps chips and stats', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.GAME_OVER,
+        phase: 'game_over',
         chips: 1200,
         bet: 100,
         playerHand: [{ rank: 'K', suit: 'hearts' }],
@@ -265,9 +266,9 @@ describe('gameReducer — state transitions', () => {
 
   describe('RESET', () => {
     it('resets to initial state with provided bankroll', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.GAME_OVER,
+        phase: 'game_over',
         chips: 200,
         stats: { wins: 10, losses: 8, pushes: 2 },
       }
@@ -282,9 +283,9 @@ describe('gameReducer — state transitions', () => {
     })
 
     it('uses current chips if no bankroll provided', () => {
-      const state = {
+      const state: GameState = {
         ...createInitialState(1000),
-        phase: GAME_STATES.GAME_OVER,
+        phase: 'game_over',
         chips: 500,
       }
 
@@ -297,31 +298,31 @@ describe('gameReducer — state transitions', () => {
 describe('gameReducer — illegal actions', () => {
   it('ignores HIT during BETTING phase', () => {
     const state = createInitialState(1000)
-    const next = gameReducer(state, { type: ACTIONS.HIT, payload: {} })
+    const next = gameReducer(state, { type: ACTIONS.HIT, payload: { playerHand: [], deck: [] } })
     expect(next).toBe(state) // same reference — no change
   })
 
   it('ignores DEAL during PLAYER_TURN', () => {
-    const state = { ...createInitialState(1000), phase: GAME_STATES.PLAYER_TURN }
-    const next = gameReducer(state, { type: ACTIONS.DEAL, payload: {} })
+    const state: GameState = { ...createInitialState(1000), phase: 'player_turn' }
+    const next = gameReducer(state, { type: ACTIONS.DEAL, payload: { deck: [], playerHand: [], dealerHand: [] } })
     expect(next).toBe(state)
   })
 
   it('ignores PLACE_BET during DEALER_TURN', () => {
-    const state = { ...createInitialState(1000), phase: GAME_STATES.DEALER_TURN }
+    const state: GameState = { ...createInitialState(1000), phase: 'dealer_turn' }
     const next = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 50 } })
     expect(next).toBe(state)
   })
 
   it('ignores STAND during GAME_OVER', () => {
-    const state = { ...createInitialState(1000), phase: GAME_STATES.GAME_OVER }
+    const state: GameState = { ...createInitialState(1000), phase: 'game_over' }
     const next = gameReducer(state, { type: ACTIONS.STAND })
     expect(next).toBe(state)
   })
 
   it('returns state for unknown action type', () => {
     const state = createInitialState(1000)
-    const next = gameReducer(state, { type: 'UNKNOWN_ACTION', payload: {} })
+    const next = gameReducer(state, { type: 'UNKNOWN_ACTION' as never, payload: {} } as unknown as GameAction)
     expect(next).toBe(state)
   })
 })

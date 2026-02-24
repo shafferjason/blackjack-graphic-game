@@ -1,6 +1,8 @@
+import type { GamePhase } from './types'
+
 // ── Card definitions ──
-export const SUITS = ['hearts', 'diamonds', 'clubs', 'spades']
-export const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
+export const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'] as const
+export const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] as const
 
 // ── Bankroll & betting ──
 export const STARTING_BANKROLL = 1000
@@ -23,7 +25,7 @@ export const NUM_DECKS = 6
 export const DECK_PENETRATION = 0.75
 
 // ── Game state machine ──
-export const GAME_STATES = {
+export const GAME_STATES: Record<string, GamePhase> = {
   IDLE: 'idle',
   BETTING: 'betting',
   DEALING: 'dealing',

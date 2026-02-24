@@ -1,6 +1,17 @@
 import { useGameSettings } from '../config/GameSettingsContext'
+import type { GamePhase } from '../types'
 
-export default function ActionControls({ gameState, chips, bet, onHit, onStand, onNewRound, onReset }) {
+interface ActionControlsProps {
+  gameState: GamePhase
+  chips: number
+  bet: number
+  onHit: () => void
+  onStand: () => void
+  onNewRound: () => void
+  onReset: () => void
+}
+
+export default function ActionControls({ gameState, chips, bet, onHit, onStand, onNewRound, onReset }: ActionControlsProps) {
   const { GAME_STATES } = useGameSettings()
 
   if (gameState === GAME_STATES.PLAYER_TURN) {

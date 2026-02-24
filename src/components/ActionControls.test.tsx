@@ -3,12 +3,13 @@ import { screen, fireEvent } from '@testing-library/react'
 import ActionControls from './ActionControls'
 import { renderWithSettings } from '../test/renderWithSettings'
 import { GAME_STATES } from '../constants'
+import type { GamePhase } from '../types'
 
 describe('ActionControls component', () => {
   it('shows Hit and Stand buttons during PLAYER_TURN', () => {
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.PLAYER_TURN}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
         chips={900}
         bet={100}
         onHit={vi.fn()}
@@ -25,7 +26,7 @@ describe('ActionControls component', () => {
     const onHit = vi.fn()
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.PLAYER_TURN}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
         chips={900}
         bet={100}
         onHit={onHit}
@@ -42,7 +43,7 @@ describe('ActionControls component', () => {
     const onStand = vi.fn()
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.PLAYER_TURN}
+        gameState={GAME_STATES.PLAYER_TURN as GamePhase}
         chips={900}
         bet={100}
         onHit={vi.fn()}
@@ -58,7 +59,7 @@ describe('ActionControls component', () => {
   it('shows "Dealer is drawing..." during DEALING', () => {
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.DEALING}
+        gameState={GAME_STATES.DEALING as GamePhase}
         chips={900}
         bet={100}
         onHit={vi.fn()}
@@ -73,7 +74,7 @@ describe('ActionControls component', () => {
   it('shows "Dealer is drawing..." during DEALER_TURN', () => {
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.DEALER_TURN}
+        gameState={GAME_STATES.DEALER_TURN as GamePhase}
         chips={900}
         bet={100}
         onHit={vi.fn()}
@@ -88,7 +89,7 @@ describe('ActionControls component', () => {
   it('shows "Doubling down..." during DOUBLING', () => {
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.DOUBLING}
+        gameState={GAME_STATES.DOUBLING as GamePhase}
         chips={800}
         bet={200}
         onHit={vi.fn()}
@@ -103,7 +104,7 @@ describe('ActionControls component', () => {
   it('shows "Surrendering..." during SURRENDERING', () => {
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.SURRENDERING}
+        gameState={GAME_STATES.SURRENDERING as GamePhase}
         chips={950}
         bet={100}
         onHit={vi.fn()}
@@ -118,7 +119,7 @@ describe('ActionControls component', () => {
   it('shows New Round and Reset buttons during GAME_OVER', () => {
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.GAME_OVER}
+        gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={1100}
         bet={0}
         onHit={vi.fn()}
@@ -134,7 +135,7 @@ describe('ActionControls component', () => {
   it('disables New Round when chips <= 0', () => {
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.GAME_OVER}
+        gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={0}
         bet={0}
         onHit={vi.fn()}
@@ -150,7 +151,7 @@ describe('ActionControls component', () => {
     const onNewRound = vi.fn()
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.GAME_OVER}
+        gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={1000}
         bet={0}
         onHit={vi.fn()}
@@ -167,7 +168,7 @@ describe('ActionControls component', () => {
     const onReset = vi.fn()
     renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.GAME_OVER}
+        gameState={GAME_STATES.GAME_OVER as GamePhase}
         chips={1000}
         bet={0}
         onHit={vi.fn()}
@@ -183,7 +184,7 @@ describe('ActionControls component', () => {
   it('returns null for unhandled game states', () => {
     const { container } = renderWithSettings(
       <ActionControls
-        gameState={GAME_STATES.BETTING}
+        gameState={GAME_STATES.BETTING as GamePhase}
         chips={1000}
         bet={50}
         onHit={vi.fn()}

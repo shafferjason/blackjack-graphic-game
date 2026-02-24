@@ -1,4 +1,10 @@
-export default function Scoreboard({ stats }) {
+import type { GameStats } from '../types'
+
+interface ScoreboardProps {
+  stats: GameStats
+}
+
+export default function Scoreboard({ stats }: ScoreboardProps) {
   return (
     <div className="stats-bar">
       <span className="stat win-stat">W {stats.wins}</span>

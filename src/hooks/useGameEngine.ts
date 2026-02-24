@@ -4,6 +4,7 @@ import { cardValue, calculateScore, isBlackjack } from '../utils/scoring'
 import { getBlackjackPayout, getWinPayout, getPushPayout } from '../utils/payout'
 import { useGameSettings } from '../config/GameSettingsContext'
 import { gameReducer, createInitialState, ACTIONS } from '../state/gameReducer'
+import type { Card, Hand, Deck, GameStats, GameResult, GamePhase } from '../types'
 
 export function useGameEngine() {
   const {
@@ -17,13 +18,13 @@ export function useGameEngine() {
   const [state, dispatch] = useReducer(gameReducer, STARTING_BANKROLL, createInitialState)
   const cardIdRef = useRef(0)
 
-  const drawCard = useCallback((currentDeck) => {
+  const drawCard = useCallback((currentDeck: Deck): { card: Card; newDeck: Deck } => {
     const newDeck = [...currentDeck]
-    const card = newDeck.pop()
+    const card = newDeck.pop()!
     return { card, newDeck }
   }, [])
 
-  const placeBet = useCallback((amount) => {
+  const placeBet = useCallback((amount: number) => {
     dispatch({ type: ACTIONS.PLACE_BET, payload: { amount } })
   }, [])
 
@@ -35,8 +36,8 @@ export function useGameEngine() {
     if (state.bet === 0) return
 
     let currentDeck = createDeck()
-    const pHand = []
-    const dHand = []
+    const pHand: Hand = []
+    const dHand: Hand = []
 
     for (let i = 0; i < 2; i++) {
       let res = drawCard(currentDeck)
@@ -89,15 +90,15 @@ export function useGameEngine() {
         payload: {
           message: 'Hit or Stand?',
           result: null,
-          phase: GAME_STATES.PLAYER_TURN,
+          phase: GAME_STATES.PLAYER_TURN as GamePhase,
         },
       })
     }
   }, [state.bet, state.chips, state.stats, drawCard, GAME_STATES])
 
-  const resolveGame = useCallback((pHand, dHand, dDeck, currentBet, currentChips, currentStats) => {
-    const dealerPlay = (dh, dd) => {
-      let dealerScore = calculateScore(dh)
+  const resolveGame = useCallback((pHand: Hand, dHand: Hand, dDeck: Deck, currentBet: number, currentChips: number, currentStats: GameStats) => {
+    const dealerPlay = (dh: Hand, dd: Deck) => {
+      const dealerScore = calculateScore(dh)
       const playerScore = calculateScore(pHand)
 
       if (dealerScore < DEALER_STAND_THRESHOLD) {
@@ -110,7 +111,7 @@ export function useGameEngine() {
         })
         setTimeout(() => dealerPlay(newDh, newDeck), DEALER_DRAW_DELAY)
       } else {
-        let message, result, chipDelta, statKey
+        let message: string, result: GameResult, chipDelta: number, statKey: keyof GameStats
         if (dealerScore > 21) {
           message = `Dealer busts with ${dealerScore}! You win!`
           result = 'win'
@@ -160,7 +161,7 @@ export function useGameEngine() {
       // Bust: HIT to update hand, then RESOLVE
       dispatch({
         type: ACTIONS.HIT,
-        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN },
+        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN as GamePhase },
       })
       dispatch({
         type: ACTIONS.STAND, // transition to DEALER_TURN so RESOLVE is valid
@@ -178,14 +179,14 @@ export function useGameEngine() {
       // Auto-stand on 21
       dispatch({
         type: ACTIONS.HIT,
-        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN },
+        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN as GamePhase },
       })
       dispatch({ type: ACTIONS.STAND })
       resolveGame(newHand, state.dealerHand, newDeck, state.bet, state.chips, state.stats)
     } else {
       dispatch({
         type: ACTIONS.HIT,
-        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN },
+        payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN as GamePhase },
       })
     }
   }, [state.phase, state.deck, state.playerHand, state.dealerHand, state.bet, state.stats, drawCard, resolveGame, GAME_STATES])

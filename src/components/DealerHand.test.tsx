@@ -15,8 +15,8 @@ describe('DealerHand component', () => {
 
   it('shows score with "?" when dealer is not revealed', () => {
     const hand = [
-      { rank: 'K', suit: 'hearts', id: 1 },
-      { rank: '5', suit: 'clubs', id: 2 },
+      { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
+      { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
     render(<DealerHand hand={hand} dealerRevealed={false} dealerVisibleScore={10} />)
     expect(screen.getByText('10 + ?')).toBeInTheDocument()
@@ -24,8 +24,8 @@ describe('DealerHand component', () => {
 
   it('shows full score when dealer is revealed', () => {
     const hand = [
-      { rank: 'K', suit: 'hearts', id: 1 },
-      { rank: '5', suit: 'clubs', id: 2 },
+      { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
+      { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
     render(<DealerHand hand={hand} dealerRevealed={true} dealerVisibleScore={15} />)
     expect(screen.getByText('15')).toBeInTheDocument()
@@ -33,8 +33,8 @@ describe('DealerHand component', () => {
 
   it('hides second card when not revealed', () => {
     const hand = [
-      { rank: 'K', suit: 'hearts', id: 1 },
-      { rank: '5', suit: 'clubs', id: 2 },
+      { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
+      { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
     const { container } = render(<DealerHand hand={hand} dealerRevealed={false} dealerVisibleScore={10} />)
     expect(container.querySelector('.card-back')).toBeInTheDocument()
@@ -42,8 +42,8 @@ describe('DealerHand component', () => {
 
   it('shows all cards face-up when revealed', () => {
     const hand = [
-      { rank: 'K', suit: 'hearts', id: 1 },
-      { rank: '5', suit: 'clubs', id: 2 },
+      { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
+      { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
     const { container } = render(<DealerHand hand={hand} dealerRevealed={true} dealerVisibleScore={15} />)
     expect(container.querySelector('.card-back')).not.toBeInTheDocument()

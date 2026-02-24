@@ -1,7 +1,14 @@
 import Card from './Card'
 import { cardValue } from '../utils/scoring'
+import type { Hand } from '../types'
 
-export default function DealerHand({ hand, dealerRevealed, dealerVisibleScore }) {
+interface DealerHandProps {
+  hand: Hand
+  dealerRevealed: boolean
+  dealerVisibleScore: number
+}
+
+export default function DealerHand({ hand, dealerRevealed, dealerVisibleScore }: DealerHandProps) {
   return (
     <section className="hand-area">
       <div className="hand-header">

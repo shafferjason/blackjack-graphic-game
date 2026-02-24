@@ -1,4 +1,9 @@
-export default function ChipStack({ chips, bet }) {
+interface ChipStackProps {
+  chips: number
+  bet: number
+}
+
+export default function ChipStack({ chips, bet }: ChipStackProps) {
   return (
     <div className="chip-stack">
       <div className="chip-total">

@@ -1,27 +1,34 @@
 import './Card.css'
+import type { Card as CardType, Suit } from '../types'
 
-const SUIT_SYMBOLS = {
+const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
   diamonds: '\u2666',
   clubs: '\u2663',
   spades: '\u2660',
 }
 
-const SUIT_COLORS = {
+const SUIT_COLORS: Record<Suit, string> = {
   hearts: 'red',
   diamonds: 'red',
   clubs: 'black',
   spades: 'black',
 }
 
-const SUIT_ACCENTS = {
+interface SuitAccent {
+  primary: string
+  secondary: string
+  tertiary: string
+}
+
+const SUIT_ACCENTS: Record<Suit, SuitAccent> = {
   hearts: { primary: '#c41e3a', secondary: '#e8485e', tertiary: '#f9dce1' },
   diamonds: { primary: '#c41e3a', secondary: '#e8485e', tertiary: '#f9dce1' },
   clubs: { primary: '#1a1a2e', secondary: '#3a3a5e', tertiary: '#d8d8e8' },
   spades: { primary: '#1a1a2e', secondary: '#3a3a5e', tertiary: '#d8d8e8' },
 }
 
-function JackSVG({ suit }) {
+function JackSVG({ suit }: { suit: Suit }) {
   const c = SUIT_ACCENTS[suit]
   const isRed = suit === 'hearts' || suit === 'diamonds'
   const skinTone = '#f5d0a9'
@@ -126,7 +133,7 @@ function JackSVG({ suit }) {
   )
 }
 
-function QueenSVG({ suit }) {
+function QueenSVG({ suit }: { suit: Suit }) {
   const c = SUIT_ACCENTS[suit]
   const isRed = suit === 'hearts' || suit === 'diamonds'
   const skinTone = '#f5d0a9'
@@ -247,7 +254,7 @@ function QueenSVG({ suit }) {
   )
 }
 
-function KingSVG({ suit }) {
+function KingSVG({ suit }: { suit: Suit }) {
   const c = SUIT_ACCENTS[suit]
   const isRed = suit === 'hearts' || suit === 'diamonds'
   const skinTone = '#f5d0a9'
@@ -394,16 +401,22 @@ function KingSVG({ suit }) {
   )
 }
 
-const FACE_COMPONENTS = {
+const FACE_COMPONENTS: Record<string, React.FC<{ suit: Suit }>> = {
   J: JackSVG,
   Q: QueenSVG,
   K: KingSVG,
 }
 
-function Card({ card, hidden, index }) {
+interface CardProps {
+  card: CardType
+  hidden?: boolean
+  index?: number
+}
+
+function Card({ card, hidden, index }: CardProps) {
   if (hidden) {
     return (
-      <div className="card card-back" style={{ '--i': index }}>
+      <div className="card card-back" style={{ '--i': index } as React.CSSProperties}>
         <div className="card-back-pattern">
           <div className="card-back-inner" />
         </div>
@@ -417,7 +430,7 @@ function Card({ card, hidden, index }) {
   const FaceComponent = FACE_COMPONENTS[card.rank]
 
   return (
-    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''}`} style={{ '--i': index }}>
+    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''}`} style={{ '--i': index } as React.CSSProperties}>
       <div className="card-corner top-left">
         <span className="card-rank">{card.rank}</span>
         <span className="card-suit">{symbol}</span>

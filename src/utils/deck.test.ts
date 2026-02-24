@@ -16,7 +16,7 @@ describe('createDeck', () => {
   it('contains all 13 ranks per suit', () => {
     const deck = createDeck()
     const expectedRanks = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']
-    for (const suit of ['hearts', 'diamonds', 'clubs', 'spades']) {
+    for (const suit of ['hearts', 'diamonds', 'clubs', 'spades'] as const) {
       const ranks = deck.filter(c => c.suit === suit).map(c => c.rank).sort()
       expect(ranks).toEqual(expectedRanks.sort())
     }
@@ -32,7 +32,7 @@ describe('createDeck', () => {
 
   it('shuffles the deck (not in factory order)', () => {
     // Run multiple attempts — a non-shuffled deck is astronomically unlikely
-    const unshuffled = []
+    const unshuffled: string[] = []
     for (const suit of ['hearts', 'diamonds', 'clubs', 'spades']) {
       for (const rank of ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K']) {
         unshuffled.push(`${rank}-${suit}`)

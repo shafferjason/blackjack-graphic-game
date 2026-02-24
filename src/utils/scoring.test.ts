@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { cardValue, calculateScore, isBlackjack } from './scoring'
+import type { Card, Hand } from '../types'
 
 describe('cardValue', () => {
   it('returns 10 for face cards (J, Q, K)', () => {
@@ -22,7 +23,7 @@ describe('cardValue', () => {
 
 describe('calculateScore', () => {
   it('sums number cards correctly', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: '5', suit: 'hearts' },
       { rank: '3', suit: 'clubs' },
     ]
@@ -30,7 +31,7 @@ describe('calculateScore', () => {
   })
 
   it('counts face cards as 10', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'K', suit: 'spades' },
       { rank: 'Q', suit: 'hearts' },
     ]
@@ -38,7 +39,7 @@ describe('calculateScore', () => {
   })
 
   it('treats Ace as 11 when score <= 21', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: '6', suit: 'clubs' },
     ]
@@ -46,7 +47,7 @@ describe('calculateScore', () => {
   })
 
   it('reduces Ace from 11 to 1 when score exceeds 21', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: '9', suit: 'clubs' },
       { rank: '5', suit: 'diamonds' },
@@ -56,7 +57,7 @@ describe('calculateScore', () => {
   })
 
   it('handles multiple aces correctly', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: 'A', suit: 'spades' },
       { rank: '9', suit: 'clubs' },
@@ -66,7 +67,7 @@ describe('calculateScore', () => {
   })
 
   it('handles three aces', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: 'A', suit: 'spades' },
       { rank: 'A', suit: 'clubs' },
@@ -77,7 +78,7 @@ describe('calculateScore', () => {
   })
 
   it('handles four aces', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: 'A', suit: 'spades' },
       { rank: 'A', suit: 'clubs' },
@@ -88,7 +89,7 @@ describe('calculateScore', () => {
   })
 
   it('returns bust score when inevitable', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'K', suit: 'hearts' },
       { rank: 'Q', suit: 'spades' },
       { rank: '5', suit: 'clubs' },
@@ -101,7 +102,7 @@ describe('calculateScore', () => {
   })
 
   it('handles blackjack (Ace + 10)', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: '10', suit: 'spades' },
     ]
@@ -109,7 +110,7 @@ describe('calculateScore', () => {
   })
 
   it('handles blackjack (Ace + face card)', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: 'K', suit: 'spades' },
     ]
@@ -117,7 +118,7 @@ describe('calculateScore', () => {
   })
 
   it('handles soft 17 (Ace + 6)', () => {
-    const hand = [
+    const hand: Hand = [
       { rank: 'A', suit: 'hearts' },
       { rank: '6', suit: 'clubs' },
     ]

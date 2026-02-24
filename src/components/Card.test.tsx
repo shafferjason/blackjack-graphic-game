@@ -32,7 +32,7 @@ describe('Card component', () => {
   })
 
   it('renders face-card-type class for J, Q, K', () => {
-    for (const rank of ['J', 'Q', 'K']) {
+    for (const rank of ['J', 'Q', 'K'] as const) {
       const { container } = render(<Card card={{ suit: 'hearts', rank, id: 1 }} index={0} />)
       expect(container.querySelector('.face-card-type')).toBeInTheDocument()
     }
@@ -51,7 +51,7 @@ describe('Card component', () => {
 
   it('sets --i css variable from index prop', () => {
     const { container } = render(<Card card={{ suit: 'hearts', rank: '5', id: 1 }} index={3} />)
-    const card = container.querySelector('.card')
+    const card = container.querySelector('.card') as HTMLElement
     expect(card.style.getPropertyValue('--i')).toBe('3')
   })
 

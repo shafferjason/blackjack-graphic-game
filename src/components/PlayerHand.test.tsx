@@ -20,8 +20,8 @@ describe('PlayerHand component', () => {
 
   it('renders cards when hand has cards', () => {
     const hand = [
-      { rank: 'K', suit: 'hearts', id: 1 },
-      { rank: '5', suit: 'clubs', id: 2 },
+      { rank: 'K' as const, suit: 'hearts' as const, id: 1 },
+      { rank: '5' as const, suit: 'clubs' as const, id: 2 },
     ]
     const { container } = render(<PlayerHand hand={hand} playerScore={15} />)
     expect(container.querySelectorAll('.card')).toHaveLength(2)
@@ -29,21 +29,21 @@ describe('PlayerHand component', () => {
   })
 
   it('displays the player score', () => {
-    const hand = [{ rank: 'K', suit: 'hearts', id: 1 }]
+    const hand = [{ rank: 'K' as const, suit: 'hearts' as const, id: 1 }]
     const { container } = render(<PlayerHand hand={hand} playerScore={10} />)
     const pill = container.querySelector('.score-pill')
     expect(pill).toBeInTheDocument()
-    expect(pill.textContent).toBe('10')
+    expect(pill!.textContent).toBe('10')
   })
 
   it('applies bust class when score > 21', () => {
-    const hand = [{ rank: 'K', suit: 'hearts', id: 1 }]
+    const hand = [{ rank: 'K' as const, suit: 'hearts' as const, id: 1 }]
     const { container } = render(<PlayerHand hand={hand} playerScore={25} />)
     expect(container.querySelector('.score-pill.bust')).toBeInTheDocument()
   })
 
   it('does not apply bust class when score <= 21', () => {
-    const hand = [{ rank: 'K', suit: 'hearts', id: 1 }]
+    const hand = [{ rank: 'K' as const, suit: 'hearts' as const, id: 1 }]
     const { container } = render(<PlayerHand hand={hand} playerScore={20} />)
     expect(container.querySelector('.score-pill.bust')).not.toBeInTheDocument()
   })

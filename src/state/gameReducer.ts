@@ -1,4 +1,5 @@
 import { GAME_STATES } from '../constants'
+import type { GameState, GameAction, GamePhase } from '../types'
 
 // ── Action types ──
 export const ACTIONS = {
@@ -15,10 +16,10 @@ export const ACTIONS = {
   RESOLVE: 'RESOLVE',
   NEW_ROUND: 'NEW_ROUND',
   RESET: 'RESET',
-}
+} as const
 
 // ── Legal transitions: for each state, which actions are allowed ──
-const VALID_ACTIONS = {
+const VALID_ACTIONS: Record<string, string[]> = {
   [GAME_STATES.IDLE]:            [ACTIONS.PLACE_BET, ACTIONS.RESET],
   [GAME_STATES.BETTING]:         [ACTIONS.PLACE_BET, ACTIONS.CLEAR_BET, ACTIONS.DEAL, ACTIONS.RESET],
   [GAME_STATES.DEALING]:         [ACTIONS.RESOLVE],
@@ -32,15 +33,15 @@ const VALID_ACTIONS = {
   [GAME_STATES.GAME_OVER]:       [ACTIONS.NEW_ROUND, ACTIONS.RESET],
 }
 
-function isValidAction(state, action) {
+function isValidAction(state: GamePhase, action: string): boolean {
   const allowed = VALID_ACTIONS[state]
   return allowed ? allowed.includes(action) : false
 }
 
 // ── Initial state ──
-export function createInitialState(startingBankroll) {
+export function createInitialState(startingBankroll: number): GameState {
   return {
-    phase: GAME_STATES.BETTING,
+    phase: GAME_STATES.BETTING as GamePhase,
     deck: [],
     playerHand: [],
     dealerHand: [],
@@ -54,8 +55,8 @@ export function createInitialState(startingBankroll) {
 }
 
 // ── Reducer ──
-export function gameReducer(state, action) {
-  const { type, payload } = action
+export function gameReducer(state: GameState, action: GameAction): GameState {
+  const { type } = action
 
   if (!isValidAction(state.phase, type)) {
     if (import.meta.env.DEV) {
@@ -67,17 +68,18 @@ export function gameReducer(state, action) {
   }
 
   if (import.meta.env.DEV) {
+    const payload = 'payload' in action ? action.payload : ''
     console.log(`[GameFSM] ${state.phase} → ${type}`, payload || '')
   }
 
   switch (type) {
     case ACTIONS.PLACE_BET: {
-      const { amount } = payload
+      const { amount } = action.payload
       if (state.chips < amount) return state
       return {
         ...state,
         bet: state.bet + amount,
-        phase: GAME_STATES.BETTING,
+        phase: GAME_STATES.BETTING as GamePhase,
       }
     }
 
@@ -85,7 +87,7 @@ export function gameReducer(state, action) {
       return { ...state, bet: 0 }
 
     case ACTIONS.DEAL: {
-      const { deck, playerHand, dealerHand } = payload
+      const { deck, playerHand, dealerHand } = action.payload
       return {
         ...state,
         deck,
@@ -94,14 +96,14 @@ export function gameReducer(state, action) {
         chips: state.chips - state.bet,
         result: null,
         dealerRevealed: false,
-        phase: GAME_STATES.DEALING,
+        phase: GAME_STATES.DEALING as GamePhase,
         message: 'Dealing...',
       }
     }
 
     case ACTIONS.RESOLVE: {
       // RESOLVE can come from DEALING (blackjack), DOUBLING, SURRENDERING, or DEALER_TURN
-      const { message, result, chips, dealerRevealed, stats, phase } = payload
+      const { message, result, chips, dealerRevealed, stats, phase } = action.payload
       return {
         ...state,
         message,
@@ -109,17 +111,17 @@ export function gameReducer(state, action) {
         chips: chips !== undefined ? chips : state.chips,
         dealerRevealed: dealerRevealed !== undefined ? dealerRevealed : state.dealerRevealed,
         stats: stats || state.stats,
-        phase: phase || GAME_STATES.GAME_OVER,
+        phase: (phase || GAME_STATES.GAME_OVER) as GamePhase,
       }
     }
 
     case ACTIONS.HIT: {
-      const { playerHand, deck, phase } = payload
+      const { playerHand, deck, phase } = action.payload
       return {
         ...state,
         playerHand,
         deck,
-        phase: phase || GAME_STATES.PLAYER_TURN,
+        phase: (phase || GAME_STATES.PLAYER_TURN) as GamePhase,
       }
     }
 
@@ -127,13 +129,13 @@ export function gameReducer(state, action) {
       return {
         ...state,
         dealerRevealed: true,
-        phase: GAME_STATES.DEALER_TURN,
+        phase: GAME_STATES.DEALER_TURN as GamePhase,
         message: 'Dealer is playing...',
       }
     }
 
     case ACTIONS.DOUBLE: {
-      const { playerHand, deck } = payload
+      const { playerHand, deck } = action.payload
       return {
         ...state,
         playerHand,
@@ -141,7 +143,7 @@ export function gameReducer(state, action) {
         chips: state.chips - state.bet,
         bet: state.bet * 2,
         dealerRevealed: true,
-        phase: GAME_STATES.DOUBLING,
+        phase: GAME_STATES.DOUBLING as GamePhase,
         message: 'Doubling down...',
       }
     }
@@ -150,7 +152,7 @@ export function gameReducer(state, action) {
       // Placeholder for future split implementation
       return {
         ...state,
-        phase: GAME_STATES.SPLITTING,
+        phase: GAME_STATES.SPLITTING as GamePhase,
         message: 'Splitting...',
       }
 
@@ -158,7 +160,7 @@ export function gameReducer(state, action) {
       // Placeholder for future insurance implementation
       return {
         ...state,
-        phase: GAME_STATES.INSURANCE_OFFER,
+        phase: GAME_STATES.INSURANCE_OFFER as GamePhase,
         message: 'Insurance?',
       }
 
@@ -168,14 +170,14 @@ export function gameReducer(state, action) {
         ...state,
         chips: state.chips + halfBet,
         dealerRevealed: true,
-        phase: GAME_STATES.SURRENDERING,
+        phase: GAME_STATES.SURRENDERING as GamePhase,
         message: 'Surrendered — half bet returned.',
         result: 'lose',
       }
     }
 
     case ACTIONS.DEALER_DRAW: {
-      const { dealerHand, deck } = payload
+      const { dealerHand, deck } = action.payload
       return {
         ...state,
         dealerHand,
@@ -193,11 +195,11 @@ export function gameReducer(state, action) {
         result: null,
         dealerRevealed: false,
         message: 'Place your bet to start!',
-        phase: GAME_STATES.BETTING,
+        phase: GAME_STATES.BETTING as GamePhase,
       }
 
     case ACTIONS.RESET: {
-      const { startingBankroll } = payload || {}
+      const startingBankroll = action.payload?.startingBankroll
       return createInitialState(startingBankroll || state.chips)
     }
 
