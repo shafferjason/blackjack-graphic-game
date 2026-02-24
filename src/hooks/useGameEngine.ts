@@ -84,6 +84,16 @@ export function useGameEngine() {
           stats: { ...state.stats, wins: state.stats.wins + 1 },
         },
       })
+    } else if (dHand[0].rank === 'A') {
+      // Dealer shows Ace — offer insurance before player acts
+      dispatch({
+        type: ACTIONS.RESOLVE,
+        payload: {
+          message: 'Dealer shows Ace — Insurance?',
+          result: null,
+          phase: GAME_STATES.INSURANCE_OFFER as GamePhase,
+        },
+      })
     } else {
       // Normal play — transition DEALING → PLAYER_TURN
       dispatch({
@@ -97,7 +107,7 @@ export function useGameEngine() {
     }
   }, [state.bet, state.chips, state.stats, drawCard, GAME_STATES])
 
-  const resolveGame = useCallback((pHand: Hand, dHand: Hand, dDeck: Deck, currentBet: number, currentChips: number, currentStats: GameStats) => {
+  const resolveGame = useCallback((pHand: Hand, dHand: Hand, dDeck: Deck, currentBet: number, currentChips: number, currentStats: GameStats, currentInsuranceBet: number) => {
     const dealerPlay = (dh: Hand, dd: Deck) => {
       const dealerScore = calculateScore(dh)
       const playerScore = calculateScore(pHand)
@@ -112,6 +122,11 @@ export function useGameEngine() {
         })
         setTimeout(() => dealerPlay(newDh, newDeck), DEALER_DRAW_DELAY)
       } else {
+        const dealerHasBlackjack = isBlackjack(dh)
+        const insurancePayout = (dealerHasBlackjack && currentInsuranceBet > 0)
+          ? currentInsuranceBet * 3 // return original bet + 2:1 winnings
+          : 0
+
         let message: string, result: GameResult, chipDelta: number, statKey: keyof GameStats
         if (dealerScore > 21) {
           message = `Dealer busts with ${dealerScore}! You win!`
@@ -135,12 +150,18 @@ export function useGameEngine() {
           statKey = 'pushes'
         }
 
+        if (insurancePayout > 0) {
+          message += ' Insurance pays 2:1!'
+        } else if (currentInsuranceBet > 0) {
+          message += ' Insurance lost.'
+        }
+
         dispatch({
           type: ACTIONS.RESOLVE,
           payload: {
             message,
             result,
-            chips: currentChips + chipDelta,
+            chips: currentChips + chipDelta + insurancePayout,
             dealerRevealed: true,
             stats: { ...currentStats, [statKey]: currentStats[statKey] + 1 },
           },
@@ -151,7 +172,7 @@ export function useGameEngine() {
   }, [drawCard, DEALER_STAND_THRESHOLD, DEALER_DRAW_DELAY, DEALER_PLAY_INITIAL_DELAY])
 
   // ── Resolve all split hands against dealer ──
-  const resolveSplitGame = useCallback((hands: SplitHand[], dHand: Hand, dDeck: Deck, currentChips: number, currentStats: GameStats) => {
+  const resolveSplitGame = useCallback((hands: SplitHand[], dHand: Hand, dDeck: Deck, currentChips: number, currentStats: GameStats, currentInsuranceBet: number = 0) => {
     const dealerPlay = (dh: Hand, dd: Deck) => {
       const dealerScore = calculateScore(dh)
 
@@ -165,6 +186,11 @@ export function useGameEngine() {
         })
         setTimeout(() => dealerPlay(newDh, newDeck), DEALER_DRAW_DELAY)
       } else {
+        const dealerHasBlackjack = isBlackjack(dh)
+        const insurancePayout = (dealerHasBlackjack && currentInsuranceBet > 0)
+          ? currentInsuranceBet * 3
+          : 0
+
         let totalChips = currentChips
         const updatedStats = { ...currentStats }
         const resolvedHands: SplitHand[] = []
@@ -202,13 +228,20 @@ export function useGameEngine() {
           resolvedHands.push({ ...hand, result })
         }
 
+        let message = results.join(' | ')
+        if (insurancePayout > 0) {
+          message += ' Insurance pays 2:1!'
+        } else if (currentInsuranceBet > 0) {
+          message += ' Insurance lost.'
+        }
+
         dispatch({
           type: ACTIONS.SPLIT_RESOLVE,
           payload: {
             splitHands: resolvedHands,
-            chips: totalChips,
+            chips: totalChips + insurancePayout,
             stats: updatedStats,
-            message: results.join(' | '),
+            message,
           },
         })
       }
@@ -242,7 +275,7 @@ export function useGameEngine() {
         } else {
           // All hands done — go to dealer
           dispatch({ type: ACTIONS.SPLIT_STAND })
-          resolveSplitGame(updatedHands, state.dealerHand, newDeck, state.chips, state.stats)
+          resolveSplitGame(updatedHands, state.dealerHand, newDeck, state.chips, state.stats, state.insuranceBet)
         }
       }
       return
@@ -281,7 +314,7 @@ export function useGameEngine() {
         payload: { playerHand: newHand, deck: newDeck, phase: GAME_STATES.PLAYER_TURN as GamePhase },
       })
       dispatch({ type: ACTIONS.STAND })
-      resolveGame(newHand, state.dealerHand, newDeck, state.bet, state.chips, state.stats)
+      resolveGame(newHand, state.dealerHand, newDeck, state.bet, state.chips, state.stats, state.insuranceBet)
     } else {
       dispatch({
         type: ACTIONS.HIT,
@@ -301,15 +334,15 @@ export function useGameEngine() {
       const nextIndex = state.activeHandIndex + 1
       if (nextIndex >= updatedHands.length) {
         // All hands done — resolve against dealer
-        resolveSplitGame(updatedHands, state.dealerHand, state.deck, state.chips, state.stats)
+        resolveSplitGame(updatedHands, state.dealerHand, state.deck, state.chips, state.stats, state.insuranceBet)
       }
       return
     }
 
     // ── Normal stand ──
     dispatch({ type: ACTIONS.STAND })
-    resolveGame(state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats)
-  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, resolveGame, resolveSplitGame, GAME_STATES])
+    resolveGame(state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, state.insuranceBet)
+  }, [state.phase, state.isSplit, state.splitHands, state.activeHandIndex, state.playerHand, state.dealerHand, state.deck, state.bet, state.chips, state.stats, state.insuranceBet, resolveGame, resolveSplitGame, GAME_STATES])
 
   const doubleDown = useCallback(() => {
     if (state.phase !== GAME_STATES.PLAYER_TURN) return
@@ -340,9 +373,9 @@ export function useGameEngine() {
       })
     } else {
       // Resolve against dealer with doubled bet
-      resolveGame(newHand, state.dealerHand, newDeck, doubledBet, chipsAfterDouble, state.stats)
+      resolveGame(newHand, state.dealerHand, newDeck, doubledBet, chipsAfterDouble, state.stats, state.insuranceBet)
     }
-  }, [state.phase, state.chips, state.bet, state.deck, state.playerHand, state.dealerHand, state.stats, drawCard, resolveGame, GAME_STATES])
+  }, [state.phase, state.chips, state.bet, state.deck, state.playerHand, state.dealerHand, state.stats, state.insuranceBet, drawCard, resolveGame, GAME_STATES])
 
   // ── Split pairs ──
   const splitPairs = useCallback(() => {
@@ -389,9 +422,24 @@ export function useGameEngine() {
 
     if (isAces) {
       // Aces split: one card each, then resolve against dealer
-      resolveSplitGame([hand1, hand2], state.dealerHand, currentDeck, state.chips - state.bet, state.stats)
+      resolveSplitGame([hand1, hand2], state.dealerHand, currentDeck, state.chips - state.bet, state.stats, state.insuranceBet)
     }
   }, [state.phase, state.playerHand, state.chips, state.bet, state.deck, state.dealerHand, state.splitHands, state.stats, drawCard, resolveSplitGame, GAME_STATES, MAX_SPLIT_HANDS])
+
+  // ── Insurance ──
+  const maxInsuranceBet = Math.floor(state.bet / 2)
+
+  const acceptInsurance = useCallback((amount: number) => {
+    if (state.phase !== GAME_STATES.INSURANCE_OFFER) return
+    const clamped = Math.min(amount, maxInsuranceBet, state.chips)
+    if (clamped <= 0) return
+    dispatch({ type: ACTIONS.INSURE, payload: { amount: clamped } })
+  }, [state.phase, state.chips, maxInsuranceBet, GAME_STATES])
+
+  const declineInsurance = useCallback(() => {
+    if (state.phase !== GAME_STATES.INSURANCE_OFFER) return
+    dispatch({ type: ACTIONS.INSURE, payload: { amount: 0 } })
+  }, [state.phase, GAME_STATES])
 
   const newRound = useCallback(() => {
     dispatch({ type: ACTIONS.NEW_ROUND })
@@ -443,6 +491,8 @@ export function useGameEngine() {
       splitHands: state.splitHands,
       activeHandIndex: state.activeHandIndex,
       isSplit: state.isSplit,
+      insuranceBet: state.insuranceBet,
+      maxInsuranceBet,
     },
     actions: {
       placeBet,
@@ -452,6 +502,8 @@ export function useGameEngine() {
       stand,
       doubleDown,
       splitPairs,
+      acceptInsurance,
+      declineInsurance,
       newRound,
       resetGame,
     },

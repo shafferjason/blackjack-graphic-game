@@ -18,6 +18,7 @@ describe('createInitialState', () => {
     expect(state.splitHands).toEqual([])
     expect(state.activeHandIndex).toBe(0)
     expect(state.isSplit).toBe(false)
+    expect(state.insuranceBet).toBe(0)
   })
 
   it('uses custom bankroll', () => {
@@ -441,6 +442,44 @@ describe('gameReducer — state transitions', () => {
     })
   })
 
+  describe('INSURE', () => {
+    it('accepts insurance: deducts chips and transitions to PLAYER_TURN', () => {
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'insurance_offer',
+        chips: 900,
+        bet: 100,
+        insuranceBet: 0,
+        playerHand: [{ rank: '10', suit: 'hearts', id: 1 }, { rank: '5', suit: 'clubs', id: 2 }],
+        dealerHand: [{ rank: 'A', suit: 'spades', id: 3 }, { rank: '7', suit: 'diamonds', id: 4 }],
+      }
+
+      const next = gameReducer(state, { type: ACTIONS.INSURE, payload: { amount: 50 } })
+      expect(next.insuranceBet).toBe(50)
+      expect(next.chips).toBe(850) // 900 - 50
+      expect(next.phase).toBe(GAME_STATES.PLAYER_TURN)
+      expect(next.message).toBe('Insurance taken. Hit or Stand?')
+    })
+
+    it('declines insurance: transitions to PLAYER_TURN without chip change', () => {
+      const state: GameState = {
+        ...createInitialState(1000),
+        phase: 'insurance_offer',
+        chips: 900,
+        bet: 100,
+        insuranceBet: 0,
+        playerHand: [{ rank: '10', suit: 'hearts', id: 1 }, { rank: '5', suit: 'clubs', id: 2 }],
+        dealerHand: [{ rank: 'A', suit: 'spades', id: 3 }, { rank: '7', suit: 'diamonds', id: 4 }],
+      }
+
+      const next = gameReducer(state, { type: ACTIONS.INSURE, payload: { amount: 0 } })
+      expect(next.insuranceBet).toBe(0)
+      expect(next.chips).toBe(900)
+      expect(next.phase).toBe(GAME_STATES.PLAYER_TURN)
+      expect(next.message).toBe('Hit or Stand?')
+    })
+  })
+
   describe('DEALER_DRAW', () => {
     it('updates dealer hand and deck', () => {
       const state: GameState = {
@@ -487,6 +526,7 @@ describe('gameReducer — state transitions', () => {
       expect(next.splitHands).toEqual([])
       expect(next.isSplit).toBe(false)
       expect(next.activeHandIndex).toBe(0)
+      expect(next.insuranceBet).toBe(0)
     })
   })
 
@@ -584,6 +624,11 @@ describe('VALID_ACTIONS mapping', () => {
     expect(VALID_ACTIONS[GAME_STATES.PLAYER_TURN]).toContain(ACTIONS.DOUBLE)
     expect(VALID_ACTIONS[GAME_STATES.PLAYER_TURN]).toContain(ACTIONS.SPLIT)
     expect(VALID_ACTIONS[GAME_STATES.PLAYER_TURN]).toContain(ACTIONS.SURRENDER)
+  })
+
+  it('allows INSURE and RESOLVE in INSURANCE_OFFER', () => {
+    expect(VALID_ACTIONS[GAME_STATES.INSURANCE_OFFER]).toContain(ACTIONS.INSURE)
+    expect(VALID_ACTIONS[GAME_STATES.INSURANCE_OFFER]).toContain(ACTIONS.RESOLVE)
   })
 
   it('allows SPLIT_HIT, SPLIT_STAND, and SPLIT_RESOLVE in SPLITTING', () => {

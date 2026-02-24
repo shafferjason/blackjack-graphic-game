@@ -10,10 +10,13 @@ const defaultProps = {
   bet: 100,
   canDouble: true,
   canSplit: false,
+  maxInsuranceBet: 50,
   onHit: vi.fn(),
   onStand: vi.fn(),
   onDoubleDown: vi.fn(),
   onSplit: vi.fn(),
+  onAcceptInsurance: vi.fn(),
+  onDeclineInsurance: vi.fn(),
   onNewRound: vi.fn(),
   onReset: vi.fn(),
 }
@@ -237,6 +240,43 @@ describe('ActionControls component', () => {
     )
     fireEvent.click(screen.getByText('Reset'))
     expect(onReset).toHaveBeenCalled()
+  })
+
+  it('shows insurance buttons during INSURANCE_OFFER', () => {
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.INSURANCE_OFFER as GamePhase}
+      />
+    )
+    expect(screen.getByText('Insure $50')).toBeInTheDocument()
+    expect(screen.getByText('No Insurance')).toBeInTheDocument()
+  })
+
+  it('calls onAcceptInsurance when Insure is clicked', () => {
+    const onAcceptInsurance = vi.fn()
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.INSURANCE_OFFER as GamePhase}
+        onAcceptInsurance={onAcceptInsurance}
+      />
+    )
+    fireEvent.click(screen.getByText('Insure $50'))
+    expect(onAcceptInsurance).toHaveBeenCalledWith(50)
+  })
+
+  it('calls onDeclineInsurance when No Insurance is clicked', () => {
+    const onDeclineInsurance = vi.fn()
+    renderWithSettings(
+      <ActionControls
+        {...defaultProps}
+        gameState={GAME_STATES.INSURANCE_OFFER as GamePhase}
+        onDeclineInsurance={onDeclineInsurance}
+      />
+    )
+    fireEvent.click(screen.getByText('No Insurance'))
+    expect(onDeclineInsurance).toHaveBeenCalled()
   })
 
   it('returns null for unhandled game states', () => {

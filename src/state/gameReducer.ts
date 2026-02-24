@@ -29,7 +29,7 @@ const VALID_ACTIONS: Record<string, string[]> = {
   [GAME_STATES.PLAYER_TURN]:     [ACTIONS.HIT, ACTIONS.STAND, ACTIONS.DOUBLE, ACTIONS.SPLIT, ACTIONS.INSURE, ACTIONS.SURRENDER],
   [GAME_STATES.SPLITTING]:       [ACTIONS.SPLIT_HIT, ACTIONS.SPLIT_STAND, ACTIONS.SPLIT_RESOLVE],
   [GAME_STATES.DOUBLING]:        [ACTIONS.RESOLVE],
-  [GAME_STATES.INSURANCE_OFFER]: [ACTIONS.INSURE, ACTIONS.HIT, ACTIONS.STAND],
+  [GAME_STATES.INSURANCE_OFFER]: [ACTIONS.INSURE, ACTIONS.RESOLVE],
   [GAME_STATES.SURRENDERING]:    [ACTIONS.RESOLVE],
   [GAME_STATES.DEALER_TURN]:     [ACTIONS.DEALER_DRAW, ACTIONS.RESOLVE],
   [GAME_STATES.RESOLVING]:       [ACTIONS.NEW_ROUND, ACTIONS.RESET],
@@ -51,6 +51,7 @@ export function createInitialState(startingBankroll: number): GameState {
     message: 'Place your bet to start!',
     chips: startingBankroll,
     bet: 0,
+    insuranceBet: 0,
     result: null,
     dealerRevealed: false,
     stats: { wins: 0, losses: 0, pushes: 0 },
@@ -220,13 +221,25 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       }
     }
 
-    case ACTIONS.INSURE:
-      // Placeholder for future insurance implementation
+    case ACTIONS.INSURE: {
+      const { amount } = action.payload
+      if (amount > 0) {
+        return {
+          ...state,
+          insuranceBet: amount,
+          chips: state.chips - amount,
+          phase: GAME_STATES.PLAYER_TURN as GamePhase,
+          message: 'Insurance taken. Hit or Stand?',
+        }
+      }
+      // Declined insurance
       return {
         ...state,
-        phase: GAME_STATES.INSURANCE_OFFER as GamePhase,
-        message: 'Insurance?',
+        insuranceBet: 0,
+        phase: GAME_STATES.PLAYER_TURN as GamePhase,
+        message: 'Hit or Stand?',
       }
+    }
 
     case ACTIONS.SURRENDER: {
       const halfBet = Math.floor(state.bet / 2)
@@ -256,6 +269,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         dealerHand: [],
         deck: [],
         bet: 0,
+        insuranceBet: 0,
         result: null,
         dealerRevealed: false,
         message: 'Place your bet to start!',

@@ -7,16 +7,37 @@ interface ActionControlsProps {
   bet: number
   canDouble: boolean
   canSplit: boolean
+  maxInsuranceBet: number
   onHit: () => void
   onStand: () => void
   onDoubleDown: () => void
   onSplit: () => void
+  onAcceptInsurance: (amount: number) => void
+  onDeclineInsurance: () => void
   onNewRound: () => void
   onReset: () => void
 }
 
-export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, onHit, onStand, onDoubleDown, onSplit, onNewRound, onReset }: ActionControlsProps) {
+export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset }: ActionControlsProps) {
   const { GAME_STATES } = useGameSettings()
+
+  if (gameState === GAME_STATES.INSURANCE_OFFER) {
+    return (
+      <div className="play-panel">
+        <div className="chip-info">
+          <span className="chip-coin">$</span>{chips}
+          <span className="bet-tag">Bet: ${bet}</span>
+        </div>
+        <div className="insurance-label">Insurance? (up to ${maxInsuranceBet})</div>
+        <div className="play-buttons">
+          <button className="btn btn-insurance" onClick={() => onAcceptInsurance(maxInsuranceBet)}>
+            Insure ${maxInsuranceBet}
+          </button>
+          <button className="btn btn-stand" onClick={onDeclineInsurance}>No Insurance</button>
+        </div>
+      </div>
+    )
+  }
 
   if (gameState === GAME_STATES.PLAYER_TURN) {
     return (

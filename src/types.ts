@@ -52,6 +52,7 @@ export interface GameState {
   message: string
   chips: number
   bet: number
+  insuranceBet: number
   result: GameResult | null
   dealerRevealed: boolean
   stats: GameStats
@@ -72,7 +73,7 @@ export type GameAction =
   | { type: 'SPLIT_HIT'; payload: { hand: Hand; deck: Deck } }
   | { type: 'SPLIT_STAND' }
   | { type: 'SPLIT_RESOLVE'; payload: { splitHands: SplitHand[]; chips: number; stats: GameStats; message: string } }
-  | { type: 'INSURE' }
+  | { type: 'INSURE'; payload: { amount: number } }
   | { type: 'SURRENDER' }
   | { type: 'DEALER_DRAW'; payload: { dealerHand: Hand; deck: Deck } }
   | { type: 'RESOLVE'; payload: ResolvePayload }
