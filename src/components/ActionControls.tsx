@@ -19,9 +19,10 @@ interface ActionControlsProps {
   onDeclineInsurance: () => void
   onNewRound: () => void
   onReset: () => void
+  onButtonClick?: () => void
 }
 
-export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, canSurrender, canDoubleAfterSplit, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onSurrender, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset }: ActionControlsProps) {
+export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, canSurrender, canDoubleAfterSplit, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onSurrender, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset, onButtonClick }: ActionControlsProps) {
   const { GAME_STATES } = useGameSettings()
 
   if (gameState === GAME_STATES.INSURANCE_OFFER) {
@@ -33,10 +34,10 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
         </div>
         <div className="insurance-label">Insurance? (up to ${maxInsuranceBet})</div>
         <div className="play-buttons">
-          <button className="btn btn-insurance" onClick={() => onAcceptInsurance(maxInsuranceBet)}>
+          <button className="btn btn-insurance" onClick={() => { onButtonClick?.(); onAcceptInsurance(maxInsuranceBet) }}>
             Insure ${maxInsuranceBet}
           </button>
-          <button className="btn btn-stand" onClick={onDeclineInsurance}>No Insurance</button>
+          <button className="btn btn-stand" onClick={() => { onButtonClick?.(); onDeclineInsurance() }}>No Insurance</button>
         </div>
       </div>
     )
@@ -50,11 +51,11 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
           <span className="bet-tag">Bet: ${bet}</span>
         </div>
         <div className="play-buttons">
-          <button className="btn btn-hit" onClick={onHit}>Hit</button>
-          <button className="btn btn-stand" onClick={onStand}>Stand</button>
-          <button className="btn btn-double" onClick={onDoubleDown} disabled={!canDouble}>Double</button>
-          <button className="btn btn-split" onClick={onSplit} disabled={!canSplit}>Split</button>
-          <button className="btn btn-surrender" onClick={onSurrender} disabled={!canSurrender}>Surrender</button>
+          <button className="btn btn-hit" onClick={() => { onButtonClick?.(); onHit() }}>Hit</button>
+          <button className="btn btn-stand" onClick={() => { onButtonClick?.(); onStand() }}>Stand</button>
+          <button className="btn btn-double" onClick={() => { onButtonClick?.(); onDoubleDown() }} disabled={!canDouble}>Double</button>
+          <button className="btn btn-split" onClick={() => { onButtonClick?.(); onSplit() }} disabled={!canSplit}>Split</button>
+          <button className="btn btn-surrender" onClick={() => { onButtonClick?.(); onSurrender() }} disabled={!canSurrender}>Surrender</button>
         </div>
       </div>
     )
@@ -68,10 +69,10 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
           <span className="bet-tag">Bet: ${bet} x2</span>
         </div>
         <div className="play-buttons">
-          <button className="btn btn-hit" onClick={onHit}>Hit</button>
-          <button className="btn btn-stand" onClick={onStand}>Stand</button>
+          <button className="btn btn-hit" onClick={() => { onButtonClick?.(); onHit() }}>Hit</button>
+          <button className="btn btn-stand" onClick={() => { onButtonClick?.(); onStand() }}>Stand</button>
           {canDoubleAfterSplit && (
-            <button className="btn btn-double" onClick={onDoubleDown} disabled={chips < bet}>Double</button>
+            <button className="btn btn-double" onClick={() => { onButtonClick?.(); onDoubleDown() }} disabled={chips < bet}>Double</button>
           )}
         </div>
       </div>
@@ -107,10 +108,10 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
           <span className="chip-coin">$</span>{chips}
         </div>
         <div className="result-buttons">
-          <button className="btn btn-primary" onClick={onNewRound} disabled={chips <= 0}>
+          <button className="btn btn-primary" onClick={() => { onButtonClick?.(); onNewRound() }} disabled={chips <= 0}>
             New Round
           </button>
-          <button className="btn btn-outline" onClick={onReset}>
+          <button className="btn btn-outline" onClick={() => { onButtonClick?.(); onReset() }}>
             Reset
           </button>
         </div>

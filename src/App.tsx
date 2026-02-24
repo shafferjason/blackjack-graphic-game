@@ -1,5 +1,6 @@
 import { useGameEngine } from './hooks/useGameEngine'
 import { useGameSettings } from './config/GameSettingsContext'
+import { useSoundEffects } from './hooks/useSoundEffects'
 import Scoreboard from './components/Scoreboard'
 import DealerHand from './components/DealerHand'
 import GameBanner from './components/GameBanner'
@@ -17,6 +18,16 @@ import './App.css'
 function App() {
   const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO } = useGameSettings()
   const { state, actions } = useGameEngine()
+
+  const { muted, toggleMute, playButtonClick } = useSoundEffects({
+    gameState: state.gameState,
+    result: state.result,
+    bet: state.bet,
+    chips: state.chips,
+    playerHandLength: state.playerHand.length,
+    dealerHandLength: state.dealerHand.length,
+    cutCardReached: state.cutCardReached,
+  })
 
   const isSplitActive = state.isSplit && state.splitHands.length > 0
 
@@ -40,6 +51,13 @@ function App() {
           <HandHistory history={state.handHistory} />
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
+          <button
+            className="sound-toggle"
+            onClick={toggleMute}
+            title={muted ? 'Unmute sounds' : 'Mute sounds'}
+          >
+            {muted ? '\u{1F507}' : '\u{1F50A}'}
+          </button>
         </div>
       </header>
 
@@ -83,6 +101,7 @@ function App() {
               onPlaceBet={actions.placeBet}
               onClearBet={actions.clearBet}
               onDeal={actions.dealCards}
+              onButtonClick={playButtonClick}
             />
           ) : (
             <ActionControls
@@ -103,6 +122,7 @@ function App() {
               onDeclineInsurance={actions.declineInsurance}
               onNewRound={actions.newRound}
               onReset={actions.resetGame}
+              onButtonClick={playButtonClick}
             />
           )}
         </div>

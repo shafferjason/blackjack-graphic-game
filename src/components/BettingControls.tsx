@@ -7,9 +7,10 @@ interface BettingControlsProps {
   onPlaceBet: (amount: number) => void
   onClearBet: () => void
   onDeal: () => void
+  onButtonClick?: () => void
 }
 
-export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, onDeal }: BettingControlsProps) {
+export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, onDeal, onButtonClick }: BettingControlsProps) {
   const { CHIP_DENOMINATIONS } = useGameSettings()
   return (
     <div className="betting-panel">
@@ -27,8 +28,8 @@ export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, on
         ))}
       </div>
       <div className="bet-actions">
-        <button className="btn btn-outline" onClick={onClearBet} disabled={bet === 0}>Clear</button>
-        <button className="btn btn-primary" onClick={onDeal} disabled={bet === 0}>Deal</button>
+        <button className="btn btn-outline" onClick={() => { onButtonClick?.(); onClearBet() }} disabled={bet === 0}>Clear</button>
+        <button className="btn btn-primary" onClick={() => { onButtonClick?.(); onDeal() }} disabled={bet === 0}>Deal</button>
       </div>
     </div>
   )

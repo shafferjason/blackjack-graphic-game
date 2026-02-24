@@ -591,6 +591,28 @@
   animation: pulse 1.2s ease-in-out infinite;
 }
 
+/* Sound toggle */
+.sound-toggle {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(240, 236, 228, 0.6);
+  font-size: 1.1rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  line-height: 1;
+}
+
+.sound-toggle:hover {
+  color: var(--gold-light);
+  border-color: var(--gold);
+}
+
 /* Settings toggle */
 .settings-toggle {
   background: none;
