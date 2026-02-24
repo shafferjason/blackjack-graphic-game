@@ -1,9 +1,12 @@
-import type { GameState, GameStats, DetailedStats } from '../types'
+import type { GameState, GameStats, DetailedStats, HandHistoryEntry } from '../types'
 
 const STORAGE_KEYS = {
   GAME_STATE: 'blackjack-game-state',
   HOUSE_RULES: 'blackjack-house-rules',
+  HAND_HISTORY: 'blackjack-hand-history',
 } as const
+
+const MAX_HAND_HISTORY = 200
 
 /** Fields we persist between sessions */
 export interface PersistedGameState {
@@ -69,10 +72,35 @@ export function loadGameState(): PersistedGameState | null {
   return null
 }
 
+export function saveHandHistory(history: HandHistoryEntry[]): void {
+  try {
+    const trimmed = history.slice(-MAX_HAND_HISTORY)
+    localStorage.setItem(STORAGE_KEYS.HAND_HISTORY, JSON.stringify(trimmed))
+  } catch {
+    // ignore storage errors (quota exceeded, etc.)
+  }
+}
+
+export function loadHandHistory(): HandHistoryEntry[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.HAND_HISTORY)
+    if (stored) {
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        return parsed.slice(-MAX_HAND_HISTORY)
+      }
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return []
+}
+
 export function clearAllStorage(): void {
   try {
     localStorage.removeItem(STORAGE_KEYS.GAME_STATE)
     localStorage.removeItem(STORAGE_KEYS.HOUSE_RULES)
+    localStorage.removeItem(STORAGE_KEYS.HAND_HISTORY)
   } catch {
     // ignore storage errors
   }

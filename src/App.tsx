@@ -10,6 +10,7 @@ import ActionControls from './components/ActionControls'
 import ShoeIndicator from './components/ShoeIndicator'
 import SettingsPanel from './components/SettingsPanel'
 import StatsDashboard from './components/StatsDashboard'
+import HandHistory from './components/HandHistory'
 import './App.css'
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
         </h1>
         <Scoreboard stats={state.stats} />
         <div className="header-actions">
+          <HandHistory history={state.handHistory} />
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
         </div>

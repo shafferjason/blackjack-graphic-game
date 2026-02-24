@@ -114,6 +114,34 @@ export interface ResolvePayload {
   phase?: GamePhase
 }
 
+// ── Hand History ──
+export type HandAction = 'hit' | 'stand' | 'double' | 'split' | 'surrender' | 'insurance'
+
+export interface HandHistoryStep {
+  action: HandAction | 'deal' | 'dealer_draw' | 'result'
+  playerHand: Hand
+  dealerHand: Hand
+  dealerRevealed: boolean
+  splitHands?: SplitHand[]
+}
+
+export interface HandHistoryEntry {
+  id: number
+  timestamp: number
+  bet: number
+  insuranceBet: number
+  playerFinalHand: Hand
+  dealerFinalHand: Hand
+  actions: HandAction[]
+  result: GameResult
+  payout: number
+  playerScore: number
+  dealerScore: number
+  isSplit: boolean
+  splitResults?: { cards: Hand; result: GameResult; bet: number }[]
+  steps: HandHistoryStep[]
+}
+
 // ── House Rules (configurable) ──
 export interface HouseRules {
   NUM_DECKS: number
