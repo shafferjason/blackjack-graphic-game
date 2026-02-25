@@ -24,17 +24,49 @@ Files used (in `public/audio/`):
 These sounds are used alongside the existing Web Audio API synthesis
 engine to create a hybrid audio experience.
 
-## Card Visuals — Face Card Design Reference
+## Card Visuals — Face Card Design
 
-**Inspiration:** Public domain SVG playing card designs
-**Sources:**
-- me.uk/cards (CC0 Public Domain) — https://www.me.uk/cards/
-- Wikimedia Commons English Pattern Playing Cards (CC0) —
-  https://commons.wikimedia.org/wiki/File:English_pattern_playing_cards_deck_PLUS_CC0.svg
+### Design Approach
 
-**License:** Creative Commons Zero (CC0 1.0 Universal) — Public Domain
+The face card SVG artwork (Jack, Queen, King) is **100% original
+procedural SVG code** written from scratch. No image files, SVG paths,
+or artwork were traced, copied, or derived from any proprietary or
+commercial playing card deck.
 
-The face card SVG artwork (Jack, Queen, King) is original procedural
-SVG code enhanced with design elements inspired by traditional
-English/French pattern playing card designs available in the public
-domain. No image files are copied; all rendering is programmatic.
+### Public Domain Reference Material
+
+The general design language (half-figure court card composition,
+traditional attributes such as Jack's halberd, Queen's rose, King's
+scepter, ermine trim, and pointed collars) is inspired by the
+**traditional European court card pattern**, which originates from
+pre-1900 designs and is firmly in the public domain.
+
+Reference materials consulted for general style direction (not copied):
+
+1. **me.uk/cards (RevK SVG Playing Cards)**
+   - **URL:** https://www.me.uk/cards/
+   - **License:** Creative Commons Zero (CC0 1.0 Universal) — Public Domain
+   - **Usage:** General style reference for traditional English pattern
+     court card composition and proportions. No SVG paths or artwork
+     copied.
+
+2. **Wikimedia Commons — English Pattern Playing Cards Deck**
+   - **URL:** https://commons.wikimedia.org/wiki/File:English_pattern_playing_cards_deck_PLUS_CC0.svg
+   - **License:** Creative Commons Zero (CC0 1.0 Universal) — Public Domain
+   - **Author:** Dmitry Fomin (original SVG compilation)
+   - **Usage:** General reference for traditional court card layout
+     conventions. No SVG paths or artwork copied.
+
+3. **OpenGameArt.org — Playing Cards (Vector & PNG)**
+   - **URL:** https://opengameart.org/content/playing-cards-vector-png
+   - **License:** Creative Commons Zero (CC0 1.0 Universal) — Public Domain
+   - **Usage:** General reference for playing card visual conventions.
+     No artwork copied.
+
+### Legal Safety Summary
+
+- **No proprietary decks** were traced, copied, or used as source material
+- **No image files** are included — all rendering is 100% programmatic SVG
+- All reference materials are **CC0 Public Domain** (no attribution required)
+- The traditional European court card pattern is **public domain** (pre-1900)
+- Attribution is provided voluntarily as a courtesy to CC0 creators
