@@ -48,7 +48,7 @@ export default defineConfig({
         skipWaiting: true,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
-        globPatterns: ['**/*.{js,css,html,svg,png,woff2,woff}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,woff,ogg}'],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

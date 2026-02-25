@@ -1,7 +1,9 @@
 /**
  * Premium sound effects system using Web Audio API.
- * All sounds are synthesized programmatically — no audio file assets needed (0 KB).
+ * Hybrid architecture: real recorded samples (Kenney CC0) layered with
+ * programmatic synthesis for the best of both worlds.
  * High-fidelity layered synthesis with modern casino quality:
+ *  - Real recorded casino samples for authentic card/chip sounds
  *  - Per-profile EQ and dynamics processing (warmth, punch)
  *  - Convolution reverb for spatial depth
  *  - Multiband filtering — low-shelf warmth, high-shelf rolloff
@@ -50,6 +52,72 @@ try {
   // ignore
 }
 
+// ── Sample-based audio layer (Kenney CC0 casino sounds) ──
+
+const sampleBuffers: Map<string, AudioBuffer> = new Map()
+let samplesLoading = false
+let samplesLoaded = false
+
+const SAMPLE_PATHS: Record<string, string> = {
+  cardPlace1: '/audio/cardPlace1.ogg',
+  cardPlace2: '/audio/cardPlace2.ogg',
+  cardPlace3: '/audio/cardPlace3.ogg',
+  cardPlace4: '/audio/cardPlace4.ogg',
+  cardSlide1: '/audio/cardSlide1.ogg',
+  cardSlide2: '/audio/cardSlide2.ogg',
+  cardSlide3: '/audio/cardSlide3.ogg',
+  cardShuffle: '/audio/cardShuffle.ogg',
+  cardFan1: '/audio/cardFan1.ogg',
+  chipLay1: '/audio/chipLay1.ogg',
+  chipLay2: '/audio/chipLay2.ogg',
+  chipLay3: '/audio/chipLay3.ogg',
+  chipsCollide1: '/audio/chipsCollide1.ogg',
+  chipsCollide2: '/audio/chipsCollide2.ogg',
+  chipsStack1: '/audio/chipsStack1.ogg',
+  chipsStack2: '/audio/chipsStack2.ogg',
+  chipsHandle1: '/audio/chipsHandle1.ogg',
+  chipsHandle2: '/audio/chipsHandle2.ogg',
+}
+
+async function loadSamples(): Promise<void> {
+  if (samplesLoading || samplesLoaded) return
+  samplesLoading = true
+  const ctx = getCtx()
+  const entries = Object.entries(SAMPLE_PATHS)
+  await Promise.all(
+    entries.map(async ([name, path]) => {
+      try {
+        const resp = await fetch(path)
+        if (!resp.ok) return
+        const arrayBuf = await resp.arrayBuffer()
+        const audioBuf = await ctx.decodeAudioData(arrayBuf)
+        sampleBuffers.set(name, audioBuf)
+      } catch {
+        // Graceful fallback — synthesis still works
+      }
+    })
+  )
+  samplesLoaded = true
+  samplesLoading = false
+}
+
+function playSample(name: string, gain = 0.5): void {
+  const buf = sampleBuffers.get(name)
+  if (!buf || muted) return
+  const ctx = getCtx()
+  const src = ctx.createBufferSource()
+  src.buffer = buf
+  const gn = ctx.createGain()
+  gn.gain.value = gain
+  src.connect(gn).connect(getMaster())
+  src.start()
+}
+
+function playRandomSample(prefix: string, count: number, gain = 0.5): void {
+  const idx = Math.floor(Math.random() * count) + 1
+  playSample(`${prefix}${idx}`, gain)
+}
+
 function getCtx(): AudioContext {
   if (!audioCtx) {
     audioCtx = new AudioContext()
@@ -81,6 +149,10 @@ function getCtx(): AudioContext {
   }
   if (audioCtx.state === 'suspended') {
     audioCtx.resume()
+  }
+  // Lazy-load recorded samples on first context init
+  if (!samplesLoaded && !samplesLoading) {
+    loadSamples()
   }
   return audioCtx
 }
@@ -269,7 +341,7 @@ function profileReverb(): { dur: number; decay: number } {
 
 // ── Sound Generators ──
 
-/** Card deal — crisp paper snap with warm table thud and air */
+/** Card deal — recorded sample layered with crisp synthesized snap */
 export function playCardDeal(): void {
   if (muted) return
   const ctx = getCtx()
@@ -277,6 +349,15 @@ export function playCardDeal(): void {
   const now = ctx.currentTime
   const pg = profileGain()
   const isModern = currentProfile === 'modern-casino'
+
+  // Recorded sample layer — randomly pick from card place/slide variants
+  if (samplesLoaded) {
+    if (Math.random() < 0.5) {
+      playRandomSample('cardPlace', 4, 0.45)
+    } else {
+      playRandomSample('cardSlide', 3, 0.4)
+    }
+  }
 
   // Layer 1: Crisp high-frequency transient (card snap)
   const snapDur = 0.035
@@ -349,7 +430,7 @@ export function playCardDeal(): void {
   }
 }
 
-/** Chip place — ceramic chip with ring and settle */
+/** Chip place — recorded sample layered with ceramic synthesis */
 export function playChipPlace(): void {
   if (muted) return
   const ctx = getCtx()
@@ -357,6 +438,11 @@ export function playChipPlace(): void {
   const now = ctx.currentTime
   const pg = profileGain()
   const isModern = currentProfile === 'modern-casino'
+
+  // Recorded sample layer
+  if (samplesLoaded) {
+    playRandomSample('chipLay', 3, 0.5)
+  }
 
   // Primary ceramic impact
   const osc = ctx.createOscillator()
@@ -430,7 +516,7 @@ export function playChipPlace(): void {
   }
 }
 
-/** Chips collecting — cascading ceramic chips sliding */
+/** Chips collecting — recorded samples layered with cascading synthesis */
 export function playChipCollect(): void {
   if (muted) return
   const ctx = getCtx()
@@ -438,6 +524,13 @@ export function playChipCollect(): void {
   const now = ctx.currentTime
   const pg = profileGain()
   const isModern = currentProfile === 'modern-casino'
+
+  // Recorded sample layers — staggered chip sounds
+  if (samplesLoaded) {
+    playRandomSample('chipsCollide', 2, 0.4)
+    setTimeout(() => playRandomSample('chipsStack', 2, 0.35), 80)
+    setTimeout(() => playRandomSample('chipsHandle', 2, 0.3), 160)
+  }
 
   // Cascading ceramic clicks
   const chipCount = isModern ? 8 : 6
@@ -485,7 +578,7 @@ export function playChipCollect(): void {
   }
 }
 
-/** Win fanfare — warm ascending major chord with reverb */
+/** Win fanfare — warm ascending major chord with reverb and chip sounds */
 export function playWinFanfare(): void {
   if (muted) return
   const ctx = getCtx()
@@ -494,6 +587,12 @@ export function playWinFanfare(): void {
   const pg = profileGain()
   const isModern = currentProfile === 'modern-casino'
   const rv = profileReverb()
+
+  // Celebratory chip sounds (recorded samples)
+  if (samplesLoaded) {
+    setTimeout(() => playRandomSample('chipsStack', 2, 0.3), 100)
+    setTimeout(() => playRandomSample('chipsHandle', 2, 0.25), 250)
+  }
 
   // Warm reverb
   const reverb = createReverb(ctx, rv.dur, rv.decay)
@@ -732,7 +831,7 @@ export function playBlackjackCelebration(): void {
   sparkSrc.stop(now + 0.32 + sparkDur)
 }
 
-/** Shuffle — realistic card riffle with flutter and body */
+/** Shuffle — recorded shuffle sample layered with synthesis riffle */
 export function playShuffle(): void {
   if (muted) return
   const ctx = getCtx()
@@ -740,6 +839,13 @@ export function playShuffle(): void {
   const now = ctx.currentTime
   const pg = profileGain()
   const isModern = currentProfile === 'modern-casino'
+
+  // Recorded shuffle sample
+  if (samplesLoaded) {
+    playSample('cardShuffle', 0.5)
+    // Add fan layer for richness
+    setTimeout(() => playSample('cardFan1', 0.2), 200)
+  }
 
   const duration = isModern ? 0.55 : 0.5
   const bufferSize = Math.ceil(ctx.sampleRate * duration)
