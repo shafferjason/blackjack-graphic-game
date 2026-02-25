@@ -18,6 +18,7 @@ import HandHistory from './components/HandHistory'
 import AchievementToast from './components/AchievementToast'
 import ChipAnimation from './components/ChipAnimation'
 import CelebrationEffects from './components/CelebrationEffects'
+import TutorialOverlay from './components/TutorialOverlay'
 import './App.css'
 
 function App() {
@@ -167,6 +168,7 @@ function App() {
         <nav className="header-actions" aria-label="Game tools">
           <HandHistory history={state.handHistory} />
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
+          <TutorialOverlay />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
           <button
             className="sound-toggle"
