@@ -654,6 +654,7 @@ function App() {
 
       <footer className="footer">
         <span>Blackjack pays {payoutLabel} &middot; {soft17Label} &middot; {deckLabel}</span>
+        <span className="build-version">v{__BUILD_VERSION__}</span>
       </footer>
 
       <AchievementToast achievements={state.achievements} />

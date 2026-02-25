@@ -1006,6 +1006,15 @@
   color: rgba(255, 255, 255, 0.25);
   background: var(--bg-dark);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.build-version {
+  font-family: monospace;
+  opacity: 0.6;
 }
 
 /* ── iPhone SE / extra-small phones (< 375px) ── */
