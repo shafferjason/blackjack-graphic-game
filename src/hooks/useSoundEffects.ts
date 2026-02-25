@@ -2,6 +2,8 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   isMuted,
   toggleMute,
+  getVolume,
+  setVolume,
   playCardDeal,
   playChipPlace,
   playChipCollect,
@@ -36,6 +38,7 @@ export function useSoundEffects({
   cutCardReached,
 }: SoundEffectsInput) {
   const [muted, setMutedState] = useState(isMuted)
+  const [volume, setVolumeState] = useState(getVolume)
   const prevPhaseRef = useRef<GamePhase>(gameState)
   const prevResultRef = useRef<GameResult | null>(result)
   const prevPlayerCardsRef = useRef(playerHandLength)
@@ -46,6 +49,11 @@ export function useSoundEffects({
   const handleToggleMute = useCallback(() => {
     const newMuted = toggleMute()
     setMutedState(newMuted)
+  }, [])
+
+  const handleSetVolume = useCallback((value: number) => {
+    setVolume(value)
+    setVolumeState(value)
   }, [])
 
   useEffect(() => {
@@ -127,7 +135,9 @@ export function useSoundEffects({
 
   return {
     muted,
+    volume,
     toggleMute: handleToggleMute,
+    setVolume: handleSetVolume,
     playButtonClick,
   }
 }

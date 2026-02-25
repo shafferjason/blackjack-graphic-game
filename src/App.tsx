@@ -28,6 +28,7 @@ import TutorialOverlay from './components/TutorialOverlay'
 import StrategyOverlay from './components/StrategyOverlay'
 import CountingOverlay from './components/CountingOverlay'
 import SideBets from './components/SideBets'
+import AudioPanel from './components/AudioPanel'
 import MultiplayerSetup from './components/MultiplayerSetup'
 import type { PlayerConfig } from './components/MultiplayerSetup'
 import MultiplayerBar from './components/MultiplayerBar'
@@ -367,7 +368,7 @@ function App() {
     }, 50)
   }, [mpActive, mpActiveIndex, mpPlayers, state.chips, actions])
 
-  const { muted, toggleMute, playButtonClick } = useSoundEffects({
+  const { muted, volume, toggleMute, setVolume, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
     result: state.result,
     bet: state.bet,
@@ -496,15 +497,7 @@ function App() {
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
           <TutorialOverlay />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
-          <button
-            className="sound-toggle"
-            onClick={toggleMute}
-            title={muted ? 'Unmute sounds' : 'Mute sounds'}
-            aria-label={muted ? 'Unmute sounds' : 'Mute sounds'}
-            aria-pressed={!muted}
-          >
-            {muted ? '\u{1F507}' : '\u{1F50A}'}
-          </button>
+          <AudioPanel muted={muted} volume={volume} onToggleMute={toggleMute} onSetVolume={setVolume} />
         </nav>
       </header>
 

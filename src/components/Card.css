@@ -234,16 +234,19 @@
 }
 
 .card-rank {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Playfair Display', 'Georgia', serif;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 .card-suit {
   font-size: 14px;
   line-height: 1;
+  text-rendering: optimizeLegibility;
 }
 
 /* Card center */
@@ -282,11 +285,18 @@
   height: 100%;
   max-height: 100%;
   display: block;
+  /* Crisp rendering for detailed linework */
+  shape-rendering: geometricPrecision;
 }
 
-/* Subtle inner glow on face cards */
+/* Refined inner glow on face cards — warm and subtle */
 .face-card-type .card-center {
-  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+  background: radial-gradient(ellipse at 45% 40%, rgba(255, 252, 240, 0.35) 0%, transparent 55%);
+}
+
+/* Face card text rendering — ensure serif consistency */
+.face-svg text {
+  font-family: 'Playfair Display', 'Georgia', serif;
 }
 
 /* ── Pip layout — realistic poker card positions ── */
@@ -337,11 +347,13 @@
 }
 
 .badge-rank {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Playfair Display', 'Georgia', serif;
   font-size: 28px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   text-shadow:
     -1px -1px 0 #fff,
     1px -1px 0 #fff,
