@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import './Card.css'
 import type { Card as CardType, CardBackTheme, Suit } from '../types'
 import { useGameSettings } from '../config/GameSettingsContext'
+import { FACE_CARD_TEXTURES } from './faceCardTextures'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -31,15 +32,17 @@ const SUIT_ACCENTS: Record<Suit, SuitAccent> = {
 }
 
 /* ─────────────────────────────────────────────────────────
-   Legally Safe Vector Face Cards — Original Artwork
-   100% original procedural SVG, not traced or copied from
-   any proprietary deck. Design language inspired by the
-   traditional European court card pattern (public domain,
-   pre-1900 origin). Reference materials:
+   Legally Safe Hybrid Painted Face Cards — v4 Original Artwork
+   100% original procedural SVG + raster paint textures.
+   Not traced or copied from any proprietary deck. Design
+   language inspired by the traditional European court card
+   pattern (public domain, pre-1900 origin). Reference:
    - me.uk/cards (CC0 Public Domain)
    - Wikimedia Commons English Pattern deck (CC0)
    - OpenGameArt.org playing card assets (CC0)
-   All rendering is programmatic — no image assets copied.
+   Raster textures are procedurally generated mathematical
+   noise (Mulberry32 PRNG). See preview/pd-face-cards-v4/
+   LICENSE_NOTES.md for full legal notes.
    ───────────────────────────────────────────────────────── */
 
 // Shared rendering helpers for consistent face-card artwork
@@ -48,46 +51,57 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
   const gold = '#c9a84c'
   const goldDark = '#8b6914'
   const goldBright = '#e0c470'
+  const pid = `${label}-${suit}`
   return (
     <svg viewBox="0 0 80 120" className="face-svg" role="img" aria-label={`${label} figure`}>
       <defs>
-        <clipPath id={`${label}-top-${suit}`}><rect x="0" y="0" width="80" height="60" /></clipPath>
-        <clipPath id={`${label}-bot-${suit}`}><rect x="0" y="60" width="80" height="60" /></clipPath>
-        {/* Fine engraving-style cross-hatch for parchment depth */}
-        <pattern id={`${label}-hatch-${suit}`} width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="3" stroke={c.primary} strokeWidth="0.12" opacity="0.06" />
+        <clipPath id={`${pid}-top`}><rect x="0" y="0" width="80" height="60" /></clipPath>
+        <clipPath id={`${pid}-bot`}><rect x="0" y="60" width="80" height="60" /></clipPath>
+        {/* Hybrid v4 raster paint textures — decoded once, GPU-cached */}
+        <pattern id={`${pid}-tex-canvas`} patternUnits="userSpaceOnUse" width="64" height="64">
+          <image href={FACE_CARD_TEXTURES.CANVAS_GRAIN} width="64" height="64" />
         </pattern>
-        <pattern id={`${label}-hatch2-${suit}`} width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)">
-          <line x1="0" y1="0" x2="0" y2="3" stroke={c.primary} strokeWidth="0.12" opacity="0.04" />
+        <pattern id={`${pid}-tex-skin`} patternUnits="userSpaceOnUse" width="80" height="80">
+          <image href={FACE_CARD_TEXTURES.SKIN_PAINT} width="80" height="80" />
         </pattern>
-        {/* Micro stipple for premium card-stock feel */}
-        <pattern id={`${label}-stipple-${suit}`} width="2" height="2" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="0.15" fill={c.primary} opacity="0.03" />
+        <pattern id={`${pid}-tex-fabric`} patternUnits="userSpaceOnUse" width="80" height="80">
+          <image href={FACE_CARD_TEXTURES.FABRIC_PAINT} width="80" height="80" />
         </pattern>
+        <pattern id={`${pid}-tex-hair`} patternUnits="userSpaceOnUse" width="48" height="96">
+          <image href={FACE_CARD_TEXTURES.HAIR_PAINT} width="48" height="96" />
+        </pattern>
+        <pattern id={`${pid}-tex-brush`} patternUnits="userSpaceOnUse" width="96" height="96">
+          <image href={FACE_CARD_TEXTURES.BRUSH_OVERLAY} width="96" height="96" />
+        </pattern>
+        {/* Warm radial vignette */}
+        <radialGradient id={`${pid}-vignette`} cx="50%" cy="50%" r="55%">
+          <stop offset="0%" stopColor="#fffdf5" stopOpacity="0.15" />
+          <stop offset="60%" stopColor="#faf5e8" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#e8e0d0" stopOpacity="0.12" />
+        </radialGradient>
         {/* Warm inner glow */}
-        <radialGradient id={`${label}-glow-${suit}`} cx="50%" cy="45%" r="55%">
+        <radialGradient id={`${pid}-glow`} cx="50%" cy="45%" r="55%">
           <stop offset="0%" stopColor="#fffdf5" stopOpacity="0.3" />
           <stop offset="60%" stopColor="#faf5e8" stopOpacity="0.1" />
           <stop offset="100%" stopColor="#fffdf5" stopOpacity="0" />
         </radialGradient>
         {/* Gold gradient for premium gilding */}
-        <linearGradient id={`${label}-goldGrad-${suit}`} x1="0" y1="0" x2="1" y2="1">
+        <linearGradient id={`${pid}-goldGrad`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor={goldBright} />
           <stop offset="50%" stopColor={gold} />
           <stop offset="100%" stopColor={goldDark} />
         </linearGradient>
       </defs>
-      {/* Background fills — layered parchment texture */}
-      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${label}-hatch-${suit})`} />
-      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${label}-hatch2-${suit})`} />
-      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${label}-stipple-${suit})`} />
-      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${label}-glow-${suit})`} />
+      {/* Background — vignette base + canvas grain texture */}
+      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-vignette)`} />
+      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-tex-canvas)`} opacity="0.35" />
+      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-glow)`} />
       {/* Decorative triple inner border — engraved frame */}
       <rect x="2" y="2" width="76" height="116" rx="3.5" fill="none" stroke={c.primary} strokeWidth="0.4" opacity="0.15" />
-      <rect x="3.5" y="3.5" width="73" height="113" rx="3" fill="none" stroke={`url(#${label}-goldGrad-${suit})`} strokeWidth="0.35" opacity="0.22" />
+      <rect x="3.5" y="3.5" width="73" height="113" rx="3" fill="none" stroke={`url(#${pid}-goldGrad)`} strokeWidth="0.35" opacity="0.22" />
       <rect x="5" y="5" width="70" height="110" rx="2.5" fill="none" stroke={goldBright} strokeWidth="0.15" opacity="0.12" />
       {/* Corner flourishes — refined scroll ornaments */}
-      {[[6, 6, ''], [74, 6, 'scale(-1,1) translate(-80,0)'], [6, 114, 'scale(1,-1) translate(0,-120)'], [74, 114, 'scale(-1,-1) translate(-80,-120)']].map(([x, y, t], i) => (
+      {[[6, 6, ''], [74, 6, 'scale(-1,1) translate(-80,0)'], [6, 114, 'scale(1,-1) translate(0,-120)'], [74, 114, 'scale(-1,-1) translate(-80,-120)']].map(([_x, _y, t], i) => (
         <g key={i} transform={t as string}>
           <path d="M6,6 Q6,14 14,14" fill="none" stroke={gold} strokeWidth="0.3" opacity="0.28" />
           <path d="M6,6 Q6,12 12,12" fill="none" stroke={goldBright} strokeWidth="0.25" opacity="0.2" />
@@ -98,7 +112,7 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
         </g>
       ))}
       {/* Top Half */}
-      <g clipPath={`url(#${label}-top-${suit})`}>{children}</g>
+      <g clipPath={`url(#${pid}-top)`}>{children}</g>
       {/* Center divider — ornamental triple rule with rosette */}
       <line x1="5" y1="60" x2="75" y2="60" stroke={c.primary} strokeWidth="0.3" opacity="0.18" />
       <line x1="7" y1="59.3" x2="73" y2="59.3" stroke={goldDark} strokeWidth="0.15" opacity="0.12" />
@@ -112,7 +126,9 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
       <text x="12" y="57.8" fontSize="5.5" fill={c.primary} fontFamily="serif" opacity="0.45">{SUIT_SYMBOLS[suit]}</text>
       <text x="68" y="64" fontSize="5.5" fill={c.primary} fontFamily="serif" textAnchor="middle" transform="rotate(180,68,62)" opacity="0.45">{SUIT_SYMBOLS[suit]}</text>
       {/* Bottom Half (mirrored) */}
-      <g clipPath={`url(#${label}-bot-${suit})`} transform="rotate(180,40,90)">{children}</g>
+      <g clipPath={`url(#${pid}-bot)`} transform="rotate(180,40,90)">{children}</g>
+      {/* Full-card brush overlay for painted feel */}
+      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-tex-brush)`} opacity="0.1" />
     </svg>
   )
 }
@@ -145,6 +161,7 @@ function JackSVG({ suit }: { suit: Suit }) {
   const tunic = isRed ? '#a41428' : '#141430'
   const tunicMid = isRed ? '#c42e40' : '#242444'
   const tunicHi = isRed ? '#d84858' : '#343458'
+  const pid = `jack-${suit}`
 
   const halfContent = (
     <>
@@ -153,7 +170,9 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M27.5,20.5 Q26.5,13 31,8.5 Q35,4 40,10 Q45,4 49,8.5 Q53.5,13 52.5,20.5" fill={cap} stroke={ink} strokeWidth="0.5" />
       <path d="M29.5,19 Q29,14 33,10 Q36.5,6.5 40,10.5 Q43.5,6.5 47,10 Q51,14 50.5,19" fill={capMid} opacity="0.35" />
       <path d="M34,10.5 Q37,7.5 40,11 Q43,7.5 46,10.5" fill={capHi} opacity="0.12" />
-      {/* Cap texture */}
+      {/* Cap brush texture overlay */}
+      <ellipse cx="40" cy="14" rx="14" ry="10" fill={`url(#${pid}-tex-brush)`} opacity="0.2" />
+      {/* Cap texture lines */}
       <path d="M31,14 Q35.5,9 40,13" fill="none" stroke={ink} strokeWidth="0.08" opacity="0.08" />
       <path d="M40,13 Q44.5,9 49,14" fill="none" stroke={ink} strokeWidth="0.08" opacity="0.08" />
       {/* Gold hat-band */}
@@ -181,9 +200,14 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M54.5,26 Q57.5,31 56,37" fill="none" stroke={hair} strokeWidth="1" opacity="0.4" strokeLinecap="round" />
       <path d="M27.5,24 Q25.5,27 26,31" fill="none" stroke={hairHi} strokeWidth="0.45" opacity="0.2" strokeLinecap="round" />
       <path d="M52.5,24 Q54.5,27 54,31" fill="none" stroke={hairHi} strokeWidth="0.45" opacity="0.2" strokeLinecap="round" />
+      {/* Hair paint texture */}
+      <rect x="21" y="20" width="8" height="18" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
+      <rect x="51" y="20" width="8" height="18" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
 
       {/* ── Face — youthful oval ── */}
       <ellipse cx="40" cy="33.5" rx="10.8" ry="11.8" fill={skin} stroke={ink} strokeWidth="0.5" />
+      {/* Skin paint texture overlay */}
+      <ellipse cx="40" cy="33.5" rx="10.5" ry="11.5" fill={`url(#${pid}-tex-skin)`} opacity="0.35" />
       <ellipse cx="40" cy="28" rx="6" ry="3" fill={skinHi} opacity="0.12" />
       <path d="M30.5,38 Q33.5,44 40,45 Q46.5,44 49.5,38" fill="none" stroke={skinShade} strokeWidth="0.22" opacity="0.22" />
       <ellipse cx="33.5" cy="36.5" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.15" />
@@ -222,6 +246,8 @@ function JackSVG({ suit }: { suit: Suit }) {
 
       {/* ── Tunic ── */}
       <path d="M24.5,49 L20.5,60 L59.5,60 L55.5,49 Q40,55.5 24.5,49 Z" fill={tunic} stroke={ink} strokeWidth="0.4" />
+      {/* Fabric paint texture overlay */}
+      <path d="M24.5,49 L20.5,60 L59.5,60 L55.5,49 Q40,55.5 24.5,49 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.45" />
       <path d="M32,50 Q36,54 40,51 Q44,54 48,50" fill={tunicHi} opacity="0.07" />
       <path d="M36.5,50.5 L40,58.5 L43.5,50.5" fill={tunicMid} opacity="0.22" />
       <line x1="40" y1="49" x2="40" y2="60" stroke={gold} strokeWidth="0.55" opacity="0.35" />
@@ -258,6 +284,7 @@ function QueenSVG({ suit }: { suit: Suit }) {
   const dressHi = isRed ? '#d44858' : '#343458'
   const jewel = isRed ? '#1e4488' : '#b82828'
   const jewelHi = isRed ? '#3a68b0' : '#d84848'
+  const pid = `queen-${suit}`
 
   const halfContent = (
     <>
@@ -294,9 +321,14 @@ function QueenSVG({ suit }: { suit: Suit }) {
       <path d="M52,25 Q55,30 54,35" fill="none" stroke={hairHi} strokeWidth="0.4" opacity="0.16" strokeLinecap="round" />
       <path d="M27,28 Q25.5,33 26,37" fill="none" stroke={hair} strokeWidth="0.3" opacity="0.18" />
       <path d="M53,28 Q54.5,33 54,37" fill="none" stroke={hair} strokeWidth="0.3" opacity="0.18" />
+      {/* Hair paint texture */}
+      <rect x="21" y="22" width="8" height="26" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
+      <rect x="51" y="22" width="8" height="26" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
 
       {/* ── Face — elegant oval ── */}
       <ellipse cx="40" cy="34" rx="10.3" ry="11.8" fill={skin} stroke={ink} strokeWidth="0.5" />
+      {/* Skin paint texture overlay */}
+      <ellipse cx="40" cy="34" rx="10" ry="11.5" fill={`url(#${pid}-tex-skin)`} opacity="0.35" />
       <ellipse cx="40" cy="28.5" rx="5.5" ry="2.8" fill={skinHi} opacity="0.1" />
       <path d="M31.5,37 Q34.5,43.5 40,45 Q45.5,43.5 48.5,37" fill="none" stroke={skinShade} strokeWidth="0.2" opacity="0.2" />
       <ellipse cx="34" cy="37" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.14" />
@@ -333,6 +365,8 @@ function QueenSVG({ suit }: { suit: Suit }) {
 
       {/* ── Dress bodice ── */}
       <path d="M23.5,48 L19.5,60 L60.5,60 L56.5,48 Q40,56 23.5,48 Z" fill={dress} stroke={ink} strokeWidth="0.4" />
+      {/* Fabric paint texture overlay */}
+      <path d="M23.5,48 L19.5,60 L60.5,60 L56.5,48 Q40,56 23.5,48 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.45" />
       <path d="M30,50 Q35,54 40,50.5 Q45,54 50,50" fill={dressHi} opacity="0.06" />
       <path d="M28.5,47.5 Q34.5,52.5 40,49.5 Q45.5,52.5 51.5,47.5" fill={dressMid} opacity="0.18" stroke={gold} strokeWidth="0.35" />
       <line x1="40" y1="49.5" x2="40" y2="60" stroke={gold} strokeWidth="0.5" opacity="0.3" />
@@ -365,11 +399,12 @@ function KingSVG({ suit }: { suit: Suit }) {
   const hairHi = isRed ? '#6a3c1c' : '#201820'
   const beard = isRed ? '#5a3018' : '#161016'
   const robe = isRed ? '#a41428' : '#141430'
-  const robeMid = isRed ? '#c42e40' : '#242444'
+  const _robeMid = isRed ? '#c42e40' : '#242444'
   const robeHi = isRed ? '#d44858' : '#343458'
   const jewel = isRed ? '#1e4488' : '#b82828'
   const jewelHi = isRed ? '#3a68b0' : '#d84848'
   const ermine = '#f0eadc'
+  const pid = `king-${suit}`
 
   const halfContent = (
     <>
@@ -403,9 +438,14 @@ function KingSVG({ suit }: { suit: Suit }) {
       <path d="M52.5,24.5 Q56,30 54.5,38" fill="none" stroke={hair} strokeWidth="2" strokeLinecap="round" />
       <path d="M26.5,27 Q24.5,32 25.5,36" fill="none" stroke={hairHi} strokeWidth="0.6" opacity="0.22" strokeLinecap="round" />
       <path d="M53.5,27 Q55.5,32 54.5,36" fill="none" stroke={hairHi} strokeWidth="0.6" opacity="0.22" strokeLinecap="round" />
+      {/* Hair paint texture */}
+      <rect x="23" y="24" width="6" height="14" rx="2" fill={`url(#${pid}-tex-hair)`} opacity="0.25" />
+      <rect x="51" y="24" width="6" height="14" rx="2" fill={`url(#${pid}-tex-hair)`} opacity="0.25" />
 
       {/* ── Face — broader, authoritative ── */}
       <ellipse cx="40" cy="36" rx="11.2" ry="12.2" fill={skin} stroke={ink} strokeWidth="0.5" />
+      {/* Skin paint texture overlay */}
+      <ellipse cx="40" cy="36" rx="11" ry="12" fill={`url(#${pid}-tex-skin)`} opacity="0.35" />
       <ellipse cx="40" cy="30" rx="6" ry="3" fill={skinHi} opacity="0.1" />
       <ellipse cx="34.5" cy="38" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.13" />
       <ellipse cx="45.5" cy="38" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.13" />
@@ -446,6 +486,8 @@ function KingSVG({ suit }: { suit: Suit }) {
 
       {/* ── Robe ── */}
       <path d="M20.5,57 L17,60 L63,60 L59.5,57 Z" fill={robe} stroke={ink} strokeWidth="0.3" />
+      {/* Fabric paint texture overlay */}
+      <path d="M20.5,57 L17,60 L63,60 L59.5,57 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.4" />
       <path d="M30,57.5 Q40,58.5 50,57.5" fill={robeHi} opacity="0.05" />
       <path d="M20.5,57.2 L17,60" fill="none" stroke={gold} strokeWidth="0.25" opacity="0.18" />
       <path d="M59.5,57.2 L63,60" fill="none" stroke={gold} strokeWidth="0.25" opacity="0.18" />
