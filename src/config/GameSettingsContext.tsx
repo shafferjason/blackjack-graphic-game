@@ -15,6 +15,7 @@ const DEFAULT_HOUSE_RULES: HouseRules = {
   STRATEGY_TRAINER_ENABLED: constants.STRATEGY_TRAINER_ENABLED,
   CARD_COUNTING_ENABLED: constants.CARD_COUNTING_ENABLED,
   SIDE_BETS_ENABLED: constants.SIDE_BETS_ENABLED,
+  MULTIPLAYER_ENABLED: constants.MULTIPLAYER_ENABLED,
 }
 
 function loadHouseRules(): HouseRules {
@@ -59,6 +60,7 @@ export const GameSettingsProvider = ({ children }: { children: ReactNode }) => {
       STRATEGY_TRAINER_ENABLED: (overrides.STRATEGY_TRAINER_ENABLED as boolean) ?? DEFAULT_HOUSE_RULES.STRATEGY_TRAINER_ENABLED,
       CARD_COUNTING_ENABLED: (overrides.CARD_COUNTING_ENABLED as boolean) ?? DEFAULT_HOUSE_RULES.CARD_COUNTING_ENABLED,
       SIDE_BETS_ENABLED: (overrides.SIDE_BETS_ENABLED as boolean) ?? DEFAULT_HOUSE_RULES.SIDE_BETS_ENABLED,
+      MULTIPLAYER_ENABLED: (overrides.MULTIPLAYER_ENABLED as boolean) ?? DEFAULT_HOUSE_RULES.MULTIPLAYER_ENABLED,
     } as HouseRules
     saveHouseRules(rules)
   }, [overrides])

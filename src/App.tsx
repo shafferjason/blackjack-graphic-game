@@ -28,10 +28,14 @@ import TutorialOverlay from './components/TutorialOverlay'
 import StrategyOverlay from './components/StrategyOverlay'
 import CountingOverlay from './components/CountingOverlay'
 import SideBets from './components/SideBets'
+import MultiplayerSetup from './components/MultiplayerSetup'
+import type { PlayerConfig } from './components/MultiplayerSetup'
+import MultiplayerBar from './components/MultiplayerBar'
+import type { MultiplayerState } from './components/MultiplayerBar'
 import './App.css'
 
 function App() {
-  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, SIDE_BETS_ENABLED, ALLOW_SURRENDER } = useGameSettings()
+  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, SIDE_BETS_ENABLED, MULTIPLAYER_ENABLED, ALLOW_SURRENDER, updateSetting } = useGameSettings()
 
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
     'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
@@ -267,6 +271,102 @@ function App() {
     originalDealCards()
   }, [originalDealCards, SIDE_BETS_ENABLED, perfectPairsBet, twentyOnePlusThreeBet, actions])
 
+  // ── Multiplayer (Local Hot-Seat) state ──
+  const [mpShowSetup, setMpShowSetup] = useState(false)
+  const [mpPlayers, setMpPlayers] = useState<MultiplayerState[]>([])
+  const [mpActiveIndex, setMpActiveIndex] = useState(0)
+  const [mpPhase, setMpPhase] = useState<'betting' | 'playing' | 'results'>('betting')
+  const mpActive = MULTIPLAYER_ENABLED && mpPlayers.length >= 2
+  const prevMpGameStateRef = useRef(state.gameState)
+
+  // When multiplayer is enabled but no players set up, show setup
+  useEffect(() => {
+    if (MULTIPLAYER_ENABLED && mpPlayers.length === 0 && !mpShowSetup) {
+      setMpShowSetup(true)
+    }
+    if (!MULTIPLAYER_ENABLED && mpPlayers.length > 0) {
+      setMpPlayers([])
+      setMpActiveIndex(0)
+    }
+  }, [MULTIPLAYER_ENABLED, mpPlayers.length, mpShowSetup])
+
+  const handleMpStart = useCallback((configs: PlayerConfig[]) => {
+    const players: MultiplayerState[] = configs.map(c => ({
+      name: c.name,
+      bankroll: c.bankroll,
+      bet: 0,
+      result: null,
+      isActive: false,
+      wins: 0,
+      losses: 0,
+    }))
+    setMpPlayers(players)
+    setMpActiveIndex(0)
+    setMpPhase('betting')
+    setMpShowSetup(false)
+    // Set the game engine to the first player's bankroll
+    actions.adjustChips(players[0].bankroll - state.chips)
+  }, [actions, state.chips])
+
+  const handleMpCancel = useCallback(() => {
+    setMpShowSetup(false)
+    setMpPlayers([])
+    updateSetting('MULTIPLAYER_ENABLED', false)
+  }, [updateSetting])
+
+  // Track player results and advance turns in multiplayer
+  useEffect(() => {
+    if (!mpActive) return
+
+    const wasPlaying = prevMpGameStateRef.current !== GAME_STATES.GAME_OVER
+      && prevMpGameStateRef.current !== GAME_STATES.BETTING
+    const isNowDone = state.gameState === GAME_STATES.GAME_OVER
+
+    if (wasPlaying && isNowDone) {
+      // Record result for current player
+      setMpPlayers(prev => prev.map((p, i) => {
+        if (i !== mpActiveIndex) return p
+        const result = state.result || 'lose'
+        return {
+          ...p,
+          bankroll: state.chips,
+          bet: 0,
+          result,
+          wins: p.wins + (result === 'win' || result === 'blackjack' ? 1 : 0),
+          losses: p.losses + (result === 'lose' ? 1 : 0),
+        }
+      }))
+      setMpPhase('results')
+    }
+
+    prevMpGameStateRef.current = state.gameState
+  }, [mpActive, state.gameState, state.result, state.chips, mpActiveIndex, GAME_STATES])
+
+  // Advance to next player when current player starts a new round
+  const mpNewRound = useCallback(() => {
+    if (!mpActive) {
+      actions.newRound()
+      return
+    }
+
+    // Save current player's bankroll
+    const currentBankroll = state.chips
+    setMpPlayers(prev => prev.map((p, i) =>
+      i === mpActiveIndex ? { ...p, bankroll: currentBankroll, result: null } : p
+    ))
+
+    const nextIndex = (mpActiveIndex + 1) % mpPlayers.length
+    setMpActiveIndex(nextIndex)
+    setMpPhase('betting')
+
+    // Reset the round and set to next player's bankroll
+    actions.newRound()
+    // Use setTimeout to ensure the new round state is applied first
+    setTimeout(() => {
+      actions.adjustChips(mpPlayers[nextIndex].bankroll - currentBankroll)
+    }, 50)
+  }, [mpActive, mpActiveIndex, mpPlayers, state.chips, actions])
+
   const { muted, toggleMute, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
     result: state.result,
@@ -304,7 +404,7 @@ function App() {
       onSurrender: strategySurrender,
       onAcceptInsurance: actions.acceptInsurance,
       onDeclineInsurance: actions.declineInsurance,
-      onNewRound: actions.newRound,
+      onNewRound: mpActive ? mpNewRound : actions.newRound,
       onDeal: dealCardsWithSideBets,
       onPlaceBet: handlePlaceBet,
       onClearBet: actions.clearBet,
@@ -408,6 +508,14 @@ function App() {
         </nav>
       </header>
 
+      {mpActive && (
+        <MultiplayerBar
+          players={mpPlayers}
+          activeIndex={mpActiveIndex}
+          phase={mpPhase}
+        />
+      )}
+
       <main className="table" style={feltStyle} aria-label="Blackjack table">
         <ChipAnimation
           betTrigger={betTrigger}
@@ -426,6 +534,12 @@ function App() {
           shoeSize={state.shoeSize}
           cutCardReached={state.cutCardReached}
         />
+
+        {mpActive && (
+          <div className="mp-turn-banner" aria-live="polite">
+            {mpPlayers[mpActiveIndex]?.name}&apos;s Turn
+          </div>
+        )}
 
         <DealerHand
           hand={state.dealerHand}
@@ -528,7 +642,7 @@ function App() {
               onSurrender={strategySurrender}
               onAcceptInsurance={actions.acceptInsurance}
               onDeclineInsurance={actions.declineInsurance}
-              onNewRound={actions.newRound}
+              onNewRound={mpActive ? mpNewRound : actions.newRound}
               onReset={actions.resetGame}
               onButtonClick={playButtonClick}
               optimalAction={optimalAction}
@@ -548,6 +662,13 @@ function App() {
       <div className="sr-only" aria-live="polite" aria-atomic="true" role="log">
         {srAnnouncement}
       </div>
+
+      {mpShowSetup && (
+        <MultiplayerSetup
+          onStart={handleMpStart}
+          onCancel={handleMpCancel}
+        />
+      )}
     </div>
   )
 }

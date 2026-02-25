@@ -36,6 +36,7 @@ export const TABLE_FELT_THEME = 'classic-green' as const
 export const STRATEGY_TRAINER_ENABLED = false
 export const CARD_COUNTING_ENABLED = false
 export const SIDE_BETS_ENABLED = false
+export const MULTIPLAYER_ENABLED = false
 
 // ── Game state machine ──
 export const GAME_STATES: Record<string, GamePhase> = {

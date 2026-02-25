@@ -38,6 +38,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
     STRATEGY_TRAINER_ENABLED,
     CARD_COUNTING_ENABLED,
     SIDE_BETS_ENABLED,
+    MULTIPLAYER_ENABLED,
     updateSetting,
   } = settings
 
@@ -246,6 +247,27 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                     className={`setting-chip ${!SIDE_BETS_ENABLED ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('SIDE_BETS_ENABLED', false)}
                     aria-pressed={!SIDE_BETS_ENABLED}
+                  >
+                    Off
+                  </button>
+                </div>
+              </div>
+
+              {/* Multiplayer */}
+              <div className="setting-row" role="group" aria-label="Local Multiplayer">
+                <label className="setting-label">Multiplayer</label>
+                <div className="setting-options">
+                  <button
+                    className={`setting-chip ${MULTIPLAYER_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('MULTIPLAYER_ENABLED', true)}
+                    aria-pressed={MULTIPLAYER_ENABLED}
+                  >
+                    On
+                  </button>
+                  <button
+                    className={`setting-chip ${!MULTIPLAYER_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('MULTIPLAYER_ENABLED', false)}
+                    aria-pressed={!MULTIPLAYER_ENABLED}
                   >
                     Off
                   </button>

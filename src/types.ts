@@ -169,6 +169,7 @@ export interface HouseRules {
   STRATEGY_TRAINER_ENABLED: boolean
   CARD_COUNTING_ENABLED: boolean
   SIDE_BETS_ENABLED: boolean
+  MULTIPLAYER_ENABLED: boolean
 }
 
 // ── Game Settings ──
@@ -195,6 +196,7 @@ export interface GameSettings {
   STRATEGY_TRAINER_ENABLED: boolean
   CARD_COUNTING_ENABLED: boolean
   SIDE_BETS_ENABLED: boolean
+  MULTIPLAYER_ENABLED: boolean
   updateSetting: (key: string, value: unknown) => void
   resetSettings: () => void
 }
