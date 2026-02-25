@@ -7,6 +7,8 @@ import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { getOptimalAction, actionLabel } from './utils/basicStrategy'
 import type { ResolvedAction } from './utils/basicStrategy'
 import { getHiLoValue, calculateTrueCount, getDecksRemaining } from './utils/counting'
+import { evaluatePerfectPairs, evaluateTwentyOnePlusThree, calculateSideBetPayout } from './utils/sideBets'
+import type { PerfectPairsResult, TwentyOnePlusThreeResult } from './utils/sideBets'
 import type { Card } from './types'
 import Scoreboard from './components/Scoreboard'
 import DealerHand from './components/DealerHand'
@@ -25,10 +27,11 @@ import CelebrationEffects from './components/CelebrationEffects'
 import TutorialOverlay from './components/TutorialOverlay'
 import StrategyOverlay from './components/StrategyOverlay'
 import CountingOverlay from './components/CountingOverlay'
+import SideBets from './components/SideBets'
 import './App.css'
 
 function App() {
-  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, ALLOW_SURRENDER } = useGameSettings()
+  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, SIDE_BETS_ENABLED, ALLOW_SURRENDER } = useGameSettings()
 
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
     'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
@@ -180,6 +183,90 @@ function App() {
     setShowCountInput(false)
   }, [runningCount])
 
+  // ── Side Bets state ──
+  const [perfectPairsBet, setPerfectPairsBet] = useState(0)
+  const [twentyOnePlusThreeBet, setTwentyOnePlusThreeBet] = useState(0)
+  const [sideBetResult, setSideBetResult] = useState<{
+    perfectPairs: PerfectPairsResult | null
+    twentyOnePlusThree: TwentyOnePlusThreeResult | null
+  } | null>(null)
+  const [showSideBetResults, setShowSideBetResults] = useState(false)
+  const sideBetsEvaluatedRef = useRef(false)
+
+  const handlePlacePerfectPairs = useCallback((amount: number) => {
+    setPerfectPairsBet(amount)
+  }, [])
+
+  const handlePlaceTwentyOnePlusThree = useCallback((amount: number) => {
+    setTwentyOnePlusThreeBet(amount)
+  }, [])
+
+  const handleClearSideBets = useCallback(() => {
+    setPerfectPairsBet(0)
+    setTwentyOnePlusThreeBet(0)
+  }, [])
+
+  // Evaluate side bets when cards are dealt and we enter player_turn or insurance_offer
+  useEffect(() => {
+    if (!SIDE_BETS_ENABLED) return
+    if (perfectPairsBet === 0 && twentyOnePlusThreeBet === 0) return
+
+    const phase = state.gameState
+    const justDealt = (phase === GAME_STATES.PLAYER_TURN || phase === GAME_STATES.INSURANCE_OFFER || phase === GAME_STATES.GAME_OVER)
+      && state.playerHand.length >= 2
+      && state.dealerHand.length >= 1
+      && !sideBetsEvaluatedRef.current
+
+    if (!justDealt) return
+
+    sideBetsEvaluatedRef.current = true
+
+    const ppResult = perfectPairsBet > 0
+      ? evaluatePerfectPairs(state.playerHand[0], state.playerHand[1])
+      : null
+
+    const tptResult = twentyOnePlusThreeBet > 0
+      ? evaluateTwentyOnePlusThree(state.playerHand[0], state.playerHand[1], state.dealerHand[0])
+      : null
+
+    setSideBetResult({ perfectPairs: ppResult, twentyOnePlusThree: tptResult })
+    setShowSideBetResults(true)
+
+    // Calculate side bet payouts and add/deduct from chips via a side-effect
+    // Side bets are deducted when placed (during deal) and winnings added back
+    let sideBetPayout = 0
+    if (ppResult && ppResult.payout > 0) {
+      sideBetPayout += calculateSideBetPayout(perfectPairsBet, ppResult.payout)
+    }
+    if (tptResult && tptResult.payout > 0) {
+      sideBetPayout += calculateSideBetPayout(twentyOnePlusThreeBet, tptResult.payout)
+    }
+
+    // Use the game engine's side bet handler
+    if (sideBetPayout > 0) {
+      actions.adjustChips(sideBetPayout)
+    }
+  }, [SIDE_BETS_ENABLED, state.gameState, state.playerHand, state.dealerHand, perfectPairsBet, twentyOnePlusThreeBet, GAME_STATES, actions])
+
+  // Reset side bet evaluation flag and results on new round
+  useEffect(() => {
+    if (state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE) {
+      sideBetsEvaluatedRef.current = false
+      setShowSideBetResults(false)
+      setSideBetResult(null)
+    }
+  }, [state.gameState, GAME_STATES])
+
+  // Deduct side bets from chips when deal happens
+  const originalDealCards = actions.dealCards
+  const dealCardsWithSideBets = useCallback(() => {
+    const totalSideBets = (SIDE_BETS_ENABLED ? perfectPairsBet + twentyOnePlusThreeBet : 0)
+    if (totalSideBets > 0) {
+      actions.adjustChips(-totalSideBets)
+    }
+    originalDealCards()
+  }, [originalDealCards, SIDE_BETS_ENABLED, perfectPairsBet, twentyOnePlusThreeBet, actions])
+
   const { muted, toggleMute, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
     result: state.result,
@@ -218,7 +305,7 @@ function App() {
       onAcceptInsurance: actions.acceptInsurance,
       onDeclineInsurance: actions.declineInsurance,
       onNewRound: actions.newRound,
-      onDeal: actions.dealCards,
+      onDeal: dealCardsWithSideBets,
       onPlaceBet: handlePlaceBet,
       onClearBet: actions.clearBet,
       onButtonClick: playButtonClick,
@@ -386,6 +473,34 @@ function App() {
           />
         )}
 
+        {SIDE_BETS_ENABLED && isBetting && (
+          <SideBets
+            chips={state.chips}
+            mainBet={state.bet}
+            perfectPairsBet={perfectPairsBet}
+            twentyOnePlusThreeBet={twentyOnePlusThreeBet}
+            onPlacePerfectPairs={handlePlacePerfectPairs}
+            onPlaceTwentyOnePlusThree={handlePlaceTwentyOnePlusThree}
+            onClearSideBets={handleClearSideBets}
+            sideBetResult={null}
+            showResults={false}
+          />
+        )}
+
+        {SIDE_BETS_ENABLED && showSideBetResults && sideBetResult && !isBetting && (
+          <SideBets
+            chips={state.chips}
+            mainBet={state.bet}
+            perfectPairsBet={perfectPairsBet}
+            twentyOnePlusThreeBet={twentyOnePlusThreeBet}
+            onPlacePerfectPairs={handlePlacePerfectPairs}
+            onPlaceTwentyOnePlusThree={handlePlaceTwentyOnePlusThree}
+            onClearSideBets={handleClearSideBets}
+            sideBetResult={sideBetResult}
+            showResults={true}
+          />
+        )}
+
         <div className="controls-area">
           {(state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE) ? (
             <BettingControls
@@ -393,7 +508,7 @@ function App() {
               bet={state.bet}
               onPlaceBet={handlePlaceBet}
               onClearBet={actions.clearBet}
-              onDeal={actions.dealCards}
+              onDeal={dealCardsWithSideBets}
               onButtonClick={playButtonClick}
             />
           ) : (

@@ -2555,3 +2555,184 @@
 .counting-toggle-test:hover {
   background: rgba(212, 166, 68, 0.2);
 }
+
+/* ── Side Bets ── */
+.side-bets {
+  background: rgba(10, 15, 26, 0.6);
+  border: 1px solid rgba(212, 166, 68, 0.2);
+  border-radius: 10px;
+  padding: 8px 14px;
+  margin: 4px auto;
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.side-bets-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.side-bets-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gold-light, #e8c252);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.side-bets-info-btn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 166, 68, 0.4);
+  background: rgba(212, 166, 68, 0.1);
+  color: var(--gold-light, #e8c252);
+  font-size: 0.7rem;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.side-bets-clear {
+  margin-left: auto;
+  padding: 2px 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(240, 236, 228, 0.6);
+  cursor: pointer;
+}
+
+.side-bets-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  font-size: 0.7rem;
+  color: rgba(240, 236, 228, 0.7);
+}
+
+.side-bets-info-section strong {
+  color: var(--gold-light, #e8c252);
+  font-size: 0.72rem;
+}
+
+.side-bets-payouts {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-left: 8px;
+  font-size: 0.68rem;
+  color: rgba(240, 236, 228, 0.55);
+}
+
+.side-bets-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.side-bet-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.side-bet-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(240, 236, 228, 0.7);
+  min-width: 85px;
+}
+
+.side-bet-chips {
+  display: flex;
+  gap: 4px;
+}
+
+.side-bet-chip {
+  padding: 3px 8px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(240, 236, 228, 0.7);
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 36px;
+  text-align: center;
+}
+
+.side-bet-chip:hover:not(:disabled) {
+  background: rgba(212, 166, 68, 0.15);
+  border-color: rgba(212, 166, 68, 0.4);
+}
+
+.side-bet-chip:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.side-bet-chip-active {
+  background: rgba(212, 166, 68, 0.2) !important;
+  border-color: rgba(212, 166, 68, 0.6) !important;
+  color: var(--gold-light, #e8c252) !important;
+}
+
+.side-bet-amount {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--gold-light, #e8c252);
+}
+
+.side-bets-results {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.side-bet-result {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+}
+
+.side-bet-win {
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.side-bet-lose {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.side-bet-result-label {
+  font-weight: 600;
+  color: rgba(240, 236, 228, 0.6);
+}
+
+.side-bet-result-value {
+  font-weight: 700;
+}
+
+.side-bet-win .side-bet-result-value {
+  color: #4ade80;
+}
+
+.side-bet-lose .side-bet-result-value {
+  color: #f87171;
+}

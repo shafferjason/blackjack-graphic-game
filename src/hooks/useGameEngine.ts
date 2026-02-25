@@ -908,6 +908,13 @@ export function useGameEngine() {
     dispatch({ type: ACTIONS.RESET, payload: { startingBankroll: STARTING_BANKROLL } })
   }, [STARTING_BANKROLL, resetSettings])
 
+  const adjustChips = useCallback((amount: number) => {
+    dispatch({
+      type: ACTIONS.RESTORE_STATE,
+      payload: { chips: state.chips + amount } as Partial<GameState>,
+    })
+  }, [state.chips])
+
   const playerScore = calculateScore(state.playerHand)
   const dealerVisibleScore = state.dealerRevealed
     ? calculateScore(state.dealerHand)
@@ -989,6 +996,7 @@ export function useGameEngine() {
       newRound,
       resetGame,
       resetEverything,
+      adjustChips,
     },
   }
 }

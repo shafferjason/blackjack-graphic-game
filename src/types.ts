@@ -168,6 +168,7 @@ export interface HouseRules {
   TABLE_FELT_THEME: TableFeltTheme
   STRATEGY_TRAINER_ENABLED: boolean
   CARD_COUNTING_ENABLED: boolean
+  SIDE_BETS_ENABLED: boolean
 }
 
 // ── Game Settings ──
@@ -193,6 +194,7 @@ export interface GameSettings {
   TABLE_FELT_THEME: TableFeltTheme
   STRATEGY_TRAINER_ENABLED: boolean
   CARD_COUNTING_ENABLED: boolean
+  SIDE_BETS_ENABLED: boolean
   updateSetting: (key: string, value: unknown) => void
   resetSettings: () => void
 }

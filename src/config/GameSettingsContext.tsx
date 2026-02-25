@@ -14,6 +14,7 @@ const DEFAULT_HOUSE_RULES: HouseRules = {
   TABLE_FELT_THEME: constants.TABLE_FELT_THEME,
   STRATEGY_TRAINER_ENABLED: constants.STRATEGY_TRAINER_ENABLED,
   CARD_COUNTING_ENABLED: constants.CARD_COUNTING_ENABLED,
+  SIDE_BETS_ENABLED: constants.SIDE_BETS_ENABLED,
 }
 
 function loadHouseRules(): HouseRules {
@@ -57,6 +58,7 @@ export const GameSettingsProvider = ({ children }: { children: ReactNode }) => {
       TABLE_FELT_THEME: (overrides.TABLE_FELT_THEME as string) ?? DEFAULT_HOUSE_RULES.TABLE_FELT_THEME,
       STRATEGY_TRAINER_ENABLED: (overrides.STRATEGY_TRAINER_ENABLED as boolean) ?? DEFAULT_HOUSE_RULES.STRATEGY_TRAINER_ENABLED,
       CARD_COUNTING_ENABLED: (overrides.CARD_COUNTING_ENABLED as boolean) ?? DEFAULT_HOUSE_RULES.CARD_COUNTING_ENABLED,
+      SIDE_BETS_ENABLED: (overrides.SIDE_BETS_ENABLED as boolean) ?? DEFAULT_HOUSE_RULES.SIDE_BETS_ENABLED,
     } as HouseRules
     saveHouseRules(rules)
   }, [overrides])

@@ -37,6 +37,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
     TABLE_FELT_THEME,
     STRATEGY_TRAINER_ENABLED,
     CARD_COUNTING_ENABLED,
+    SIDE_BETS_ENABLED,
     updateSetting,
   } = settings
 
@@ -224,6 +225,27 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                     className={`setting-chip ${!CARD_COUNTING_ENABLED ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('CARD_COUNTING_ENABLED', false)}
                     aria-pressed={!CARD_COUNTING_ENABLED}
+                  >
+                    Off
+                  </button>
+                </div>
+              </div>
+
+              {/* Side Bets */}
+              <div className="setting-row" role="group" aria-label="Side Bets">
+                <label className="setting-label">Side Bets</label>
+                <div className="setting-options">
+                  <button
+                    className={`setting-chip ${SIDE_BETS_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('SIDE_BETS_ENABLED', true)}
+                    aria-pressed={SIDE_BETS_ENABLED}
+                  >
+                    On
+                  </button>
+                  <button
+                    className={`setting-chip ${!SIDE_BETS_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('SIDE_BETS_ENABLED', false)}
+                    aria-pressed={!SIDE_BETS_ENABLED}
                   >
                     Off
                   </button>
