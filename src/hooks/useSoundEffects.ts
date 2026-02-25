@@ -11,6 +11,8 @@ import {
   playShuffle,
   playButtonClick,
   playPush,
+  playStand,
+  playBust,
 } from '../utils/sound'
 import type { GamePhase, GameResult } from '../types'
 
@@ -69,12 +71,17 @@ export function useSoundEffects({
 
     // Card deal sounds — when dealing phase starts, play deal sounds
     if (prevPhase === 'betting' && gameState === 'dealing') {
-      // Stagger 4 card deal sounds
+      // Stagger 4 card deal sounds with slight timing variation
       playCardDeal()
-      setTimeout(() => playCardDeal(), 80)
-      setTimeout(() => playCardDeal(), 160)
-      setTimeout(() => playCardDeal(), 240)
+      setTimeout(() => playCardDeal(), 90)
+      setTimeout(() => playCardDeal(), 175)
+      setTimeout(() => playCardDeal(), 260)
       return
+    }
+
+    // Player stand — transition from player_turn to dealer_turn
+    if (prevPhase === 'player_turn' && gameState === 'dealer_turn') {
+      playStand()
     }
 
     // Player hit — new player card
@@ -100,10 +107,18 @@ export function useSoundEffects({
       } else if (result === 'win') {
         setTimeout(() => {
           playWinFanfare()
-          setTimeout(() => playChipCollect(), 400)
+          setTimeout(() => playChipCollect(), 350)
         }, 200)
       } else if (result === 'lose') {
-        setTimeout(() => playLossThud(), 200)
+        // Bust (lost during player turn) gets a distinct bust sound
+        const wasBust = prevPhase === 'player_turn'
+        setTimeout(() => {
+          if (wasBust) {
+            playBust()
+          } else {
+            playLossThud()
+          }
+        }, 200)
       } else if (result === 'push') {
         setTimeout(() => playPush(), 200)
       }

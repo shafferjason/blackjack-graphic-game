@@ -24,10 +24,10 @@ interface SuitAccent {
 }
 
 const SUIT_ACCENTS: Record<Suit, SuitAccent> = {
-  hearts: { primary: '#c41e3a', secondary: '#e8485e', tertiary: '#f9dce1' },
-  diamonds: { primary: '#c41e3a', secondary: '#e8485e', tertiary: '#f9dce1' },
-  clubs: { primary: '#1a1a2e', secondary: '#3a3a5e', tertiary: '#d8d8e8' },
-  spades: { primary: '#1a1a2e', secondary: '#3a3a5e', tertiary: '#d8d8e8' },
+  hearts: { primary: '#bf1b35', secondary: '#d94060', tertiary: '#f5d0d8' },
+  diamonds: { primary: '#bf1b35', secondary: '#d94060', tertiary: '#f5d0d8' },
+  clubs: { primary: '#18182e', secondary: '#36365c', tertiary: '#d4d4e6' },
+  spades: { primary: '#18182e', secondary: '#36365c', tertiary: '#d4d4e6' },
 }
 
 function JackSVG({ suit }: { suit: Suit }) {
@@ -499,58 +499,86 @@ function CardBackSVG({ theme }: { theme: CardBackTheme }) {
   return (
     <svg viewBox="0 0 90 130" className="card-back-svg" preserveAspectRatio="xMidYMid slice">
       <defs>
+        {/* Fine linen texture */}
+        <pattern id={`${pid}-linen`} width="4" height="4" patternUnits="userSpaceOnUse">
+          <rect width="4" height="4" fill="transparent" />
+          <line x1="0" y1="2" x2="4" y2="2" stroke={c.pattern} strokeWidth="0.3" />
+          <line x1="2" y1="0" x2="2" y2="4" stroke={c.patternAlt} strokeWidth="0.3" />
+        </pattern>
         {/* Crosshatch pattern */}
         <pattern id={`${pid}-cross`} width="8" height="8" patternUnits="userSpaceOnUse">
-          <line x1="0" y1="0" x2="8" y2="8" stroke={c.pattern} strokeWidth="0.8" />
-          <line x1="8" y1="0" x2="0" y2="8" stroke={c.patternAlt} strokeWidth="0.8" />
+          <line x1="0" y1="0" x2="8" y2="8" stroke={c.pattern} strokeWidth="0.7" />
+          <line x1="8" y1="0" x2="0" y2="8" stroke={c.patternAlt} strokeWidth="0.7" />
         </pattern>
         {/* Diamond repeating pattern for border */}
         <pattern id={`${pid}-diamonds`} width="12" height="12" patternUnits="userSpaceOnUse">
-          <path d="M6,0 L12,6 L6,12 L0,6 Z" fill="none" stroke={c.accent} strokeWidth="0.5" opacity="0.4" />
+          <path d="M6,0 L12,6 L6,12 L0,6 Z" fill="none" stroke={c.accent} strokeWidth="0.5" opacity="0.35" />
+          <circle cx="6" cy="6" r="0.6" fill={c.accent} opacity="0.2" />
         </pattern>
+        {/* Radial glow for center */}
+        <radialGradient id={`${pid}-glow`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={c.accent} stopOpacity="0.08" />
+          <stop offset="70%" stopColor={c.accent} stopOpacity="0.02" />
+          <stop offset="100%" stopColor={c.accent} stopOpacity="0" />
+        </radialGradient>
       </defs>
 
-      {/* Background gradient */}
-      <rect width="90" height="130" rx="10" fill={c.bg1} />
-      <rect width="90" height="130" rx="10" fill={`url(#${pid}-cross)`} />
+      {/* Background gradient with depth */}
+      <rect width="90" height="130" rx="12" fill={c.bg1} />
+      <rect width="90" height="130" rx="12" fill={c.bg2} opacity="0.4" />
+      <rect width="90" height="130" rx="12" fill={`url(#${pid}-linen)`} />
+      <rect width="90" height="130" rx="12" fill={`url(#${pid}-cross)`} />
 
       {/* Outer decorative border */}
-      <rect x="3" y="3" width="84" height="124" rx="8" fill="none" stroke={c.border} strokeWidth="1.5" />
+      <rect x="3" y="3" width="84" height="124" rx="10" fill="none" stroke={c.border} strokeWidth="1.5" />
+      <rect x="4.5" y="4.5" width="81" height="121" rx="9" fill="none" stroke={c.border} strokeWidth="0.3" opacity="0.5" />
 
       {/* Diamond border band */}
-      <rect x="6" y="6" width="78" height="118" rx="6" fill={`url(#${pid}-diamonds)`} stroke={c.borderInner} strokeWidth="0.5" />
+      <rect x="6" y="6" width="78" height="118" rx="8" fill={`url(#${pid}-diamonds)`} stroke={c.borderInner} strokeWidth="0.5" />
 
-      {/* Inner frame */}
-      <rect x="10" y="10" width="70" height="110" rx="5" fill="none" stroke={c.accent} strokeWidth="0.8" opacity="0.5" />
+      {/* Inner frame - double line */}
+      <rect x="10" y="10" width="70" height="110" rx="6" fill="none" stroke={c.accent} strokeWidth="0.8" opacity="0.45" />
+      <rect x="12" y="12" width="66" height="106" rx="5" fill="none" stroke={c.accent} strokeWidth="0.3" opacity="0.25" />
 
       {/* Corner ornaments - top-left */}
-      <g opacity="0.6">
-        <path d="M14,14 Q14,22 22,22" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M14,14 Q14,19 19,19" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <circle cx="14" cy="14" r="1.5" fill={c.accent} />
+      <g opacity="0.55">
+        <path d="M15,15 Q15,24 24,24" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M15,15 Q15,20 20,20" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <path d="M15,15 Q15,17 17,17" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
+        <circle cx="15" cy="15" r="1.8" fill={c.accent} />
+        <circle cx="15" cy="15" r="0.8" fill={c.accentLight} />
       </g>
       {/* Corner ornament - top-right */}
-      <g opacity="0.6">
-        <path d="M76,14 Q76,22 68,22" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M76,14 Q76,19 71,19" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <circle cx="76" cy="14" r="1.5" fill={c.accent} />
+      <g opacity="0.55">
+        <path d="M75,15 Q75,24 66,24" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M75,15 Q75,20 70,20" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <path d="M75,15 Q75,17 73,17" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
+        <circle cx="75" cy="15" r="1.8" fill={c.accent} />
+        <circle cx="75" cy="15" r="0.8" fill={c.accentLight} />
       </g>
       {/* Corner ornament - bottom-left */}
-      <g opacity="0.6">
-        <path d="M14,116 Q14,108 22,108" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M14,116 Q14,111 19,111" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <circle cx="14" cy="116" r="1.5" fill={c.accent} />
+      <g opacity="0.55">
+        <path d="M15,115 Q15,106 24,106" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M15,115 Q15,110 20,110" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <path d="M15,115 Q15,113 17,113" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
+        <circle cx="15" cy="115" r="1.8" fill={c.accent} />
+        <circle cx="15" cy="115" r="0.8" fill={c.accentLight} />
       </g>
       {/* Corner ornament - bottom-right */}
-      <g opacity="0.6">
-        <path d="M76,116 Q76,108 68,108" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M76,116 Q76,111 71,111" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <circle cx="76" cy="116" r="1.5" fill={c.accent} />
+      <g opacity="0.55">
+        <path d="M75,115 Q75,106 66,106" fill="none" stroke={c.accentLight} strokeWidth="1" />
+        <path d="M75,115 Q75,110 70,110" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+        <path d="M75,115 Q75,113 73,113" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
+        <circle cx="75" cy="115" r="1.8" fill={c.accent} />
+        <circle cx="75" cy="115" r="0.8" fill={c.accentLight} />
       </g>
 
+      {/* Center medallion glow */}
+      <ellipse cx="45" cy="65" rx="26" ry="32" fill={`url(#${pid}-glow)`} />
+
       {/* Center medallion background */}
-      <ellipse cx="45" cy="65" rx="22" ry="28" fill={c.bg2} stroke={c.accent} strokeWidth="0.8" opacity="0.6" />
-      <ellipse cx="45" cy="65" rx="18" ry="24" fill="none" stroke={c.accentLight} strokeWidth="0.4" opacity="0.4" />
+      <ellipse cx="45" cy="65" rx="22" ry="28" fill={c.bg2} stroke={c.accent} strokeWidth="0.8" opacity="0.55" />
+      <ellipse cx="45" cy="65" rx="19" ry="25" fill="none" stroke={c.accentLight} strokeWidth="0.4" opacity="0.35" />
 
       {/* Casino spade logo in center */}
       <g transform="translate(45,58)">
@@ -560,31 +588,36 @@ function CardBackSVG({ theme }: { theme: CardBackTheme }) {
              C-0.5,9.5 0.5,10 2,10 C6,10 10,7 10,2 C10,-4 2,-12 0,-14 Z"
           fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8"
         />
+        {/* Spade highlight */}
+        <path
+          d="M0,-12 C-1.5,-10 -7,-4 -7,1 C-7,3 -6,4 -5,4"
+          fill="none" stroke={c.accentLight} strokeWidth="0.5" opacity="0.3"
+        />
         {/* Spade stem */}
         <rect x="-1.5" y="8" width="3" height="8" rx="1" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.5" />
         {/* Stem base flourish */}
-        <path d="M-5,16 Q-2,13 0,16 Q2,13 5,16" fill="none" stroke={c.logoFill} strokeWidth="0.8" />
+        <path d="M-6,16 Q-3,12 0,16 Q3,12 6,16" fill="none" stroke={c.logoFill} strokeWidth="0.8" />
+        <path d="M-4,17 Q-2,14 0,17 Q2,14 4,17" fill="none" stroke={c.logoFill} strokeWidth="0.4" opacity="0.5" />
       </g>
 
       {/* Decorative scrollwork - top */}
-      <g opacity="0.5">
-        <path d="M30,28 Q37,24 45,28 Q53,24 60,28" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
-        <path d="M33,31 Q39,28 45,31 Q51,28 57,31" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
+      <g opacity="0.45">
+        <path d="M28,27 Q36,22 45,27 Q54,22 62,27" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
+        <path d="M32,30 Q38,27 45,30 Q52,27 58,30" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
+        <path d="M36,32 Q40,30 45,32 Q50,30 54,32" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
       </g>
       {/* Decorative scrollwork - bottom */}
-      <g opacity="0.5">
-        <path d="M30,102 Q37,106 45,102 Q53,106 60,102" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
-        <path d="M33,99 Q39,102 45,99 Q51,102 57,99" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
+      <g opacity="0.45">
+        <path d="M28,103 Q36,108 45,103 Q54,108 62,103" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
+        <path d="M32,100 Q38,103 45,100 Q52,103 58,100" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
+        <path d="M36,98 Q40,100 45,98 Q50,100 54,98" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
       </g>
 
       {/* Small suit symbols in corners of inner area */}
-      <text x="18" y="34" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2660'}</text>
-      <text x="72" y="34" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2665'}</text>
-      <text x="18" y="104" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2666'}</text>
-      <text x="72" y="104" fontSize="7" fill={c.accent} opacity="0.5" textAnchor="middle" fontFamily="serif">{'\u2663'}</text>
-
-      {/* Subtle radial glow on center */}
-      <ellipse cx="45" cy="65" rx="16" ry="20" fill={c.accent} opacity="0.04" />
+      <text x="18" y="34" fontSize="7" fill={c.accent} opacity="0.4" textAnchor="middle" fontFamily="serif">{'\u2660'}</text>
+      <text x="72" y="34" fontSize="7" fill={c.accent} opacity="0.4" textAnchor="middle" fontFamily="serif">{'\u2665'}</text>
+      <text x="18" y="104" fontSize="7" fill={c.accent} opacity="0.4" textAnchor="middle" fontFamily="serif">{'\u2666'}</text>
+      <text x="72" y="104" fontSize="7" fill={c.accent} opacity="0.4" textAnchor="middle" fontFamily="serif">{'\u2663'}</text>
     </svg>
   )
 }
