@@ -46,10 +46,10 @@ describe('Card component', () => {
     expect(container.querySelector('.ace-suit')).toBeInTheDocument()
   })
 
-  it('renders pip grid for number cards', () => {
+  it('renders pip layout for number cards', () => {
     const { container } = render(<Card card={{ suit: 'clubs', rank: '7', id: 1 }} index={0} />)
-    expect(container.querySelector('.pip-grid')).toBeInTheDocument()
-    expect(container.querySelectorAll('.pip')).toHaveLength(7)
+    expect(container.querySelector('.pip-layout')).toBeInTheDocument()
+    expect(container.querySelectorAll('.pip-symbol')).toHaveLength(7)
   })
 
   it('sets --deal-i css variable from index prop', () => {

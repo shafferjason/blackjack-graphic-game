@@ -143,36 +143,67 @@
   z-index: 10;
 }
 
-/* Face-up card — premium paper texture */
+/* ── Face-up card — premium card stock ── */
 .card-face {
   background:
+    /* Subtle linen fiber texture */
     repeating-linear-gradient(
       0deg,
       transparent,
-      transparent 1px,
-      rgba(0, 0, 0, 0.008) 1px,
-      rgba(0, 0, 0, 0.008) 2px
+      transparent 1.5px,
+      rgba(0, 0, 0, 0.006) 1.5px,
+      rgba(0, 0, 0, 0.006) 2px
     ),
     repeating-linear-gradient(
       90deg,
       transparent,
-      transparent 1px,
-      rgba(0, 0, 0, 0.005) 1px,
-      rgba(0, 0, 0, 0.005) 2px
+      transparent 1.5px,
+      rgba(0, 0, 0, 0.004) 1.5px,
+      rgba(0, 0, 0, 0.004) 2px
     ),
-    linear-gradient(145deg, #fffef9 0%, #f9f6ee 40%, #f3efe5 100%);
-  border: 1px solid rgba(180, 170, 150, 0.45);
+    /* Diagonal micro-weave for card stock texture */
+    repeating-linear-gradient(
+      135deg,
+      transparent,
+      transparent 3px,
+      rgba(0, 0, 0, 0.003) 3px,
+      rgba(0, 0, 0, 0.003) 4px
+    ),
+    /* Base gradient — warm off-white with depth */
+    linear-gradient(155deg, #fffef8 0%, #faf7f0 30%, #f5f1e8 60%, #f0ece2 100%);
+  border: 1px solid rgba(170, 160, 140, 0.5);
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.08),
-    0 4px 8px rgba(0, 0, 0, 0.12),
-    0 8px 20px rgba(0, 0, 0, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.7),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+    /* Ambient occlusion */
+    0 0.5px 1px rgba(0, 0, 0, 0.06),
+    /* Near shadow */
+    0 2px 4px rgba(0, 0, 0, 0.08),
+    /* Medium shadow */
+    0 4px 10px rgba(0, 0, 0, 0.1),
+    /* Far shadow — card lift */
+    0 8px 22px rgba(0, 0, 0, 0.13),
+    /* Top edge highlight */
+    inset 0 1px 0 rgba(255, 255, 255, 0.75),
+    /* Bottom edge subtle shadow */
+    inset 0 -1px 0 rgba(0, 0, 0, 0.04),
+    /* Left edge highlight for 3D feel */
+    inset 1px 0 0 rgba(255, 255, 255, 0.3);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   padding: 4px;
   user-select: none;
+  overflow: hidden;
+}
+
+/* Subtle vignette overlay for premium card feel */
+.card-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(ellipse at 40% 30%, transparent 50%, rgba(0, 0, 0, 0.025) 100%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .card-face.red {
@@ -190,6 +221,7 @@
   align-items: center;
   line-height: 1;
   gap: 0;
+  z-index: 2;
 }
 
 .top-left {
@@ -220,13 +252,22 @@
   align-items: center;
   justify-content: center;
   flex: 1;
+  z-index: 2;
+  position: relative;
 }
 
+/* ── Ace styling ── */
 .ace-suit {
   font-size: 40px;
   filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.12));
 }
 
+/* Ace ornamental glow */
+.ace-card-type .card-center {
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.5) 0%, transparent 60%);
+}
+
+/* ── Face card styling ── */
 .face-card {
   display: flex;
   flex-direction: column;
@@ -245,9 +286,29 @@
 
 /* Subtle inner glow on face cards */
 .face-card-type .card-center {
-  background: radial-gradient(ellipse at center, rgba(255,255,255,0.45) 0%, transparent 65%);
+  background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
 }
 
+/* ── Pip layout — realistic poker card positions ── */
+.pip-layout {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.pip-symbol {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  line-height: 1;
+  filter: drop-shadow(0 0.5px 0 rgba(0, 0, 0, 0.06));
+}
+
+.pip-symbol.pip-inverted {
+  transform: translate(-50%, -50%) rotate(180deg);
+}
+
+/* Legacy pip-grid (kept for backward compatibility) */
 .pip-grid {
   display: flex;
   flex-wrap: wrap;
@@ -302,9 +363,10 @@
 /* Card back */
 .card-back {
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.1),
-    0 4px 8px rgba(0, 0, 0, 0.18),
-    0 8px 24px rgba(0, 0, 0, 0.22),
+    0 0.5px 1px rgba(0, 0, 0, 0.08),
+    0 2px 4px rgba(0, 0, 0, 0.12),
+    0 4px 10px rgba(0, 0, 0, 0.16),
+    0 8px 24px rgba(0, 0, 0, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   overflow: hidden;
   padding: 0;
@@ -342,6 +404,10 @@
 
   .ace-suit {
     font-size: 30px;
+  }
+
+  .pip-symbol {
+    font-size: 9px;
   }
 
   .pip {
@@ -384,6 +450,10 @@
     font-size: 34px;
   }
 
+  .pip-symbol {
+    font-size: 11px;
+  }
+
   .pip {
     font-size: 11px;
   }
@@ -418,6 +488,10 @@
 
   .badge-suit {
     font-size: 18px;
+  }
+
+  .pip-symbol {
+    font-size: 14px;
   }
 }
 
@@ -461,6 +535,10 @@
 
   .ace-suit {
     font-size: 48px;
+  }
+
+  .pip-symbol {
+    font-size: 17px;
   }
 
   .pip {
@@ -517,6 +595,10 @@
 
   .ace-suit {
     font-size: 56px;
+  }
+
+  .pip-symbol {
+    font-size: 20px;
   }
 
   .pip {
