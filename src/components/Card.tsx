@@ -94,7 +94,7 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
       </defs>
       {/* Background — vignette base + canvas grain texture */}
       <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-vignette)`} />
-      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-tex-canvas)`} opacity="0.35" />
+      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-tex-canvas)`} opacity="0.55" />
       <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-glow)`} />
       {/* Decorative triple inner border — engraved frame */}
       <rect x="2" y="2" width="76" height="116" rx="3.5" fill="none" stroke={c.primary} strokeWidth="0.4" opacity="0.15" />
@@ -128,7 +128,7 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
       {/* Bottom Half (mirrored) */}
       <g clipPath={`url(#${pid}-bot)`} transform="rotate(180,40,90)">{children}</g>
       {/* Full-card brush overlay for painted feel */}
-      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-tex-brush)`} opacity="0.1" />
+      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-tex-brush)`} opacity="0.15" />
     </svg>
   )
 }
@@ -170,8 +170,8 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M27.5,20.5 Q26.5,13 31,8.5 Q35,4 40,10 Q45,4 49,8.5 Q53.5,13 52.5,20.5" fill={cap} stroke={ink} strokeWidth="0.5" />
       <path d="M29.5,19 Q29,14 33,10 Q36.5,6.5 40,10.5 Q43.5,6.5 47,10 Q51,14 50.5,19" fill={capMid} opacity="0.35" />
       <path d="M34,10.5 Q37,7.5 40,11 Q43,7.5 46,10.5" fill={capHi} opacity="0.12" />
-      {/* Cap brush texture overlay */}
-      <ellipse cx="40" cy="14" rx="14" ry="10" fill={`url(#${pid}-tex-brush)`} opacity="0.2" />
+      {/* Cap brush texture overlay — velvet plush effect */}
+      <ellipse cx="40" cy="14" rx="14" ry="10" fill={`url(#${pid}-tex-brush)`} opacity="0.25" />
       {/* Cap texture lines */}
       <path d="M31,14 Q35.5,9 40,13" fill="none" stroke={ink} strokeWidth="0.08" opacity="0.08" />
       <path d="M40,13 Q44.5,9 49,14" fill="none" stroke={ink} strokeWidth="0.08" opacity="0.08" />
@@ -201,53 +201,96 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M27.5,24 Q25.5,27 26,31" fill="none" stroke={hairHi} strokeWidth="0.45" opacity="0.2" strokeLinecap="round" />
       <path d="M52.5,24 Q54.5,27 54,31" fill="none" stroke={hairHi} strokeWidth="0.45" opacity="0.2" strokeLinecap="round" />
       {/* Hair paint texture */}
-      <rect x="21" y="20" width="8" height="18" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
-      <rect x="51" y="20" width="8" height="18" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
+      <rect x="21" y="20" width="8" height="18" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.55" />
+      <rect x="51" y="20" width="8" height="18" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.55" />
 
       {/* ── Face — youthful oval ── */}
       <ellipse cx="40" cy="33.5" rx="10.8" ry="11.8" fill={skin} stroke={ink} strokeWidth="0.5" />
-      {/* Skin paint texture overlay */}
-      <ellipse cx="40" cy="33.5" rx="10.5" ry="11.5" fill={`url(#${pid}-tex-skin)`} opacity="0.35" />
-      <ellipse cx="40" cy="28" rx="6" ry="3" fill={skinHi} opacity="0.12" />
-      <path d="M30.5,38 Q33.5,44 40,45 Q46.5,44 49.5,38" fill="none" stroke={skinShade} strokeWidth="0.22" opacity="0.22" />
-      <ellipse cx="33.5" cy="36.5" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.15" />
-      <ellipse cx="46.5" cy="36.5" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.15" />
-      {/* Eyes */}
+      {/* Skin paint texture overlay — heavier for painterly read */}
+      <ellipse cx="40" cy="33.5" rx="10.5" ry="11.5" fill={`url(#${pid}-tex-skin)`} opacity="0.5" />
+      {/* Forehead highlight */}
+      <ellipse cx="40" cy="28" rx="6" ry="3" fill={skinHi} opacity="0.14" />
+      {/* Orbital shadows */}
+      <ellipse cx="36" cy="30" rx="3.2" ry="1.8" fill={skinShade} opacity="0.06" />
+      <ellipse cx="44" cy="30" rx="3.2" ry="1.8" fill={skinShade} opacity="0.06" />
+      {/* Cheekbone highlights */}
+      <ellipse cx="33.5" cy="34" rx="2" ry="1.2" fill={skinHi} opacity="0.08" />
+      <ellipse cx="46.5" cy="34" rx="2" ry="1.2" fill={skinHi} opacity="0.08" />
+      {/* Jaw modeling */}
+      <path d="M30.5,38 Q33.5,44 40,45 Q46.5,44 49.5,38" fill="none" stroke={skinShade} strokeWidth="0.25" opacity="0.25" />
+      {/* Cheek warmth */}
+      <ellipse cx="33.5" cy="36.5" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.18" />
+      <ellipse cx="46.5" cy="36.5" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.18" />
+      {/* Temple shadows */}
+      <ellipse cx="30.5" cy="32" rx="1.5" ry="3" fill={skinShade} opacity="0.06" />
+      <ellipse cx="49.5" cy="32" rx="1.5" ry="3" fill={skinShade} opacity="0.06" />
+      {/* Face brush texture overlay */}
+      <ellipse cx="40" cy="33.5" rx="10" ry="11" fill={`url(#${pid}-tex-brush)`} opacity="0.18" />
+      {/* Eyes — multi-layered for painted depth */}
       <ellipse cx="36" cy="31" rx="2" ry="1.35" fill="#f8f6f0" stroke={ink} strokeWidth="0.28" />
       <ellipse cx="44" cy="31" rx="2" ry="1.35" fill="#f8f6f0" stroke={ink} strokeWidth="0.28" />
+      {/* Iris base */}
       <circle cx="36.2" cy="31.1" r="1.05" fill={c.primary} />
       <circle cx="44.2" cy="31.1" r="1.05" fill={c.primary} />
+      {/* Iris definition rings */}
+      <circle cx="36.2" cy="31.1" r="0.85" fill="none" stroke={ink} strokeWidth="0.12" opacity="0.4" />
+      <circle cx="44.2" cy="31.1" r="0.85" fill="none" stroke={ink} strokeWidth="0.12" opacity="0.4" />
+      {/* Pupil */}
       <circle cx="36.5" cy="30.7" r="0.5" fill="#111" />
       <circle cx="44.5" cy="30.7" r="0.5" fill="#111" />
+      {/* Catchlight */}
       <circle cx="35.9" cy="30.6" r="0.28" fill="#fff" />
       <circle cx="43.9" cy="30.6" r="0.28" fill="#fff" />
-      <path d="M34.2,32 Q36,32.5 37.8,32" fill="none" stroke={skinShade} strokeWidth="0.13" opacity="0.18" />
-      <path d="M42.2,32 Q44,32.5 45.8,32" fill="none" stroke={skinShade} strokeWidth="0.13" opacity="0.18" />
+      {/* Upper eyelids */}
       <path d="M33.7,29.6 Q36,28.8 38.3,29.6" fill="none" stroke={ink} strokeWidth="0.4" />
       <path d="M41.7,29.6 Q44,28.8 46.3,29.6" fill="none" stroke={ink} strokeWidth="0.4" />
+      {/* Lower lid definition */}
+      <path d="M34.2,32 Q36,32.5 37.8,32" fill="none" stroke={skinShade} strokeWidth="0.15" opacity="0.22" />
+      <path d="M42.2,32 Q44,32.5 45.8,32" fill="none" stroke={skinShade} strokeWidth="0.15" opacity="0.22" />
+      {/* Eyelashes — 3 per eye for painted detail at scale */}
+      <line x1="34" y1="29.8" x2="33.5" y2="29.2" stroke={ink} strokeWidth="0.12" opacity="0.3" />
+      <line x1="36" y1="29" x2="36" y2="28.4" stroke={ink} strokeWidth="0.12" opacity="0.25" />
+      <line x1="38" y1="29.8" x2="38.5" y2="29.2" stroke={ink} strokeWidth="0.12" opacity="0.3" />
+      <line x1="42" y1="29.8" x2="41.5" y2="29.2" stroke={ink} strokeWidth="0.12" opacity="0.3" />
+      <line x1="44" y1="29" x2="44" y2="28.4" stroke={ink} strokeWidth="0.12" opacity="0.25" />
+      <line x1="46" y1="29.8" x2="46.5" y2="29.2" stroke={ink} strokeWidth="0.12" opacity="0.3" />
       {/* Brows */}
       <path d="M33.3,28.3 Q36,27.1 38.7,28.1" fill="none" stroke={ink} strokeWidth="0.5" strokeLinecap="round" />
       <path d="M41.3,28.1 Q44,27.1 46.7,28.3" fill="none" stroke={ink} strokeWidth="0.5" strokeLinecap="round" />
       {/* Nose */}
       <path d="M40,32.5 L39.3,36.2 Q40,37 40.7,36.5" fill="none" stroke={skinShade} strokeWidth="0.4" strokeLinecap="round" />
       <line x1="40.2" y1="33" x2="40.1" y2="35" stroke={skinHi} strokeWidth="0.25" opacity="0.12" />
-      {/* Mouth */}
+      {/* Nasolabial folds */}
+      <path d="M37,37 Q36.5,38.5 37.5,39" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.12" />
+      <path d="M43,37 Q43.5,38.5 42.5,39" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.12" />
+      {/* Mouth — gradient-layered for painted depth */}
       <path d="M37.5,39.3 Q40,40.5 42.5,39.3" fill="#be6858" stroke="#985040" strokeWidth="0.3" />
-      <path d="M38.3,39.4 Q40,39.7 41.7,39.4" fill="#f5e0d0" opacity="0.22" />
+      <path d="M37.5,39.3 Q40,40.1 42.5,39.3" fill="#d07868" opacity="0.35" />
+      <path d="M38.3,39.4 Q40,39.7 41.7,39.4" fill="#f5e0d0" opacity="0.3" />
 
-      {/* ── Pointed collar with gilding ── */}
+      {/* ── Pointed collar with gilding and lace detail ── */}
       <path d="M28.5,44.5 L33.5,49 L40,45.5 L46.5,49 L51.5,44.5" fill={gold} stroke={goldDk} strokeWidth="0.4" />
       <path d="M29.8,45.5 L33.5,48 L40,46 L46.5,48 L50.2,45.5" fill={goldLt} opacity="0.2" />
+      {/* Lace scallop edge */}
+      <path d="M29,44.8 Q30.5,43.5 32,44.8 Q33.5,43.5 35,44.8 Q36.5,43.5 38,44.8 Q39.5,43.5 40,44.5 Q40.5,43.5 42,44.8 Q43.5,43.5 45,44.8 Q46.5,43.5 48,44.8 Q49.5,43.5 51,44.8" fill="none" stroke="#f0eadc" strokeWidth="0.2" opacity="0.35" />
       <path d="M30,45 L33.5,48" fill="none" stroke={goldDk} strokeWidth="0.15" opacity="0.25" />
       <path d="M50,45 L46.5,48" fill="none" stroke={goldDk} strokeWidth="0.15" opacity="0.25" />
+      {/* Filigree lines on collar */}
+      <path d="M31,46 Q33,47.5 35,46.5" fill="none" stroke={goldLt} strokeWidth="0.1" opacity="0.18" />
+      <path d="M45,46.5 Q47,47.5 49,46" fill="none" stroke={goldLt} strokeWidth="0.1" opacity="0.18" />
       <circle cx="40" cy="46.2" r="1.3" fill={c.secondary} stroke={goldDk} strokeWidth="0.3" />
       <path d="M39.2,45.8 L40,45 L40.8,45.8" fill={c.tertiary} opacity="0.3" />
       <circle cx="39.6" cy="45.8" r="0.28" fill="#fff" opacity="0.45" />
+      {/* Flanking collar jewels */}
+      <circle cx="34" cy="47" r="0.6" fill={gold} stroke={goldDk} strokeWidth="0.15" />
+      <circle cx="46" cy="47" r="0.6" fill={gold} stroke={goldDk} strokeWidth="0.15" />
 
       {/* ── Tunic ── */}
       <path d="M24.5,49 L20.5,60 L59.5,60 L55.5,49 Q40,55.5 24.5,49 Z" fill={tunic} stroke={ink} strokeWidth="0.4" />
-      {/* Fabric paint texture overlay */}
-      <path d="M24.5,49 L20.5,60 L59.5,60 L55.5,49 Q40,55.5 24.5,49 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.45" />
+      {/* Fabric paint texture overlay — heavy for painted look */}
+      <path d="M24.5,49 L20.5,60 L59.5,60 L55.5,49 Q40,55.5 24.5,49 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.75" />
+      {/* Brush overlay on tunic for painterly fold effect */}
+      <path d="M24.5,49 L20.5,60 L59.5,60 L55.5,49 Q40,55.5 24.5,49 Z" fill={`url(#${pid}-tex-brush)`} opacity="0.3" />
       <path d="M32,50 Q36,54 40,51 Q44,54 48,50" fill={tunicHi} opacity="0.07" />
       <path d="M36.5,50.5 L40,58.5 L43.5,50.5" fill={tunicMid} opacity="0.22" />
       <line x1="40" y1="49" x2="40" y2="60" stroke={gold} strokeWidth="0.55" opacity="0.35" />
@@ -322,37 +365,72 @@ function QueenSVG({ suit }: { suit: Suit }) {
       <path d="M27,28 Q25.5,33 26,37" fill="none" stroke={hair} strokeWidth="0.3" opacity="0.18" />
       <path d="M53,28 Q54.5,33 54,37" fill="none" stroke={hair} strokeWidth="0.3" opacity="0.18" />
       {/* Hair paint texture */}
-      <rect x="21" y="22" width="8" height="26" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
-      <rect x="51" y="22" width="8" height="26" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.3" />
+      <rect x="21" y="22" width="8" height="26" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.55" />
+      <rect x="51" y="22" width="8" height="26" rx="3" fill={`url(#${pid}-tex-hair)`} opacity="0.55" />
 
       {/* ── Face — elegant oval ── */}
       <ellipse cx="40" cy="34" rx="10.3" ry="11.8" fill={skin} stroke={ink} strokeWidth="0.5" />
-      {/* Skin paint texture overlay */}
-      <ellipse cx="40" cy="34" rx="10" ry="11.5" fill={`url(#${pid}-tex-skin)`} opacity="0.35" />
-      <ellipse cx="40" cy="28.5" rx="5.5" ry="2.8" fill={skinHi} opacity="0.1" />
-      <path d="M31.5,37 Q34.5,43.5 40,45 Q45.5,43.5 48.5,37" fill="none" stroke={skinShade} strokeWidth="0.2" opacity="0.2" />
-      <ellipse cx="34" cy="37" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.14" />
-      <ellipse cx="46" cy="37" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.14" />
-      {/* Eyes */}
+      {/* Skin paint texture overlay — heavier for painterly read */}
+      <ellipse cx="40" cy="34" rx="10" ry="11.5" fill={`url(#${pid}-tex-skin)`} opacity="0.5" />
+      {/* Forehead highlight */}
+      <ellipse cx="40" cy="28.5" rx="5.5" ry="2.8" fill={skinHi} opacity="0.12" />
+      {/* Orbital shadows */}
+      <ellipse cx="36" cy="30.5" rx="3" ry="1.6" fill={skinShade} opacity="0.06" />
+      <ellipse cx="44" cy="30.5" rx="3" ry="1.6" fill={skinShade} opacity="0.06" />
+      {/* Cheekbone highlights */}
+      <ellipse cx="33.5" cy="35" rx="2" ry="1.2" fill={skinHi} opacity="0.08" />
+      <ellipse cx="46.5" cy="35" rx="2" ry="1.2" fill={skinHi} opacity="0.08" />
+      {/* Jaw modeling */}
+      <path d="M31.5,37 Q34.5,43.5 40,45 Q45.5,43.5 48.5,37" fill="none" stroke={skinShade} strokeWidth="0.22" opacity="0.25" />
+      {/* Cheek warmth */}
+      <ellipse cx="34" cy="37" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.18" />
+      <ellipse cx="46" cy="37" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.18" />
+      {/* Temple shadows */}
+      <ellipse cx="31" cy="33" rx="1.5" ry="3" fill={skinShade} opacity="0.06" />
+      <ellipse cx="49" cy="33" rx="1.5" ry="3" fill={skinShade} opacity="0.06" />
+      {/* Face brush texture overlay */}
+      <ellipse cx="40" cy="34" rx="10" ry="11" fill={`url(#${pid}-tex-brush)`} opacity="0.18" />
+      {/* Eyes — multi-layered for painted depth */}
       <ellipse cx="36" cy="31.5" rx="2.1" ry="1.4" fill="#f8f6f0" stroke={ink} strokeWidth="0.28" />
       <ellipse cx="44" cy="31.5" rx="2.1" ry="1.4" fill="#f8f6f0" stroke={ink} strokeWidth="0.28" />
+      {/* Iris base */}
       <circle cx="36.2" cy="31.6" r="1.1" fill={c.primary} />
       <circle cx="44.2" cy="31.6" r="1.1" fill={c.primary} />
+      {/* Iris definition rings */}
+      <circle cx="36.2" cy="31.6" r="0.9" fill="none" stroke={ink} strokeWidth="0.12" opacity="0.4" />
+      <circle cx="44.2" cy="31.6" r="0.9" fill="none" stroke={ink} strokeWidth="0.12" opacity="0.4" />
+      {/* Pupil */}
       <circle cx="36.5" cy="31.2" r="0.5" fill="#111" />
       <circle cx="44.5" cy="31.2" r="0.5" fill="#111" />
+      {/* Catchlight */}
       <circle cx="35.8" cy="31" r="0.28" fill="#fff" />
       <circle cx="43.8" cy="31" r="0.28" fill="#fff" />
+      {/* Upper eyelids */}
       <path d="M33.6,30 Q36,29.1 38.5,30.1" fill="none" stroke={ink} strokeWidth="0.42" />
       <path d="M41.5,30.1 Q44,29.1 46.4,30" fill="none" stroke={ink} strokeWidth="0.42" />
+      {/* Lower lid definition */}
+      <path d="M34,32.5 Q36,33 38,32.5" fill="none" stroke={skinShade} strokeWidth="0.13" opacity="0.2" />
+      <path d="M42,32.5 Q44,33 46,32.5" fill="none" stroke={skinShade} strokeWidth="0.13" opacity="0.2" />
+      {/* Eyelashes */}
+      <line x1="33.8" y1="30.2" x2="33.3" y2="29.6" stroke={ink} strokeWidth="0.1" opacity="0.3" />
+      <line x1="36" y1="29.3" x2="36" y2="28.8" stroke={ink} strokeWidth="0.1" opacity="0.25" />
+      <line x1="38.2" y1="30.2" x2="38.7" y2="29.6" stroke={ink} strokeWidth="0.1" opacity="0.3" />
+      <line x1="41.8" y1="30.2" x2="41.3" y2="29.6" stroke={ink} strokeWidth="0.1" opacity="0.3" />
+      <line x1="44" y1="29.3" x2="44" y2="28.8" stroke={ink} strokeWidth="0.1" opacity="0.25" />
+      <line x1="46.2" y1="30.2" x2="46.7" y2="29.6" stroke={ink} strokeWidth="0.1" opacity="0.3" />
       {/* Delicate brows */}
       <path d="M33.5,28.6 Q36,27.4 38.5,28.3" fill="none" stroke={hair} strokeWidth="0.32" strokeLinecap="round" />
       <path d="M41.5,28.3 Q44,27.4 46.5,28.6" fill="none" stroke={hair} strokeWidth="0.32" strokeLinecap="round" />
       {/* Nose */}
       <path d="M40,33 L39.3,36.8 Q40,37.5 40.7,37" fill="none" stroke={skinShade} strokeWidth="0.38" strokeLinecap="round" />
       <line x1="40.1" y1="33.5" x2="40" y2="35.5" stroke={skinHi} strokeWidth="0.22" opacity="0.1" />
-      {/* Lips */}
+      {/* Nasolabial folds */}
+      <path d="M37,38 Q36.5,39 37.5,39.5" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.1" />
+      <path d="M43,38 Q43.5,39 42.5,39.5" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.1" />
+      {/* Lips — gradient-layered for painted depth */}
       <path d="M37.4,39.8 Q38.5,39 40,40.1 Q41.5,39 42.6,39.8 Q41,41.5 40,41.5 Q39,41.5 37.4,39.8 Z" fill="#c06060" stroke="#9a4040" strokeWidth="0.25" />
-      <path d="M38.5,39.6 Q40,39.9 41.5,39.6" fill="#f5e0d0" opacity="0.22" />
+      <path d="M37.8,39.9 Q40,40.5 42.2,39.9" fill="#d07070" opacity="0.3" />
+      <path d="M38.5,39.6 Q40,39.9 41.5,39.6" fill="#f5e0d0" opacity="0.3" />
 
       {/* ── Necklace with pendant ── */}
       <path d="M30.5,45.5 Q35.5,48 40,49 Q44.5,48 49.5,45.5" fill="none" stroke={gold} strokeWidth="0.75" />
@@ -365,8 +443,10 @@ function QueenSVG({ suit }: { suit: Suit }) {
 
       {/* ── Dress bodice ── */}
       <path d="M23.5,48 L19.5,60 L60.5,60 L56.5,48 Q40,56 23.5,48 Z" fill={dress} stroke={ink} strokeWidth="0.4" />
-      {/* Fabric paint texture overlay */}
-      <path d="M23.5,48 L19.5,60 L60.5,60 L56.5,48 Q40,56 23.5,48 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.45" />
+      {/* Fabric paint texture overlay — heavy for painted look */}
+      <path d="M23.5,48 L19.5,60 L60.5,60 L56.5,48 Q40,56 23.5,48 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.75" />
+      {/* Brush overlay on dress for painterly fold effect */}
+      <path d="M23.5,48 L19.5,60 L60.5,60 L56.5,48 Q40,56 23.5,48 Z" fill={`url(#${pid}-tex-brush)`} opacity="0.3" />
       <path d="M30,50 Q35,54 40,50.5 Q45,54 50,50" fill={dressHi} opacity="0.06" />
       <path d="M28.5,47.5 Q34.5,52.5 40,49.5 Q45.5,52.5 51.5,47.5" fill={dressMid} opacity="0.18" stroke={gold} strokeWidth="0.35" />
       <line x1="40" y1="49.5" x2="40" y2="60" stroke={gold} strokeWidth="0.5" opacity="0.3" />
@@ -439,31 +519,62 @@ function KingSVG({ suit }: { suit: Suit }) {
       <path d="M26.5,27 Q24.5,32 25.5,36" fill="none" stroke={hairHi} strokeWidth="0.6" opacity="0.22" strokeLinecap="round" />
       <path d="M53.5,27 Q55.5,32 54.5,36" fill="none" stroke={hairHi} strokeWidth="0.6" opacity="0.22" strokeLinecap="round" />
       {/* Hair paint texture */}
-      <rect x="23" y="24" width="6" height="14" rx="2" fill={`url(#${pid}-tex-hair)`} opacity="0.25" />
-      <rect x="51" y="24" width="6" height="14" rx="2" fill={`url(#${pid}-tex-hair)`} opacity="0.25" />
+      <rect x="23" y="24" width="6" height="14" rx="2" fill={`url(#${pid}-tex-hair)`} opacity="0.5" />
+      <rect x="51" y="24" width="6" height="14" rx="2" fill={`url(#${pid}-tex-hair)`} opacity="0.5" />
 
       {/* ── Face — broader, authoritative ── */}
       <ellipse cx="40" cy="36" rx="11.2" ry="12.2" fill={skin} stroke={ink} strokeWidth="0.5" />
-      {/* Skin paint texture overlay */}
-      <ellipse cx="40" cy="36" rx="11" ry="12" fill={`url(#${pid}-tex-skin)`} opacity="0.35" />
-      <ellipse cx="40" cy="30" rx="6" ry="3" fill={skinHi} opacity="0.1" />
-      <ellipse cx="34.5" cy="38" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.13" />
-      <ellipse cx="45.5" cy="38" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.13" />
-      {/* Eyes */}
+      {/* Skin paint texture overlay — heavier for painterly read */}
+      <ellipse cx="40" cy="36" rx="11" ry="12" fill={`url(#${pid}-tex-skin)`} opacity="0.5" />
+      {/* Forehead highlight */}
+      <ellipse cx="40" cy="30" rx="6" ry="3" fill={skinHi} opacity="0.12" />
+      {/* Orbital shadows */}
+      <ellipse cx="36" cy="32" rx="3" ry="1.6" fill={skinShade} opacity="0.06" />
+      <ellipse cx="44" cy="32" rx="3" ry="1.6" fill={skinShade} opacity="0.06" />
+      {/* Cheekbone highlights */}
+      <ellipse cx="34" cy="36" rx="2" ry="1.2" fill={skinHi} opacity="0.08" />
+      <ellipse cx="46" cy="36" rx="2" ry="1.2" fill={skinHi} opacity="0.08" />
+      {/* Cheek warmth */}
+      <ellipse cx="34.5" cy="38" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.16" />
+      <ellipse cx="45.5" cy="38" rx="2.5" ry="1.5" fill="#e0b090" opacity="0.16" />
+      {/* Temple shadows */}
+      <ellipse cx="30" cy="34" rx="1.5" ry="3.5" fill={skinShade} opacity="0.06" />
+      <ellipse cx="50" cy="34" rx="1.5" ry="3.5" fill={skinShade} opacity="0.06" />
+      {/* Jaw modeling */}
+      <path d="M30,40 Q34,47 40,48 Q46,47 50,40" fill="none" stroke={skinShade} strokeWidth="0.2" opacity="0.2" />
+      {/* Face brush texture overlay */}
+      <ellipse cx="40" cy="36" rx="10.5" ry="11.5" fill={`url(#${pid}-tex-brush)`} opacity="0.18" />
+      {/* Eyes — multi-layered for painted depth */}
       <ellipse cx="36" cy="33" rx="1.8" ry="1.25" fill="#f8f6f0" stroke={ink} strokeWidth="0.28" />
       <ellipse cx="44" cy="33" rx="1.8" ry="1.25" fill="#f8f6f0" stroke={ink} strokeWidth="0.28" />
+      {/* Iris base */}
       <circle cx="36.2" cy="33.15" r="0.95" fill={c.primary} />
       <circle cx="44.2" cy="33.15" r="0.95" fill={c.primary} />
+      {/* Iris definition rings */}
+      <circle cx="36.2" cy="33.15" r="0.78" fill="none" stroke={ink} strokeWidth="0.12" opacity="0.4" />
+      <circle cx="44.2" cy="33.15" r="0.78" fill="none" stroke={ink} strokeWidth="0.12" opacity="0.4" />
+      {/* Pupil */}
       <circle cx="36.5" cy="32.7" r="0.45" fill="#111" />
       <circle cx="44.5" cy="32.7" r="0.45" fill="#111" />
+      {/* Catchlight */}
       <circle cx="35.8" cy="32.6" r="0.22" fill="#fff" />
       <circle cx="43.8" cy="32.6" r="0.22" fill="#fff" />
+      {/* Eyelashes */}
+      <line x1="33.8" y1="31.8" x2="33.4" y2="31.2" stroke={ink} strokeWidth="0.12" opacity="0.3" />
+      <line x1="36" y1="31" x2="36" y2="30.5" stroke={ink} strokeWidth="0.1" opacity="0.25" />
+      <line x1="37.8" y1="32" x2="38.2" y2="31.4" stroke={ink} strokeWidth="0.12" opacity="0.3" />
+      <line x1="42.2" y1="32" x2="41.8" y2="31.4" stroke={ink} strokeWidth="0.12" opacity="0.3" />
+      <line x1="44" y1="31" x2="44" y2="30.5" stroke={ink} strokeWidth="0.1" opacity="0.25" />
+      <line x1="46.2" y1="31.8" x2="46.6" y2="31.2" stroke={ink} strokeWidth="0.12" opacity="0.3" />
       {/* Heavy brows */}
       <path d="M33.2,30.3 Q36,28.9 38.8,29.9" fill="none" stroke={ink} strokeWidth="0.75" strokeLinecap="round" />
       <path d="M41.2,29.9 Q44,28.9 46.8,30.3" fill="none" stroke={ink} strokeWidth="0.75" strokeLinecap="round" />
       {/* Nose */}
       <path d="M40,34.5 L39,37.8 Q40,38.7 41,38" fill="none" stroke={skinShade} strokeWidth="0.42" strokeLinecap="round" />
       <line x1="40.2" y1="35" x2="40.1" y2="37" stroke={skinHi} strokeWidth="0.22" opacity="0.1" />
+      {/* Nasolabial folds */}
+      <path d="M37,39 Q36.5,39.8 37.5,40" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.1" />
+      <path d="M43,39 Q43.5,39.8 42.5,40" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.1" />
 
       {/* ── Mustache + beard ── */}
       <path d="M35.8,40.3 Q37.8,41.8 40,40.6 Q42.2,41.8 44.2,40.3" fill={beard} opacity="0.65" stroke={beard} strokeWidth="0.22" />
@@ -486,8 +597,10 @@ function KingSVG({ suit }: { suit: Suit }) {
 
       {/* ── Robe ── */}
       <path d="M20.5,57 L17,60 L63,60 L59.5,57 Z" fill={robe} stroke={ink} strokeWidth="0.3" />
-      {/* Fabric paint texture overlay */}
-      <path d="M20.5,57 L17,60 L63,60 L59.5,57 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.4" />
+      {/* Fabric paint texture overlay — heavy for painted look */}
+      <path d="M20.5,57 L17,60 L63,60 L59.5,57 Z" fill={`url(#${pid}-tex-fabric)`} opacity="0.7" />
+      {/* Brush overlay on robe for painterly fold effect */}
+      <path d="M20.5,57 L17,60 L63,60 L59.5,57 Z" fill={`url(#${pid}-tex-brush)`} opacity="0.25" />
       <path d="M30,57.5 Q40,58.5 50,57.5" fill={robeHi} opacity="0.05" />
       <path d="M20.5,57.2 L17,60" fill="none" stroke={gold} strokeWidth="0.25" opacity="0.18" />
       <path d="M59.5,57.2 L63,60" fill="none" stroke={gold} strokeWidth="0.25" opacity="0.18" />
