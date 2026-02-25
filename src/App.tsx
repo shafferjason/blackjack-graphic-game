@@ -6,6 +6,8 @@ import { useSoundEffects } from './hooks/useSoundEffects'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
 import { getOptimalAction, actionLabel } from './utils/basicStrategy'
 import type { ResolvedAction } from './utils/basicStrategy'
+import { getHiLoValue, calculateTrueCount, getDecksRemaining } from './utils/counting'
+import type { Card } from './types'
 import Scoreboard from './components/Scoreboard'
 import DealerHand from './components/DealerHand'
 import GameBanner from './components/GameBanner'
@@ -22,10 +24,11 @@ import ChipAnimation from './components/ChipAnimation'
 import CelebrationEffects from './components/CelebrationEffects'
 import TutorialOverlay from './components/TutorialOverlay'
 import StrategyOverlay from './components/StrategyOverlay'
+import CountingOverlay from './components/CountingOverlay'
 import './App.css'
 
 function App() {
-  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, ALLOW_SURRENDER } = useGameSettings()
+  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, ALLOW_SURRENDER } = useGameSettings()
 
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
     'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
@@ -113,6 +116,69 @@ function App() {
     checkStrategy('surrender')
     actions.surrender()
   }, [checkStrategy, actions])
+
+  // ── Card Counting Practice state ──
+  const [countingAccuracy, setCountingAccuracy] = useState({ correct: 0, total: 0 })
+  const [selfTestMode, setSelfTestMode] = useState(false)
+  const [showCountInput, setShowCountInput] = useState(false)
+  const [runningCount, setRunningCount] = useState(0)
+  const [lastDealtCard, setLastDealtCard] = useState<Card | null>(null)
+  const prevAllCardsRef = useRef<number>(0)
+
+  // Track cards as they're revealed and update running count
+  useEffect(() => {
+    if (!CARD_COUNTING_ENABLED) return
+
+    const playerCards = state.playerHand
+    const dealerCards = state.dealerRevealed ? state.dealerHand : state.dealerHand.slice(0, 1)
+    const splitCards = state.splitHands.flatMap(h => h.cards)
+    const allVisible = [...playerCards, ...dealerCards, ...splitCards]
+    const totalVisible = allVisible.length
+
+    if (totalVisible > prevAllCardsRef.current && totalVisible > 0) {
+      const newCard = allVisible[totalVisible - 1]
+      setLastDealtCard(newCard)
+      // Recalculate from all visible cards to stay accurate
+      let count = 0
+      for (const card of allVisible) {
+        count += getHiLoValue(card)
+      }
+      setRunningCount(count)
+    }
+
+    prevAllCardsRef.current = totalVisible
+  }, [CARD_COUNTING_ENABLED, state.playerHand, state.dealerHand, state.dealerRevealed, state.splitHands])
+
+  // Reset count on shoe reshuffle
+  useEffect(() => {
+    if (state.cutCardReached) {
+      setRunningCount(0)
+      prevAllCardsRef.current = 0
+      setLastDealtCard(null)
+    }
+  }, [state.cutCardReached])
+
+  // Show count input prompt at end of each hand in self-test mode
+  useEffect(() => {
+    if (!CARD_COUNTING_ENABLED || !selfTestMode) return
+    if (state.gameState === GAME_STATES.GAME_OVER) {
+      setShowCountInput(true)
+    }
+  }, [CARD_COUNTING_ENABLED, selfTestMode, state.gameState, GAME_STATES])
+
+  const handleToggleSelfTest = useCallback(() => {
+    setSelfTestMode(prev => !prev)
+    setShowCountInput(false)
+  }, [])
+
+  const handleSubmitCount = useCallback((guess: number) => {
+    const correct = guess === runningCount
+    setCountingAccuracy(prev => ({
+      correct: prev.correct + (correct ? 1 : 0),
+      total: prev.total + 1,
+    }))
+    setShowCountInput(false)
+  }, [runningCount])
 
   const { muted, toggleMute, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
@@ -304,6 +370,19 @@ function App() {
             optimalAction={optimalAction}
             lastFeedback={strategyFeedback}
             accuracy={strategyAccuracy}
+          />
+        )}
+
+        {CARD_COUNTING_ENABLED && (
+          <CountingOverlay
+            runningCount={runningCount}
+            cardsRemaining={state.cardsRemaining}
+            lastDealtCard={lastDealtCard}
+            accuracy={countingAccuracy}
+            selfTestMode={selfTestMode}
+            onToggleSelfTest={handleToggleSelfTest}
+            onSubmitCount={handleSubmitCount}
+            showCountInput={showCountInput}
           />
         )}
 

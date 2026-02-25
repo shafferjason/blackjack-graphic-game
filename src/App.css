@@ -2402,3 +2402,156 @@
   0% { transform: scale(1.15); opacity: 0.7; }
   100% { transform: scale(1); opacity: 1; }
 }
+
+/* ── Card Counting Practice Overlay ── */
+.counting-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(10, 15, 26, 0.6);
+  border: 1px solid rgba(212, 166, 68, 0.2);
+  border-radius: 10px;
+  margin: 4px auto;
+  max-width: 340px;
+}
+
+.counting-counts {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.counting-count-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.counting-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(240, 236, 228, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.counting-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-family: 'Inter', monospace;
+  color: rgba(240, 236, 228, 0.9);
+}
+
+.counting-value.count-positive { color: #4ade80; }
+.counting-value.count-negative { color: #f87171; }
+
+.counting-last-card {
+  padding-left: 10px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.counting-advice {
+  font-size: 0.72rem;
+  color: rgba(240, 236, 228, 0.55);
+  text-align: center;
+  font-style: italic;
+}
+
+.counting-hidden-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 14px;
+  background: rgba(212, 166, 68, 0.1);
+  border: 1px solid rgba(212, 166, 68, 0.25);
+  border-radius: 8px;
+}
+
+.counting-hidden-icon {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--gold-light, #e8c252);
+}
+
+.counting-hidden-text {
+  font-size: 0.78rem;
+  color: rgba(240, 236, 228, 0.6);
+}
+
+.counting-guess-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.counting-guess-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(240, 236, 228, 0.8);
+}
+
+.counting-guess-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.counting-guess-input {
+  width: 60px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid rgba(212, 166, 68, 0.4);
+  background: rgba(255, 255, 255, 0.08);
+  color: #f0ece4;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+}
+
+.counting-guess-input:focus {
+  border-color: var(--gold-light, #e8c252);
+  box-shadow: 0 0 6px rgba(212, 166, 68, 0.3);
+}
+
+.counting-guess-btn {
+  padding: 6px 14px !important;
+  font-size: 0.85rem !important;
+  background: rgba(34, 197, 94, 0.2) !important;
+  border: 1px solid rgba(34, 197, 94, 0.4) !important;
+  color: #bbf7d0 !important;
+  border-radius: 6px;
+}
+
+.counting-footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.counting-accuracy {
+  font-size: 0.72rem;
+  color: rgba(240, 236, 228, 0.55);
+}
+
+.counting-toggle-test {
+  padding: 3px 10px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 1px solid rgba(212, 166, 68, 0.3);
+  background: rgba(212, 166, 68, 0.1);
+  color: var(--gold-light, #e8c252);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.counting-toggle-test:hover {
+  background: rgba(212, 166, 68, 0.2);
+}

@@ -36,6 +36,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
     CARD_BACK_THEME,
     TABLE_FELT_THEME,
     STRATEGY_TRAINER_ENABLED,
+    CARD_COUNTING_ENABLED,
     updateSetting,
   } = settings
 
@@ -202,6 +203,27 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                     className={`setting-chip ${!STRATEGY_TRAINER_ENABLED ? 'setting-chip-active' : ''}`}
                     onClick={() => updateSetting('STRATEGY_TRAINER_ENABLED', false)}
                     aria-pressed={!STRATEGY_TRAINER_ENABLED}
+                  >
+                    Off
+                  </button>
+                </div>
+              </div>
+
+              {/* Card Counting Practice */}
+              <div className="setting-row" role="group" aria-label="Card Counting Practice Mode">
+                <label className="setting-label">Card Counting</label>
+                <div className="setting-options">
+                  <button
+                    className={`setting-chip ${CARD_COUNTING_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('CARD_COUNTING_ENABLED', true)}
+                    aria-pressed={CARD_COUNTING_ENABLED}
+                  >
+                    On
+                  </button>
+                  <button
+                    className={`setting-chip ${!CARD_COUNTING_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('CARD_COUNTING_ENABLED', false)}
+                    aria-pressed={!CARD_COUNTING_ENABLED}
                   >
                     Off
                   </button>

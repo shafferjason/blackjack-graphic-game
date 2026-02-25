@@ -34,6 +34,7 @@ export const ALLOW_SURRENDER = true
 export const CARD_BACK_THEME = 'classic-blue' as const
 export const TABLE_FELT_THEME = 'classic-green' as const
 export const STRATEGY_TRAINER_ENABLED = false
+export const CARD_COUNTING_ENABLED = false
 
 // ── Game state machine ──
 export const GAME_STATES: Record<string, GamePhase> = {
