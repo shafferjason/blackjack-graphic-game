@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react'
 import { useGameSettings } from '../config/GameSettingsContext'
 import type { GamePhase } from '../types'
+import type { ResolvedAction } from '../utils/basicStrategy'
 
 interface ActionControlsProps {
   gameState: GamePhase
@@ -21,9 +22,16 @@ interface ActionControlsProps {
   onNewRound: () => void
   onReset: () => void
   onButtonClick?: () => void
+  optimalAction?: ResolvedAction | null
+  strategyTrainerEnabled?: boolean
 }
 
-export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, canSurrender, canDoubleAfterSplit, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onSurrender, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset, onButtonClick }: ActionControlsProps) {
+function strategyClass(action: ResolvedAction, optimal: ResolvedAction | null | undefined, enabled: boolean | undefined): string {
+  if (!enabled || !optimal) return ''
+  return action === optimal ? 'strategy-optimal' : 'strategy-suboptimal'
+}
+
+export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, canSurrender, canDoubleAfterSplit, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onSurrender, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset, onButtonClick, optimalAction, strategyTrainerEnabled }: ActionControlsProps) {
   const { GAME_STATES } = useGameSettings()
   const primaryButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -61,11 +69,11 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
           <span className="bet-tag">Bet: ${bet}</span>
         </div>
         <div className="play-buttons" role="group" aria-label="Choose your action">
-          <button ref={primaryButtonRef} className="btn btn-hit" onClick={() => { onButtonClick?.(); onHit() }} title="Hit (H)" aria-label="Hit, draw a card, press H">Hit</button>
-          <button className="btn btn-stand" onClick={() => { onButtonClick?.(); onStand() }} title="Stand (S)" aria-label="Stand, keep current hand, press S">Stand</button>
-          <button className="btn btn-double" onClick={() => { onButtonClick?.(); onDoubleDown() }} disabled={!canDouble} title="Double (D)" aria-label={`Double down${!canDouble ? ', unavailable' : ', press D'}`}>Double</button>
-          <button className="btn btn-split" onClick={() => { onButtonClick?.(); onSplit() }} disabled={!canSplit} title="Split (P)" aria-label={`Split pairs${!canSplit ? ', unavailable' : ', press P'}`}>Split</button>
-          <button className="btn btn-surrender" onClick={() => { onButtonClick?.(); onSurrender() }} disabled={!canSurrender} title="Surrender (R)" aria-label={`Surrender${!canSurrender ? ', unavailable' : ', press R'}`}>Surrender</button>
+          <button ref={primaryButtonRef} className={`btn btn-hit ${strategyClass('hit', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onHit() }} title="Hit (H)" aria-label={`Hit, draw a card, press H${strategyTrainerEnabled && optimalAction === 'hit' ? ', recommended by basic strategy' : ''}`}>Hit</button>
+          <button className={`btn btn-stand ${strategyClass('stand', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onStand() }} title="Stand (S)" aria-label={`Stand, keep current hand, press S${strategyTrainerEnabled && optimalAction === 'stand' ? ', recommended by basic strategy' : ''}`}>Stand</button>
+          <button className={`btn btn-double ${strategyClass('double', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onDoubleDown() }} disabled={!canDouble} title="Double (D)" aria-label={`Double down${!canDouble ? ', unavailable' : ', press D'}${strategyTrainerEnabled && optimalAction === 'double' ? ', recommended by basic strategy' : ''}`}>Double</button>
+          <button className={`btn btn-split ${strategyClass('split', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onSplit() }} disabled={!canSplit} title="Split (P)" aria-label={`Split pairs${!canSplit ? ', unavailable' : ', press P'}${strategyTrainerEnabled && optimalAction === 'split' ? ', recommended by basic strategy' : ''}`}>Split</button>
+          <button className={`btn btn-surrender ${strategyClass('surrender', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onSurrender() }} disabled={!canSurrender} title="Surrender (R)" aria-label={`Surrender${!canSurrender ? ', unavailable' : ', press R'}${strategyTrainerEnabled && optimalAction === 'surrender' ? ', recommended by basic strategy' : ''}`}>Surrender</button>
         </div>
       </div>
     )
@@ -79,10 +87,10 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
           <span className="bet-tag">Bet: ${bet} x2</span>
         </div>
         <div className="play-buttons" role="group" aria-label="Choose your action for this split hand">
-          <button ref={primaryButtonRef} className="btn btn-hit" onClick={() => { onButtonClick?.(); onHit() }} title="Hit (H)" aria-label="Hit, draw a card, press H">Hit</button>
-          <button className="btn btn-stand" onClick={() => { onButtonClick?.(); onStand() }} title="Stand (S)" aria-label="Stand, keep current hand, press S">Stand</button>
+          <button ref={primaryButtonRef} className={`btn btn-hit ${strategyClass('hit', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onHit() }} title="Hit (H)" aria-label="Hit, draw a card, press H">Hit</button>
+          <button className={`btn btn-stand ${strategyClass('stand', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onStand() }} title="Stand (S)" aria-label="Stand, keep current hand, press S">Stand</button>
           {canDoubleAfterSplit && (
-            <button className="btn btn-double" onClick={() => { onButtonClick?.(); onDoubleDown() }} disabled={chips < bet} title="Double (D)" aria-label={`Double down${chips < bet ? ', unavailable' : ', press D'}`}>Double</button>
+            <button className={`btn btn-double ${strategyClass('double', optimalAction, strategyTrainerEnabled)}`} onClick={() => { onButtonClick?.(); onDoubleDown() }} disabled={chips < bet} title="Double (D)" aria-label={`Double down${chips < bet ? ', unavailable' : ', press D'}`}>Double</button>
           )}
         </div>
       </div>

@@ -35,6 +35,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
     ALLOW_SURRENDER,
     CARD_BACK_THEME,
     TABLE_FELT_THEME,
+    STRATEGY_TRAINER_ENABLED,
     updateSetting,
   } = settings
 
@@ -182,6 +183,27 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                     aria-pressed={!ALLOW_SURRENDER}
                   >
                     Not Allowed
+                  </button>
+                </div>
+              </div>
+
+              {/* Strategy Trainer */}
+              <div className="setting-row" role="group" aria-label="Strategy Trainer Mode">
+                <label className="setting-label">Strategy Trainer</label>
+                <div className="setting-options">
+                  <button
+                    className={`setting-chip ${STRATEGY_TRAINER_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('STRATEGY_TRAINER_ENABLED', true)}
+                    aria-pressed={STRATEGY_TRAINER_ENABLED}
+                  >
+                    On
+                  </button>
+                  <button
+                    className={`setting-chip ${!STRATEGY_TRAINER_ENABLED ? 'setting-chip-active' : ''}`}
+                    onClick={() => updateSetting('STRATEGY_TRAINER_ENABLED', false)}
+                    aria-pressed={!STRATEGY_TRAINER_ENABLED}
+                  >
+                    Off
                   </button>
                 </div>
               </div>

@@ -166,6 +166,7 @@ export interface HouseRules {
   ALLOW_SURRENDER: boolean
   CARD_BACK_THEME: CardBackTheme
   TABLE_FELT_THEME: TableFeltTheme
+  STRATEGY_TRAINER_ENABLED: boolean
 }
 
 // ── Game Settings ──
@@ -189,6 +190,7 @@ export interface GameSettings {
   ALLOW_SURRENDER: boolean
   CARD_BACK_THEME: CardBackTheme
   TABLE_FELT_THEME: TableFeltTheme
+  STRATEGY_TRAINER_ENABLED: boolean
   updateSetting: (key: string, value: unknown) => void
   resetSettings: () => void
 }

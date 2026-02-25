@@ -4,6 +4,8 @@ import { useGameSettings } from './config/GameSettingsContext'
 import type { TableFeltTheme } from './types'
 import { useSoundEffects } from './hooks/useSoundEffects'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { getOptimalAction, actionLabel } from './utils/basicStrategy'
+import type { ResolvedAction } from './utils/basicStrategy'
 import Scoreboard from './components/Scoreboard'
 import DealerHand from './components/DealerHand'
 import GameBanner from './components/GameBanner'
@@ -19,10 +21,11 @@ import AchievementToast from './components/AchievementToast'
 import ChipAnimation from './components/ChipAnimation'
 import CelebrationEffects from './components/CelebrationEffects'
 import TutorialOverlay from './components/TutorialOverlay'
+import StrategyOverlay from './components/StrategyOverlay'
 import './App.css'
 
 function App() {
-  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS } = useGameSettings()
+  const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, ALLOW_SURRENDER } = useGameSettings()
 
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
     'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
@@ -40,6 +43,76 @@ function App() {
     } as React.CSSProperties
   }, [TABLE_FELT_THEME])
   const { state, actions } = useGameEngine()
+
+  // ── Strategy Trainer state ──
+  const [strategyAccuracy, setStrategyAccuracy] = useState({ correct: 0, total: 0 })
+  const [strategyFeedback, setStrategyFeedback] = useState<{ action: string; correct: boolean } | null>(null)
+  const strategyFeedbackTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  // Compute optimal action for current hand
+  const optimalAction: ResolvedAction | null = useMemo(() => {
+    if (!STRATEGY_TRAINER_ENABLED) return null
+    const phase = state.gameState
+    if (phase !== GAME_STATES.PLAYER_TURN && phase !== GAME_STATES.SPLITTING) return null
+
+    const isSplitPhase = phase === GAME_STATES.SPLITTING
+    const hand = isSplitPhase
+      ? state.splitHands[state.activeHandIndex]?.cards ?? []
+      : state.playerHand
+
+    if (hand.length < 2 || state.dealerHand.length === 0) return null
+
+    const dealerUpcard = state.dealerHand[0]
+    const result = getOptimalAction(hand, dealerUpcard, {
+      canDouble: isSplitPhase ? state.canDoubleAfterSplit : state.canDouble,
+      canSplit: !isSplitPhase && state.canSplit,
+      canSurrender: !isSplitPhase && state.canSurrender,
+    })
+    return result.optimalAction
+  }, [
+    STRATEGY_TRAINER_ENABLED, state.gameState, state.playerHand, state.dealerHand,
+    state.splitHands, state.activeHandIndex, state.canDouble, state.canSplit,
+    state.canSurrender, state.canDoubleAfterSplit, GAME_STATES,
+  ])
+
+  // Strategy feedback helper
+  const checkStrategy = useCallback((playerAction: ResolvedAction) => {
+    if (!STRATEGY_TRAINER_ENABLED || !optimalAction) return
+    const correct = playerAction === optimalAction
+    setStrategyAccuracy(prev => ({
+      correct: prev.correct + (correct ? 1 : 0),
+      total: prev.total + 1,
+    }))
+    setStrategyFeedback({ action: actionLabel(optimalAction), correct })
+    if (strategyFeedbackTimer.current) clearTimeout(strategyFeedbackTimer.current)
+    strategyFeedbackTimer.current = setTimeout(() => setStrategyFeedback(null), 2000)
+  }, [STRATEGY_TRAINER_ENABLED, optimalAction])
+
+  // Wrap player actions to track strategy accuracy
+  const strategyHit = useCallback(() => {
+    checkStrategy('hit')
+    actions.hit()
+  }, [checkStrategy, actions])
+
+  const strategyStand = useCallback(() => {
+    checkStrategy('stand')
+    actions.stand()
+  }, [checkStrategy, actions])
+
+  const strategyDoubleDown = useCallback(() => {
+    checkStrategy('double')
+    actions.doubleDown()
+  }, [checkStrategy, actions])
+
+  const strategySplit = useCallback(() => {
+    checkStrategy('split')
+    actions.splitPairs()
+  }, [checkStrategy, actions])
+
+  const strategySurrender = useCallback(() => {
+    checkStrategy('surrender')
+    actions.surrender()
+  }, [checkStrategy, actions])
 
   const { muted, toggleMute, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
@@ -71,11 +144,11 @@ function App() {
 
   useKeyboardShortcuts(
     {
-      onHit: actions.hit,
-      onStand: actions.stand,
-      onDoubleDown: actions.doubleDown,
-      onSplit: actions.splitPairs,
-      onSurrender: actions.surrender,
+      onHit: strategyHit,
+      onStand: strategyStand,
+      onDoubleDown: strategyDoubleDown,
+      onSplit: strategySplit,
+      onSurrender: strategySurrender,
       onAcceptInsurance: actions.acceptInsurance,
       onDeclineInsurance: actions.declineInsurance,
       onNewRound: actions.newRound,
@@ -226,6 +299,14 @@ function App() {
           />
         )}
 
+        {STRATEGY_TRAINER_ENABLED && (
+          <StrategyOverlay
+            optimalAction={optimalAction}
+            lastFeedback={strategyFeedback}
+            accuracy={strategyAccuracy}
+          />
+        )}
+
         <div className="controls-area">
           {(state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE) ? (
             <BettingControls
@@ -246,16 +327,18 @@ function App() {
               canSurrender={state.canSurrender}
               canDoubleAfterSplit={state.canDoubleAfterSplit}
               maxInsuranceBet={state.maxInsuranceBet}
-              onHit={actions.hit}
-              onStand={actions.stand}
-              onDoubleDown={actions.doubleDown}
-              onSplit={actions.splitPairs}
-              onSurrender={actions.surrender}
+              onHit={strategyHit}
+              onStand={strategyStand}
+              onDoubleDown={strategyDoubleDown}
+              onSplit={strategySplit}
+              onSurrender={strategySurrender}
               onAcceptInsurance={actions.acceptInsurance}
               onDeclineInsurance={actions.declineInsurance}
               onNewRound={actions.newRound}
               onReset={actions.resetGame}
               onButtonClick={playButtonClick}
+              optimalAction={optimalAction}
+              strategyTrainerEnabled={STRATEGY_TRAINER_ENABLED}
             />
           )}
         </div>

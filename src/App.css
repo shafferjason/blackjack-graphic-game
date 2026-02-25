@@ -2296,3 +2296,109 @@
 .tutorial-got-it {
   flex-shrink: 0;
 }
+
+/* ── Strategy Trainer ── */
+
+/* Button color coding: green glow for optimal, red glow for suboptimal */
+.strategy-optimal {
+  box-shadow: 0 0 0 2px #22c55e, 0 0 12px rgba(34, 197, 94, 0.5) !important;
+  border-color: #22c55e !important;
+}
+
+.strategy-suboptimal {
+  box-shadow: 0 0 0 2px #ef4444, 0 0 8px rgba(239, 68, 68, 0.35) !important;
+  border-color: #ef4444 !important;
+}
+
+.strategy-optimal:not(:disabled):hover {
+  box-shadow: 0 0 0 3px #22c55e, 0 0 18px rgba(34, 197, 94, 0.6) !important;
+}
+
+.strategy-suboptimal:not(:disabled):hover {
+  box-shadow: 0 0 0 3px #ef4444, 0 0 14px rgba(239, 68, 68, 0.45) !important;
+}
+
+/* Strategy overlay panel */
+.strategy-overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 16px;
+  flex-wrap: wrap;
+}
+
+.strategy-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.85rem;
+  color: #bbf7d0;
+}
+
+.strategy-label {
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.strategy-action {
+  font-weight: 700;
+  color: #4ade80;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.strategy-feedback {
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  animation: strategy-flash 0.3s ease-out;
+}
+
+.strategy-correct {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(34, 197, 94, 0.5);
+  color: #4ade80;
+}
+
+.strategy-mistake {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
+.strategy-accuracy {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(212, 166, 68, 0.12);
+  border: 1px solid rgba(212, 166, 68, 0.3);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  color: rgba(240, 236, 228, 0.9);
+}
+
+.strategy-accuracy-label {
+  opacity: 0.7;
+}
+
+.strategy-accuracy-value {
+  font-weight: 700;
+  color: var(--gold-light, #e8c252);
+}
+
+.strategy-accuracy-detail {
+  opacity: 0.5;
+  font-size: 0.75rem;
+}
+
+@keyframes strategy-flash {
+  0% { transform: scale(1.15); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
