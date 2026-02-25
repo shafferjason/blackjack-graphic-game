@@ -77,8 +77,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 16px;
-  gap: 12px;
+  padding: 16px 8px;
+  padding-bottom: 0;
+  gap: 8px;
   background:
     radial-gradient(ellipse at 50% 40%, var(--felt-light) 0%, var(--felt) 50%, var(--felt-dark) 100%);
   position: relative;
@@ -99,8 +100,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   z-index: 1;
+  width: 100%;
 }
 
 .hand-header {
@@ -138,8 +140,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 140px;
-  padding: 6px 12px;
+  min-height: 110px;
+  padding: 4px 8px;
+  width: 100%;
 }
 
 .card-slot {
@@ -211,11 +214,22 @@
   50% { opacity: 0.6; }
 }
 
-/* Controls */
+/* Controls - bottom-anchored action bar on mobile */
 .controls-area {
   z-index: 2;
   width: 100%;
-  max-width: 440px;
+  max-width: 100%;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(0deg, rgba(10, 15, 26, 0.95) 0%, rgba(10, 15, 26, 0.85) 80%, transparent 100%);
+  padding: 12px 8px;
+  padding-top: 20px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  margin-top: auto;
 }
 
 .betting-panel,
@@ -224,7 +238,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
 }
 
 .chip-stack {
@@ -264,6 +281,8 @@
 .chip {
   width: 56px;
   height: 56px;
+  min-width: 44px;
+  min-height: 44px;
   border-radius: 50%;
   font-weight: 700;
   font-size: 0.75rem;
@@ -274,6 +293,7 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.15);
   border: 3px solid rgba(255, 255, 255, 0.2);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  touch-action: manipulation;
 }
 
 .chip:not(:disabled):hover {
@@ -291,13 +311,15 @@
   gap: 10px;
 }
 
-/* Buttons */
+/* Buttons - 44px minimum touch target */
 .btn {
-  padding: 10px 28px;
+  padding: 12px 28px;
   border-radius: 10px;
   font-weight: 600;
   font-size: 0.95rem;
   letter-spacing: 0.5px;
+  min-height: 44px;
+  touch-action: manipulation;
 }
 
 .btn-primary {
@@ -326,9 +348,11 @@
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   color: #fff;
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
-  padding: 14px 40px;
-  font-size: 1.1rem;
+  padding: 12px 20px;
+  font-size: 1rem;
   border-radius: 12px;
+  min-height: 48px;
+  flex: 1 1 auto;
 }
 
 .btn-hit:not(:disabled):hover {
@@ -340,9 +364,11 @@
   background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: #fff;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-  padding: 14px 40px;
-  font-size: 1.1rem;
+  padding: 12px 20px;
+  font-size: 1rem;
   border-radius: 12px;
+  min-height: 48px;
+  flex: 1 1 auto;
 }
 
 .btn-stand:not(:disabled):hover {
@@ -354,9 +380,11 @@
   background: linear-gradient(135deg, var(--gold) 0%, #b8860b 100%);
   color: #0a0f1a;
   box-shadow: 0 4px 12px rgba(212, 166, 68, 0.3);
-  padding: 14px 32px;
-  font-size: 1.1rem;
+  padding: 12px 20px;
+  font-size: 1rem;
   border-radius: 12px;
+  min-height: 48px;
+  flex: 1 1 auto;
 }
 
 .btn-double:not(:disabled):hover {
@@ -371,7 +399,10 @@
 
 .play-buttons {
   display: flex;
-  gap: 14px;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
 }
 
 .chip-info {
@@ -399,9 +430,16 @@
 .result-buttons {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 /* Split hands */
+.split-hands-wrapper {
+  width: 100%;
+  z-index: 1;
+}
+
 .split-hands-container {
   display: flex;
   gap: 16px;
@@ -409,6 +447,59 @@
   align-items: flex-start;
   z-index: 1;
   flex-wrap: wrap;
+  width: 100%;
+}
+
+/* Mobile swipe mode */
+.split-hands-swipe {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  gap: 0;
+  padding: 0 4px;
+  scrollbar-width: none;
+}
+
+.split-hands-swipe::-webkit-scrollbar {
+  display: none;
+}
+
+.split-hands-swipe .split-hand {
+  scroll-snap-align: center;
+  min-width: 85%;
+  flex-shrink: 0;
+}
+
+.split-swipe-dots {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 6px 0 2px;
+}
+
+.split-swipe-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  min-height: auto;
+  touch-action: manipulation;
+}
+
+.split-swipe-dot:not(:disabled):active {
+  transform: scale(1.2);
+}
+
+.split-swipe-dot-active {
+  background: var(--gold);
+  transform: scale(1.2);
 }
 
 .split-hand {
@@ -489,9 +580,11 @@
   background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: #0a0f1a;
   box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
-  padding: 14px 32px;
-  font-size: 1.1rem;
+  padding: 12px 20px;
+  font-size: 1rem;
   border-radius: 12px;
+  min-height: 48px;
+  flex: 1 1 auto;
 }
 
 .btn-insurance:not(:disabled):hover {
@@ -504,9 +597,11 @@
   background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
   color: #fff;
   box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
-  padding: 14px 32px;
-  font-size: 1.1rem;
+  padding: 12px 20px;
+  font-size: 1rem;
   border-radius: 12px;
+  min-height: 48px;
+  flex: 1 1 auto;
 }
 
 .btn-surrender:not(:disabled):hover {
@@ -524,9 +619,11 @@
   background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
   color: #fff;
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-  padding: 14px 32px;
-  font-size: 1.1rem;
+  padding: 12px 20px;
+  font-size: 1rem;
   border-radius: 12px;
+  min-height: 48px;
+  flex: 1 1 auto;
 }
 
 .btn-split:not(:disabled):hover {
@@ -610,8 +707,8 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(240, 236, 228, 0.6);
   font-size: 1.1rem;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -619,6 +716,7 @@
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
   line-height: 1;
+  touch-action: manipulation;
 }
 
 .sound-toggle:hover {
@@ -632,14 +730,15 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(240, 236, 228, 0.6);
   font-size: 1.3rem;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
+  touch-action: manipulation;
 }
 
 .settings-toggle:hover {
@@ -692,8 +791,14 @@
   color: rgba(255, 255, 255, 0.5);
   font-size: 1.5rem;
   cursor: pointer;
-  padding: 0;
+  padding: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
+  touch-action: manipulation;
 }
 
 .settings-close:hover {
@@ -862,15 +967,137 @@
 /* Footer */
 .footer {
   text-align: center;
-  padding: 10px;
-  font-size: 0.75rem;
+  padding: 8px 10px;
+  padding-bottom: max(8px, env(safe-area-inset-bottom));
+  font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.25);
   background: var(--bg-dark);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Small phone adjustments */
-@media (max-width: 379px) {
+/* ── iPhone SE / extra-small phones (< 375px) ── */
+@media (max-width: 374px) {
+  .shoe-indicator {
+    right: 4px;
+    top: 8px;
+    transform: none;
+  }
+
+  .shoe-track {
+    height: 50px;
+    width: 10px;
+  }
+
+  .cards-row {
+    min-height: 100px;
+    padding: 2px 4px;
+  }
+
+  .card-slot {
+    width: 68px;
+    height: 100px;
+    border-radius: 8px;
+    margin-left: -8px;
+  }
+
+  .card-slot:first-child {
+    margin-left: 0;
+  }
+
+  .table {
+    padding: 8px 4px;
+    padding-bottom: 0;
+    gap: 6px;
+  }
+
+  .header {
+    padding: 8px 12px;
+  }
+
+  .header h1 {
+    font-size: 1.1rem;
+  }
+
+  .stats-bar {
+    gap: 6px;
+  }
+
+  .stat {
+    font-size: 0.7rem;
+    padding: 2px 6px;
+  }
+
+  .banner {
+    padding: 6px 16px;
+    min-height: 36px;
+  }
+
+  .banner p {
+    font-size: 0.82rem;
+  }
+
+  .chip {
+    width: 48px;
+    height: 48px;
+    font-size: 0.7rem;
+  }
+
+  .chip-row {
+    gap: 6px;
+  }
+
+  .btn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    min-height: 44px;
+  }
+
+  .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    min-height: 44px;
+  }
+
+  .play-buttons {
+    gap: 6px;
+  }
+
+  .controls-area {
+    padding: 10px 6px;
+    padding-top: 16px;
+  }
+
+  .split-hands-container {
+    gap: 6px;
+  }
+
+  .split-hand .cards-row {
+    min-height: 70px;
+    padding: 2px 4px;
+  }
+
+  .hand-title {
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+  }
+
+  .score-pill {
+    font-size: 0.8rem;
+    padding: 2px 10px;
+  }
+
+  .chip-info {
+    font-size: 0.95rem;
+  }
+
+  .bet-tag {
+    font-size: 0.75rem;
+    margin-left: 8px;
+  }
+}
+
+/* ── Small phones (375px - 413px) — iPhone SE thru iPhone 12 Mini ── */
+@media (min-width: 375px) and (max-width: 413px) {
   .shoe-indicator {
     right: 6px;
   }
@@ -879,17 +1106,15 @@
     height: 60px;
     width: 10px;
   }
-}
 
-@media (max-width: 379px) {
   .cards-row {
-    min-height: 115px;
-    padding: 4px 8px;
+    min-height: 110px;
+    padding: 4px 6px;
   }
 
   .card-slot {
-    width: 72px;
-    height: 105px;
+    width: 76px;
+    height: 110px;
     border-radius: 8px;
     margin-left: -10px;
   }
@@ -899,7 +1124,8 @@
   }
 
   .table {
-    padding: 10px 8px;
+    padding: 10px 6px;
+    padding-bottom: 0;
     gap: 8px;
   }
 
@@ -912,23 +1138,14 @@
   }
 
   .chip {
-    width: 48px;
-    height: 48px;
-    font-size: 0.7rem;
-  }
-
-  .btn {
-    padding: 8px 20px;
-    font-size: 0.85rem;
+    width: 52px;
+    height: 52px;
+    font-size: 0.72rem;
   }
 
   .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
-    padding: 12px 24px;
-    font-size: 1rem;
-  }
-
-  .split-hands-container {
-    gap: 8px;
+    padding: 11px 16px;
+    font-size: 0.95rem;
   }
 
   .split-hand .cards-row {
@@ -943,8 +1160,8 @@
   border: 1px solid rgba(255, 255, 255, 0.15);
   color: rgba(240, 236, 228, 0.6);
   font-size: 1.1rem;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -952,6 +1169,7 @@
   cursor: pointer;
   transition: color 0.2s, border-color 0.2s;
   line-height: 1;
+  touch-action: manipulation;
 }
 
 .stats-toggle:hover {
@@ -1118,29 +1336,116 @@
   letter-spacing: 0.3px;
 }
 
-/* Medium mobile adjustments */
-@media (min-width: 380px) and (max-width: 599px) {
+/* ── Medium phones (414px - 599px) — iPhone 12/13/14/15 standard & Plus ── */
+@media (min-width: 414px) and (max-width: 599px) {
   .cards-row {
-    min-height: 148px;
-    padding: 6px 14px;
+    min-height: 130px;
+    padding: 6px 10px;
   }
 
   .card-slot {
-    width: 95px;
-    height: 138px;
+    width: 90px;
+    height: 130px;
     border-radius: 10px;
-    margin-left: -16px;
+    margin-left: -14px;
   }
 
   .card-slot:first-child {
     margin-left: 0;
   }
+
+  .table {
+    padding: 12px 8px;
+    padding-bottom: 0;
+    gap: 10px;
+  }
+
+  .chip {
+    width: 56px;
+    height: 56px;
+    font-size: 0.75rem;
+  }
+
+  .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
 }
 
-/* Responsive - tablet and desktop */
-@media (min-width: 600px) {
+/* ── Small tablets / landscape phones (600px - 767px) ── */
+@media (min-width: 600px) and (max-width: 767px) {
+  .table {
+    padding: 16px;
+    padding-bottom: 0;
+    gap: 12px;
+  }
+
+  .cards-row {
+    min-height: 170px;
+    padding: 8px 20px;
+  }
+
+  .card-slot {
+    width: 110px;
+    height: 160px;
+    border-radius: 10px;
+    margin-left: -18px;
+  }
+
+  .card-slot:first-child {
+    margin-left: 0;
+  }
+
+  .header h1 {
+    font-size: 1.6rem;
+  }
+
+  .banner p {
+    font-size: 1.05rem;
+  }
+
+  .chip {
+    width: 60px;
+    height: 60px;
+    font-size: 0.8rem;
+  }
+
+  .controls-area {
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
+    padding: 14px 28px;
+    font-size: 1.05rem;
+  }
+
+  /* No swipe on tablets, show all split hands */
+  .split-hands-swipe {
+    scroll-snap-type: none;
+    overflow: visible;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .split-hands-swipe .split-hand {
+    min-width: auto;
+    flex-shrink: 1;
+  }
+
+  .split-swipe-dots {
+    display: none;
+  }
+}
+
+/* ── Tablets & desktop (768px+) — iPad Mini thru iPad Pro ── */
+@media (min-width: 768px) {
   .table {
     padding: 24px;
+    padding-bottom: 0;
     gap: 16px;
   }
 
@@ -1172,6 +1477,60 @@
     width: 64px;
     height: 64px;
     font-size: 0.85rem;
+  }
+
+  .controls-area {
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+    position: sticky;
+    bottom: 0;
+  }
+
+  .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
+    padding: 14px 32px;
+    font-size: 1.1rem;
+  }
+
+  .play-buttons {
+    gap: 12px;
+  }
+
+  /* No swipe on tablets, show all split hands */
+  .split-hands-swipe {
+    scroll-snap-type: none;
+    overflow: visible;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .split-hands-swipe .split-hand {
+    min-width: auto;
+    flex-shrink: 1;
+  }
+
+  .split-swipe-dots {
+    display: none;
+  }
+}
+
+/* ── Large tablets & desktop (1024px+) — iPad Pro 12.9 ── */
+@media (min-width: 1024px) {
+  .table {
+    padding: 32px;
+    padding-bottom: 0;
+    gap: 20px;
+  }
+
+  .controls-area {
+    max-width: 600px;
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(10, 15, 26, 0.9) 0%, rgba(10, 15, 26, 0.7) 80%, transparent 100%);
+  }
+
+  .hand-area {
+    max-width: 800px;
   }
 }
 
@@ -1700,8 +2059,8 @@
   color: rgba(240, 236, 228, 0.6);
   font-size: 1.1rem;
   font-weight: 700;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -1710,6 +2069,7 @@
   transition: color 0.2s, border-color 0.2s;
   line-height: 1;
   font-family: 'Playfair Display', serif;
+  touch-action: manipulation;
 }
 
 .help-toggle:hover {
