@@ -1,13 +1,21 @@
 import { useState, useRef, useEffect } from 'react'
+import type { SoundProfile } from '../utils/sound'
 
 interface AudioPanelProps {
   muted: boolean
   volume: number
+  soundProfile: SoundProfile
   onToggleMute: () => void
   onSetVolume: (v: number) => void
+  onSetSoundProfile: (p: SoundProfile) => void
 }
 
-export default function AudioPanel({ muted, volume, onToggleMute, onSetVolume }: AudioPanelProps) {
+const PROFILES: { value: SoundProfile; label: string }[] = [
+  { value: 'modern-casino', label: 'Modern Casino' },
+  { value: 'classic', label: 'Classic' },
+]
+
+export default function AudioPanel({ muted, volume, soundProfile, onToggleMute, onSetVolume, onSetSoundProfile }: AudioPanelProps) {
   const [open, setOpen] = useState(false)
   const panelRef = useRef<HTMLDivElement>(null)
 
@@ -74,6 +82,22 @@ export default function AudioPanel({ muted, volume, onToggleMute, onSetVolume }:
                 />
                 <span className="audio-volume-value">{volumePct}%</span>
               </div>
+            </div>
+          </div>
+
+          <div className="audio-panel-row audio-profile-row" role="group" aria-label="Sound Profile">
+            <label className="audio-slider-label">Sound Profile</label>
+            <div className="audio-profile-options">
+              {PROFILES.map(p => (
+                <button
+                  key={p.value}
+                  className={`audio-profile-btn ${soundProfile === p.value ? 'audio-profile-active' : ''}`}
+                  onClick={() => onSetSoundProfile(p.value)}
+                  aria-pressed={soundProfile === p.value}
+                >
+                  {p.label}
+                </button>
+              ))}
             </div>
           </div>
         </div>

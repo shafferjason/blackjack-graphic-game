@@ -4,6 +4,9 @@ import {
   toggleMute,
   getVolume,
   setVolume,
+  getSoundProfile,
+  setSoundProfile,
+  initAmbience,
   playCardDeal,
   playChipPlace,
   playChipCollect,
@@ -16,6 +19,7 @@ import {
   playStand,
   playBust,
 } from '../utils/sound'
+import type { SoundProfile } from '../utils/sound'
 import type { GamePhase, GameResult } from '../types'
 
 interface SoundEffectsInput {
@@ -39,12 +43,14 @@ export function useSoundEffects({
 }: SoundEffectsInput) {
   const [muted, setMutedState] = useState(isMuted)
   const [volume, setVolumeState] = useState(getVolume)
+  const [soundProfile, setSoundProfileState] = useState<SoundProfile>(getSoundProfile)
   const prevPhaseRef = useRef<GamePhase>(gameState)
   const prevResultRef = useRef<GameResult | null>(result)
   const prevPlayerCardsRef = useRef(playerHandLength)
   const prevDealerCardsRef = useRef(dealerHandLength)
   const prevBetRef = useRef(bet)
   const prevCutCardRef = useRef(cutCardReached)
+  const ambienceInitRef = useRef(false)
 
   const handleToggleMute = useCallback(() => {
     const newMuted = toggleMute()
@@ -55,6 +61,19 @@ export function useSoundEffects({
     setVolume(value)
     setVolumeState(value)
   }, [])
+
+  const handleSetSoundProfile = useCallback((profile: SoundProfile) => {
+    setSoundProfile(profile)
+    setSoundProfileState(profile)
+  }, [])
+
+  // Initialize ambience on first user-driven game activity
+  useEffect(() => {
+    if (!ambienceInitRef.current && gameState !== 'idle') {
+      ambienceInitRef.current = true
+      initAmbience()
+    }
+  }, [gameState])
 
   useEffect(() => {
     const prevPhase = prevPhaseRef.current
@@ -136,8 +155,10 @@ export function useSoundEffects({
   return {
     muted,
     volume,
+    soundProfile,
     toggleMute: handleToggleMute,
     setVolume: handleSetVolume,
+    setSoundProfile: handleSetSoundProfile,
     playButtonClick,
   }
 }

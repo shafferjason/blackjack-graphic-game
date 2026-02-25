@@ -368,7 +368,7 @@ function App() {
     }, 50)
   }, [mpActive, mpActiveIndex, mpPlayers, state.chips, actions])
 
-  const { muted, volume, toggleMute, setVolume, playButtonClick } = useSoundEffects({
+  const { muted, volume, soundProfile, toggleMute, setVolume, setSoundProfile, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
     result: state.result,
     bet: state.bet,
@@ -497,7 +497,7 @@ function App() {
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
           <TutorialOverlay />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
-          <AudioPanel muted={muted} volume={volume} onToggleMute={toggleMute} onSetVolume={setVolume} />
+          <AudioPanel muted={muted} volume={volume} soundProfile={soundProfile} onToggleMute={toggleMute} onSetVolume={setVolume} onSetSoundProfile={setSoundProfile} />
         </nav>
       </header>
 

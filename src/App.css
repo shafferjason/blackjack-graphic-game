@@ -882,6 +882,46 @@
   font-variant-numeric: tabular-nums;
 }
 
+.audio-profile-row {
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.audio-profile-options {
+  display: flex;
+  gap: 6px;
+  width: 100%;
+}
+
+.audio-profile-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(240, 236, 228, 0.6);
+  font-size: 0.72rem;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  touch-action: manipulation;
+  letter-spacing: 0.2px;
+}
+
+.audio-profile-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.audio-profile-btn.audio-profile-active {
+  background: rgba(201, 168, 76, 0.18);
+  border-color: rgba(201, 168, 76, 0.45);
+  color: var(--gold-light, #e0c470);
+  font-weight: 600;
+}
+
 /* Settings toggle */
 .settings-toggle {
   background: none;
