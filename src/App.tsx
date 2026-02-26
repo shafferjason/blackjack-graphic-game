@@ -1,4 +1,5 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
+import FaceCardPreview from './components/FaceCardPreview'
 import { useGameEngine } from './hooks/useGameEngine'
 import { useGameSettings } from './config/GameSettingsContext'
 import type { TableFeltTheme } from './types'
@@ -37,6 +38,12 @@ import './App.css'
 
 function App() {
   const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, SIDE_BETS_ENABLED, MULTIPLAYER_ENABLED, ALLOW_SURRENDER, updateSetting } = useGameSettings()
+
+  // ── Face Card Preview Mode (URL param: ?preview=facecard) ──
+  const [showFaceCardPreview, setShowFaceCardPreview] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('preview') === 'facecard'
+  })
 
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
     'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
@@ -662,6 +669,10 @@ function App() {
           onStart={handleMpStart}
           onCancel={handleMpCancel}
         />
+      )}
+
+      {showFaceCardPreview && (
+        <FaceCardPreview onClose={() => setShowFaceCardPreview(false)} />
       )}
     </div>
   )

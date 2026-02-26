@@ -1,0 +1,172 @@
+/* ─── Face Card Preview Overlay ─── */
+.fc-preview-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.88);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.fc-preview-banner {
+  position: sticky;
+  top: 0;
+  z-index: 10000;
+  background: linear-gradient(90deg, #b8860b, #daa520, #b8860b);
+  color: #1a1a1a;
+  text-align: center;
+  padding: 8px 16px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-bottom: 2px solid #8b6914;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.fc-preview-panel {
+  max-width: 860px;
+  margin: 24px auto;
+  padding: 24px;
+  background: #0d1a0f;
+  border: 1px solid #2a5a3a;
+  border-radius: 12px;
+}
+
+.fc-preview-header {
+  text-align: center;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.fc-preview-header h2 {
+  color: #daa520;
+  font-size: 22px;
+  margin: 0 0 6px;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.fc-preview-header p {
+  color: #8cab8c;
+  font-size: 13px;
+  margin: 0;
+}
+
+.fc-preview-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #2a1a1a;
+  color: #e0a0a0;
+  border: 1px solid #5a2a2a;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.fc-preview-close:hover {
+  background: #4a1a1a;
+}
+
+/* ─── Suit selector ─── */
+.fc-preview-suit-selector {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.fc-suit-btn {
+  background: #1a2a1a;
+  color: #a0c0a0;
+  border: 1px solid #3a5a3a;
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 14px;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.fc-suit-btn:hover {
+  background: #2a3a2a;
+}
+
+.fc-suit-btn.active {
+  background: #1a3a1a;
+  border-color: #daa520;
+  color: #daa520;
+}
+
+/* ─── Size rows ─── */
+.fc-preview-size-row {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #1a3a2a;
+  border-radius: 8px;
+}
+
+.fc-size-label {
+  color: #8cab8c;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 12px;
+}
+
+.fc-cards-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.fc-preview-card-slot {
+  flex-shrink: 0;
+  transform: scale(var(--fc-scale, 1));
+  transform-origin: top center;
+  /* Override the base card-wrapper's hardcoded size */
+  width: 90px;
+  height: 130px;
+}
+
+/* Scale the card-wrapper inside preview slots */
+.fc-preview-card-slot .card-wrapper {
+  width: 100% !important;
+  height: 100% !important;
+  margin-left: 0 !important;
+}
+
+/* ─── Implementation notes ─── */
+.fc-preview-notes {
+  margin-top: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #1a3a2a;
+  border-radius: 8px;
+}
+
+.fc-preview-notes h3 {
+  color: #8cab8c;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 8px;
+}
+
+.fc-preview-notes ul {
+  color: #6a8a6a;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.fc-preview-notes li {
+  margin-bottom: 2px;
+}
