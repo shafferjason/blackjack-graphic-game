@@ -666,6 +666,20 @@
   }
 }
 
+/* ── Legendary idle glow ── */
+.card-wrapper[data-tier="legendary"] .card {
+  animation: legendaryIdleGlow 3s ease-in-out infinite;
+}
+
+@keyframes legendaryIdleGlow {
+  0%, 100% {
+    box-shadow: 0 0 6px rgba(251, 191, 36, 0.15), 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.3), 0 0 24px rgba(245, 158, 11, 0.12), 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .card-wrapper.deal-animate,
@@ -678,5 +692,8 @@
   }
   .card-inner.flipped {
     transition-duration: 0.01s;
+  }
+  .card-wrapper[data-tier="legendary"] .card {
+    animation: none;
   }
 }

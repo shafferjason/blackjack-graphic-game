@@ -28,7 +28,7 @@ type FaceCardRole = 'jack' | 'queen' | 'king'
 // 'flame' = Crimson Flame fire
 // 'shadow' = Shadow Dynasty dark
 // 'serpent' = Gilded Serpent mythic
-export type SkinVariant = 'classic' | 'neon' | 'royal' | 'sakura' | 'pharaoh' | 'frost' | 'flame' | 'shadow' | 'serpent' | 'celestial' | 'blood-moon' | 'midnight' | 'emerald' | 'velvet' | 'diamond'
+export type SkinVariant = 'classic' | 'neon' | 'royal' | 'sakura' | 'pharaoh' | 'frost' | 'flame' | 'shadow' | 'serpent' | 'celestial' | 'blood-moon' | 'midnight' | 'emerald' | 'velvet' | 'diamond' | 'dragon'
 
 const SKIN_TO_VARIANT: Record<string, SkinVariant> = {
   'classic': 'classic',
@@ -46,6 +46,7 @@ const SKIN_TO_VARIANT: Record<string, SkinVariant> = {
   'emerald-fortune': 'emerald',
   'velvet-noir': 'velvet',
   'diamond-dynasty': 'diamond',
+  'dragons-hoard': 'dragon',
 }
 
 export function getSkinVariant(skinId: string): SkinVariant {
@@ -118,6 +119,20 @@ export function JackHeadwearVariant({ variant, p }: { variant: SkinVariant; p: V
           <path d="M32,18 Q34,13 37,16 Q39,10 41,16 Q43,13 45,18" fill="none" stroke="#f08020" strokeWidth="0.3" opacity="0.3" />
         </g>
       )
+    case 'dragon':
+      return (
+        <g opacity="0.85">
+          {/* Dragon horn crown */}
+          <path d="M32,18 Q30,10 28,4" fill="none" stroke={p.gold} strokeWidth="1.2" strokeLinecap="round" />
+          <path d="M48,18 Q50,10 52,4" fill="none" stroke={p.gold} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Dragonscale headband */}
+          <rect x="30" y="18" width="20" height="3" rx="1" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {[32, 35, 38, 41, 44, 47].map((x, i) => (
+            <path key={i} d={`M${x},18 L${x + 1.5},16.5 L${x + 3},18`} fill={p.goldLt} stroke={p.goldDk} strokeWidth="0.2" opacity="0.5" />
+          ))}
+          <circle cx="40" cy="19.5" r="1.5" fill="#ef4444" opacity="0.7" />
+        </g>
+      )
     default:
       return null
   }
@@ -157,6 +172,16 @@ export function JackPropVariant({ variant, p }: { variant: SkinVariant; p: Varia
             <line x1="0" y1="-1" x2="0" y2="12" stroke={p.gold} strokeWidth="1" />
             <line x1="-3" y1="3" x2="3" y2="3" stroke={p.gold} strokeWidth="0.8" />
           </g>
+        </g>
+      )
+    case 'dragon':
+      return (
+        <g>
+          {/* Dragon claw dagger */}
+          <line x1="60" y1="24" x2="62" y2="52" stroke={p.goldDk} strokeWidth="1" strokeLinecap="round" />
+          <path d="M59,24 L60,18 L61,24" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {/* Dragon wing hint on shoulder */}
+          <path d="M54,36 Q58,30 64,28 Q60,34 56,38" fill={p.gold} opacity="0.2" stroke={p.goldDk} strokeWidth="0.3" />
         </g>
       )
     default:
@@ -200,6 +225,18 @@ export function QueenCrownVariant({ variant, p }: { variant: SkinVariant; p: Var
           <path d="M32,18 Q30,8 35,4 L40,8 L45,4 Q50,8 48,18" fill="none" stroke={p.gold} strokeWidth="0.8" />
           <circle cx="40" cy="6" r="4" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" />
           <circle cx="40" cy="6" r="2" fill={p.goldLt} opacity="0.3" />
+        </g>
+      )
+    case 'dragon':
+      return (
+        <g opacity="0.85">
+          {/* Dragonfire tiara */}
+          <path d="M30,18 L33,10 L36,15 L40,6 L44,15 L47,10 L50,18" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
+          <circle cx="40" cy="8" r="2" fill="#ef4444" opacity="0.6" />
+          <circle cx="40" cy="8" r="1" fill="#fbbf24" opacity="0.4" />
+          {/* Flame wisps */}
+          <path d="M36,12 Q35,8 37,6" fill="none" stroke="#f59e0b" strokeWidth="0.4" opacity="0.4" />
+          <path d="M44,12 Q45,8 43,6" fill="none" stroke="#f59e0b" strokeWidth="0.4" opacity="0.4" />
         </g>
       )
     default:
@@ -249,6 +286,19 @@ export function QueenPropVariant({ variant, p }: { variant: SkinVariant; p: Vari
           <line x1="0" y1="6" x2="0" y2="14" stroke="#2a5222" strokeWidth="0.7" strokeLinecap="round" />
         </g>
       )
+    case 'dragon':
+      return (
+        <g transform="translate(62,38)">
+          {/* Dragon egg */}
+          <ellipse cx="0" cy="2" rx="3.5" ry="5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
+          {/* Scale pattern */}
+          {[-2, 0, 2].map((y, i) => (
+            <path key={i} d={`M-2,${y} Q0,${y - 1.5} 2,${y}`} fill="none" stroke={p.goldDk} strokeWidth="0.3" opacity="0.4" />
+          ))}
+          {/* Inner glow */}
+          <ellipse cx="0" cy="1" rx="1.5" ry="2" fill="#ef4444" opacity="0.25" />
+        </g>
+      )
     default:
       return null
   }
@@ -289,6 +339,19 @@ export function KingCrownVariant({ variant, p }: { variant: SkinVariant; p: Vari
           {/* Uraeus on crown */}
           <path d="M40,-1 Q38,2 39,5" fill="none" stroke={p.gold} strokeWidth="0.6" />
           <circle cx="40" cy="-2" r="1.2" fill={p.gold} />
+        </g>
+      )
+    case 'dragon':
+      return (
+        <g opacity="0.85">
+          {/* Dragon king great crown with horns */}
+          <path d="M27,22 L25,8 Q32,4 40,0 Q48,4 55,8 L53,22 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
+          {/* Central dragon eye jewel */}
+          <circle cx="40" cy="10" r="3" fill="#ef4444" stroke={p.goldDk} strokeWidth="0.4" />
+          <circle cx="40" cy="10" r="1.2" fill="#fbbf24" opacity="0.6" />
+          {/* Crown horns */}
+          <path d="M30,15 Q27,6 24,0" fill="none" stroke={p.gold} strokeWidth="1.4" strokeLinecap="round" />
+          <path d="M50,15 Q53,6 56,0" fill="none" stroke={p.gold} strokeWidth="1.4" strokeLinecap="round" />
         </g>
       )
     default:
@@ -333,6 +396,18 @@ export function KingPropVariant({ variant, p }: { variant: SkinVariant; p: Varia
           <line x1="12" y1="32" x2="8" y2="38" stroke={p.gold} strokeWidth="0.5" />
           <line x1="12" y1="32" x2="7" y2="36" stroke={p.gold} strokeWidth="0.5" />
           <line x1="12" y1="32" x2="9" y2="40" stroke={p.gold} strokeWidth="0.5" />
+        </g>
+      )
+    case 'dragon':
+      return (
+        <g>
+          {/* Dragonfire staff */}
+          <line x1="15" y1="28" x2="14" y2="57" stroke={p.goldDk} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Flame tip */}
+          <path d="M15,28 Q13,22 14,16 Q15,20 16,16 Q17,22 15,28" fill="#ef4444" opacity="0.5" />
+          <path d="M14.5,26 Q14,22 15,18 Q16,22 15.5,26" fill="#fbbf24" opacity="0.35" />
+          {/* Staff dragon coil */}
+          <path d="M13.5,35 Q12,33 13.5,31 Q15,33 13.5,35" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
         </g>
       )
     default:

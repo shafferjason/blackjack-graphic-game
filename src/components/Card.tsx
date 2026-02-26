@@ -1072,6 +1072,7 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
     animationType === 'hit' ? 'hit-animate' : ''
 
   const cardLabel = getCardLabel(card, hidden)
+  const skinTier = getActiveSkin().tier
 
   // For the 3D-flip dealer hole card
   if (flipReveal) {
@@ -1082,6 +1083,7 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
         style={{ '--deal-i': index } as React.CSSProperties}
         role="listitem"
         aria-label={cardLabel}
+        data-tier={skinTier}
       >
         <div className={innerClass}>
           {/* Front face (the actual card) - shown when not flipped */}
@@ -1105,6 +1107,7 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
         style={{ '--deal-i': index } as React.CSSProperties}
         role="listitem"
         aria-label="Face-down card"
+        data-tier={skinTier}
       >
         <CardBack />
       </div>
@@ -1117,6 +1120,7 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
       style={{ '--deal-i': index } as React.CSSProperties}
       role="listitem"
       aria-label={cardLabel}
+      data-tier={skinTier}
     >
       <CardFace card={card} />
     </div>
