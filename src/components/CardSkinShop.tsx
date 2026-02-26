@@ -98,6 +98,31 @@ function getAchievementRewardForSkin(skinId: string) {
   return ACHIEVEMENT_SKIN_REWARDS.find(r => r.skinId === skinId)
 }
 
+/** Mini face card gallery strip showing J/Q/K themed preview */
+function FaceCardGallery({ skin }: { skin: CardSkin }) {
+  const palette = skin.faceCardPalette.red
+  const ranks = ['J', 'Q', 'K'] as const
+  return (
+    <div className="shop-face-gallery">
+      {ranks.map(rank => (
+        <div
+          key={rank}
+          className="shop-face-mini"
+          style={{
+            borderColor: skin.borderColor !== 'transparent' ? skin.borderColor : 'rgba(170,160,140,0.5)',
+            background: `linear-gradient(155deg, #fffef8, #f0ece2)`,
+          }}
+        >
+          <span className="shop-face-mini-rank" style={{ color: palette.ink }}>{rank}</span>
+          <div className="shop-face-mini-swatch" style={{ background: palette.clothing }} />
+          <div className="shop-face-mini-accent" style={{ background: palette.gold }} />
+        </div>
+      ))}
+      <span className="shop-face-gallery-label">Face cards</span>
+    </div>
+  )
+}
+
 export default function CardSkinShop({ chips, onDeductChips }: CardSkinShopProps) {
   const [open, setOpen] = useState(false)
   const [skinState, setSkinState] = useState<CardSkinState>(loadCardSkinState)
@@ -224,6 +249,7 @@ export default function CardSkinShop({ chips, onDeductChips }: CardSkinShopProps
                   {!owned && skin.price > 0 && (
                     <PriceProgressBar price={skin.price} chips={chips} />
                   )}
+                  {owned && <FaceCardGallery skin={skin} />}
                 </div>
                 <div className="shop-skin-action">
                   {skin.price === 0 || owned ? (

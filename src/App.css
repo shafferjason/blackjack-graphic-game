@@ -1706,6 +1706,59 @@
   margin-top: 2px;
 }
 
+/* ── Face Card Gallery Strip ── */
+.shop-face-gallery {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.shop-face-mini {
+  width: 22px;
+  height: 30px;
+  border-radius: 3px;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.shop-face-mini-rank {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 9px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.shop-face-mini-swatch {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  opacity: 0.6;
+}
+
+.shop-face-mini-accent {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.shop-face-gallery-label {
+  font-size: 0.55rem;
+  color: rgba(255, 255, 255, 0.3);
+  margin-left: 4px;
+}
+
 /* Skin reward toast */
 .skin-reward-toast-container {
   position: fixed;
