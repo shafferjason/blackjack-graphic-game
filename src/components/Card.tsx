@@ -811,6 +811,10 @@ function CanvasOverlay({ skinId, rank }: { skinId: string; rank: FaceRank }) {
     case 'celestial': return <CelestialOverlay rank={rank} />
     case 'dragons-hoard': return <DragonsHoardOverlay rank={rank} />
     case 'diamond-dynasty': return <DiamondDynastyOverlay rank={rank} />
+    case 'royal-gold': return <RoyalGoldOverlay />
+    case 'midnight-purple': return <MidnightPurpleOverlay rank={rank} />
+    case 'arctic-frost': return <ArcticFrostOverlay />
+    case 'emerald-fortune': return <EmeraldFortuneOverlay rank={rank} />
     default: return null
   }
 }
@@ -829,6 +833,10 @@ function CanvasFrame({ skinId }: { skinId: string }) {
     case 'celestial': return <CelestialFrame />
     case 'dragons-hoard': return <DragonsHoardFrame />
     case 'diamond-dynasty': return <DiamondDynastyFrame />
+    case 'royal-gold': return <RoyalGoldFrame />
+    case 'midnight-purple': return <MidnightPurpleFrame />
+    case 'arctic-frost': return <ArcticFrostFrame />
+    case 'emerald-fortune': return <EmeraldFortuneFrame />
     default: return null
   }
 }
@@ -1241,6 +1249,189 @@ function DiamondDynastyFrame() {
     <rect x="5" y="5" width="290" height="410" rx="8"
       fill="none" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.2"
       className="dd-rainbow-border" />
+  )
+}
+
+/* ── Royal Gold overlay — geometric pattern, gold shimmer ── */
+function RoyalGoldOverlay() {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <defs>
+        <pattern id="rg-geo" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M10,0 L20,10 L10,20 L0,10 Z" fill="none" stroke="#D4A017" strokeWidth="0.3" opacity="0.15" />
+        </pattern>
+      </defs>
+      <rect x="0" y="0" width="300" height="420" fill="url(#rg-geo)" className="rg-pattern" />
+      <rect x="0" y="0" width="300" height="420" fill="none" className="rg-shimmer" />
+    </svg>
+  )
+}
+function RoyalGoldFrame() {
+  return (
+    <>
+      <rect x="5" y="5" width="290" height="410" rx="8" fill="none" stroke="#D4A017" strokeWidth="2" opacity="0.25" />
+      <rect x="9" y="9" width="282" height="402" rx="6" fill="none" stroke="#046A38" strokeWidth="0.5" opacity="0.15" />
+    </>
+  )
+}
+
+/* ── Midnight Purple overlay — smoke, spotlight ── */
+function MidnightPurpleOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <path d="M250,380 Q260,340 245,300 Q255,260 240,220" stroke="#A855F7" strokeWidth="1.5" fill="none" opacity="0.06" className="mp-smoke" />
+      <path d="M230,390 Q240,350 225,310 Q235,270 220,230" stroke="#A855F7" strokeWidth="1" fill="none" opacity="0.04" className="mp-smoke" style={{ animationDelay: '2s' }} />
+      <polygon points="140,0 160,0 200,420 100,420" fill="rgba(107,33,168,0.03)" className="mp-spotlight" />
+      {rank === 'Q' && (
+        <>
+          <circle cx="150" cy="200" r="30" fill="none" stroke="#A855F7" strokeWidth="0.5" opacity="0.1" className="mp-radiate" />
+          <circle cx="150" cy="200" r="50" fill="none" stroke="#A855F7" strokeWidth="0.3" opacity="0.06" className="mp-radiate" style={{ animationDelay: '0.5s' }} />
+        </>
+      )}
+    </svg>
+  )
+}
+function MidnightPurpleFrame() {
+  return (
+    <>
+      <rect x="5" y="5" width="290" height="410" rx="8" fill="none" stroke="#6B21A8" strokeWidth="1.5" opacity="0.2" />
+      <rect x="9" y="9" width="282" height="402" rx="6" fill="none" stroke="#FFD700" strokeWidth="0.5" opacity="0.08" />
+    </>
+  )
+}
+
+/* ── Arctic Frost overlay — aurora, snowflakes, ice cracks ── */
+function ArcticFrostOverlay() {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <defs>
+        <linearGradient id="af-aurora" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#A8E6CF" />
+          <stop offset="50%" stopColor="#81D4FA" />
+          <stop offset="100%" stopColor="#CE93D8" />
+        </linearGradient>
+      </defs>
+      <rect x="0" y="10" width="300" height="30" fill="url(#af-aurora)" opacity="0.08" className="af-aurora-shift" />
+      {[
+        { cx: 30, cy: 50, r: 1.5, d: '0s' }, { cx: 90, cy: 120, r: 1, d: '1s' },
+        { cx: 180, cy: 80, r: 1.8, d: '2s' }, { cx: 250, cy: 150, r: 1.2, d: '0.5s' },
+        { cx: 60, cy: 250, r: 1, d: '3s' }, { cx: 220, cy: 300, r: 1.5, d: '1.5s' },
+      ].map((s, i) => (
+        <circle key={i} cx={s.cx} cy={s.cy} r={s.r} fill="#FFFFFF" opacity="0.3" className="af-snow" style={{ animationDelay: s.d }} />
+      ))}
+      <path d="M0,200 L50,210 L80,195" stroke="#FFFFFF" strokeWidth="0.5" fill="none" opacity="0.1" />
+      <path d="M220,350 L260,340 L300,355" stroke="#FFFFFF" strokeWidth="0.5" fill="none" opacity="0.08" />
+    </svg>
+  )
+}
+function ArcticFrostFrame() {
+  return (
+    <>
+      <rect x="5" y="5" width="290" height="410" rx="8" fill="none" stroke="#81D4FA" strokeWidth="1.5" opacity="0.2" />
+      <rect x="9" y="9" width="282" height="402" rx="6" fill="none" stroke="#A8E6CF" strokeWidth="0.5" opacity="0.1" />
+    </>
+  )
+}
+
+/* ── Emerald Fortune overlay — equations, sparkles, monocle ── */
+function EmeraldFortuneOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      {rank === 'J' && (
+        <>
+          <text x="90" y="90" fill="#D4A017" fontSize="5" opacity="0.15" className="ef-equation">P(21)=0.048</text>
+          <text x="180" y="100" fill="#D4A017" fontSize="4" opacity="0.12" className="ef-equation" style={{ animationDelay: '1s' }}>EV=+1.2%</text>
+          <text x="70" y="110" fill="#D4A017" fontSize="5" opacity="0.1" className="ef-equation" style={{ animationDelay: '2s' }}>TC=+3</text>
+        </>
+      )}
+      {rank === 'Q' && [0, 1, 2, 3, 4].map(i => (
+        <circle key={i} cx={195 + Math.cos((i / 5) * Math.PI * 2) * 8} cy={250 + Math.sin((i / 5) * Math.PI * 2) * 3}
+          r="1" fill="#FFFFFF" opacity="0.3" className="ef-sparkle" style={{ animationDelay: `${i * 0.4}s` }} />
+      ))}
+      {rank === 'K' && <circle cx="165" cy="140" r="2" fill="#FFFFFF" opacity="0.2" className="ef-monocle-glint" />}
+      <rect x="0" y="0" width="300" height="420" fill="none" className="ef-deco-shimmer" />
+    </svg>
+  )
+}
+function EmeraldFortuneFrame() {
+  return (
+    <>
+      <rect x="5" y="5" width="290" height="410" rx="8" fill="none" stroke="#D4A017" strokeWidth="1.5" opacity="0.2" />
+      <rect x="9" y="9" width="282" height="402" rx="6" fill="none" stroke="#046A38" strokeWidth="1" opacity="0.15" />
+    </>
+  )
+}
+
+/* ── Crimson Flame overlay — ember particles, chart pulses, clock hand tick, throne break ── */
+function CrimsonFlameOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <defs>
+        <filter id="cf-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Ember particles rising — shared across all ranks */}
+      {[
+        { cx: 60, cy: 360, d: '0s' }, { cx: 140, cy: 380, d: '1.2s' },
+        { cx: 210, cy: 350, d: '0.6s' }, { cx: 260, cy: 370, d: '2s' },
+        { cx: 100, cy: 390, d: '1.8s' }, { cx: 180, cy: 340, d: '0.3s' },
+      ].map((p, i) => (
+        <circle key={i} cx={p.cx} cy={p.cy} r={1 + (i % 3) * 0.5}
+          fill={i % 2 === 0 ? '#FF6B35' : '#FFF8E1'} opacity="0.4"
+          className="cf-ember-rise"
+          style={{ animationDelay: p.d }} />
+      ))}
+      {/* Jack: chart line pulse */}
+      {rank === 'J' && (
+        <line x1="40" y1="345" x2="260" y2="330" stroke="#FFF8E1" strokeWidth="0.8"
+          opacity="0.2" className="cf-chart-pulse" />
+      )}
+      {/* Queen: clock hand tick */}
+      {rank === 'Q' && (
+        <line x1="150" y1="175" x2="135" y2="130" stroke="#FFD700" strokeWidth="1"
+          opacity="0.3" className="cf-clock-tick" filter="url(#cf-glow)" />
+      )}
+      {/* King: throne edge particle break */}
+      {rank === 'K' && (
+        <>
+          <circle cx="90" cy="180" r="1.5" fill="#FF6B35" opacity="0.5" className="cf-throne-break" />
+          <circle cx="210" cy="190" r="1.5" fill="#FFF8E1" opacity="0.4" className="cf-throne-break" style={{ animationDelay: '0.5s' }} />
+          <circle cx="88" cy="280" r="1" fill="#FFD700" opacity="0.5" className="cf-throne-break" style={{ animationDelay: '1s' }} />
+          <circle cx="212" cy="270" r="1" fill="#FF6B35" opacity="0.4" className="cf-throne-break" style={{ animationDelay: '1.5s' }} />
+        </>
+      )}
+      {/* Ace: core pulse glow */}
+      {rank === 'A' && (
+        <circle cx="150" cy="210" r="15" fill="#FFF8E1" opacity="0.15"
+          filter="url(#cf-glow)" className="cf-core-pulse" />
+      )}
+    </svg>
+  )
+}
+
+function CrimsonFlameFrame() {
+  return (
+    <>
+      <defs>
+        <filter id="cf-frame-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <rect x="6" y="6" width="288" height="408" rx="8"
+        fill="none" stroke="#8B0000" strokeWidth="1.5" opacity="0.25" />
+      <rect x="10" y="10" width="280" height="400" rx="6"
+        fill="none" stroke="#FF6B35" strokeWidth="0.5" opacity="0.15"
+        filter="url(#cf-frame-glow)" />
+    </>
   )
 }
 
