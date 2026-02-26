@@ -4,6 +4,7 @@
   perspective: 800px;
   flex-shrink: 0;
   margin-left: -14px;
+  will-change: transform, opacity;
 }
 
 .card-wrapper:first-child {

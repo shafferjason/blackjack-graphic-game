@@ -75,6 +75,15 @@ export function useSoundEffects({
     }
   }, [gameState])
 
+  const soundTimersRef = useRef<ReturnType<typeof setTimeout>[]>([])
+
+  // Cleanup sound timers on unmount
+  useEffect(() => {
+    return () => {
+      soundTimersRef.current.forEach(clearTimeout)
+    }
+  }, [])
+
   useEffect(() => {
     const prevPhase = prevPhaseRef.current
     const prevResult = prevResultRef.current
@@ -91,6 +100,11 @@ export function useSoundEffects({
     prevBetRef.current = bet
     prevCutCardRef.current = cutCardReached
 
+    const schedule = (fn: () => void, delay: number) => {
+      const t = setTimeout(fn, delay)
+      soundTimersRef.current.push(t)
+    }
+
     // Shuffle sound when cut card is reached (new shoe created)
     if (prevCutCard && !cutCardReached && gameState === 'dealing') {
       playShuffle()
@@ -100,9 +114,9 @@ export function useSoundEffects({
     if (prevPhase === 'betting' && gameState === 'dealing') {
       // Stagger 4 card deal sounds with slight timing variation
       playCardDeal()
-      setTimeout(() => playCardDeal(), 90)
-      setTimeout(() => playCardDeal(), 175)
-      setTimeout(() => playCardDeal(), 260)
+      schedule(() => playCardDeal(), 90)
+      schedule(() => playCardDeal(), 175)
+      schedule(() => playCardDeal(), 260)
       return
     }
 
@@ -130,16 +144,16 @@ export function useSoundEffects({
     if (result !== prevResult && result !== null) {
       if (result === 'blackjack') {
         // Small delay so deal sounds finish
-        setTimeout(() => playBlackjackCelebration(), 300)
+        schedule(() => playBlackjackCelebration(), 300)
       } else if (result === 'win') {
-        setTimeout(() => {
+        schedule(() => {
           playWinFanfare()
-          setTimeout(() => playChipCollect(), 350)
+          schedule(() => playChipCollect(), 350)
         }, 200)
       } else if (result === 'lose') {
         // Bust (lost during player turn) gets a distinct bust sound
         const wasBust = prevPhase === 'player_turn'
-        setTimeout(() => {
+        schedule(() => {
           if (wasBust) {
             playBust()
           } else {
@@ -147,7 +161,7 @@ export function useSoundEffects({
           }
         }, 200)
       } else if (result === 'push') {
-        setTimeout(() => playPush(), 200)
+        schedule(() => playPush(), 200)
       }
     }
   }, [gameState, result, bet, chips, playerHandLength, dealerHandLength, cutCardReached])

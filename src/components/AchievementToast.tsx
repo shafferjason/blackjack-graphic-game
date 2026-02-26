@@ -44,7 +44,7 @@ export default function AchievementToast({ achievements }: AchievementToastProps
   if (toasts.length === 0) return null
 
   return (
-    <div className="achievement-toast-container" role="log" aria-label="Achievement notifications" aria-live="assertive">
+    <div className="achievement-toast-container" role="log" aria-label="Achievement notifications" aria-live="polite">
       {toasts.slice(0, 3).map(t => (
         <div key={t.key} className="achievement-toast" role="alert">
           <span className="achievement-toast-icon" aria-hidden="true">{t.achievement.icon}</span>

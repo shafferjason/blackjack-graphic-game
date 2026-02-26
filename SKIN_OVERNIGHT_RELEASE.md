@@ -130,6 +130,30 @@ Every skin now has uniquely different J/Q/K character silhouettes via `faceCardC
 
 ---
 
+## v1.2 Final Polish & QA (2026-02-26)
+
+### Gameplay & UX Improvements
+- **Repeat Bet**: "Repeat $X" button appears after each round to quickly re-place previous bet
+- **Undo Last Chip**: Undo button removes the most recently placed chip instead of clearing entire bet
+- **Reset Confirmation**: Reset button now requires a second click ("Confirm?") to prevent accidental bankroll wipes
+- **Dealer animation fix**: Dealer's 3rd+ cards now correctly use "hit" animation instead of "deal" animation
+- **Grammar fix**: "Your hand empty" corrected to "Your hand is empty"
+- **Achievement toast**: Changed from `aria-live="assertive"` to `aria-live="polite"` (less disruptive)
+
+### Performance Optimizations
+- **Debounced localStorage saves**: Game state persistence now batches within 100ms windows (was saving on every dispatch)
+- **Timer cleanup**: ChipAnimation and useSoundEffects properly clean up all setTimeout handles on unmount (prevents memory leaks)
+- **Removed backdrop-filter**: Header no longer uses backdrop-filter blur (prevents scroll jank on low-end devices)
+- **GPU hints**: Added `will-change: transform, opacity` to card wrappers for smoother deal animations
+- **Controls z-index**: Raised from 2 to 15 to prevent card hover overlapping the controls area
+
+### Test Results
+- 310 unit tests passing (17 test files)
+- 80 Playwright E2E tests passing (40 mobile modal + 40 face card character tests)
+- Clean production build
+
+---
+
 ## Known Follow-ups
 - "Try Before You Buy" preview mode (deferred from Step 10)
 - Full-screen face card gallery with zoom/share (deferred from Step 14)

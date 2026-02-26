@@ -30,7 +30,13 @@ export interface PersistedGameState {
   cutCardReached: boolean
 }
 
-export function saveGameState(state: GameState): void {
+let _saveGameStateTimer: ReturnType<typeof setTimeout> | null = null
+let _pendingGameState: GameState | null = null
+
+function _flushGameState(): void {
+  if (!_pendingGameState) return
+  const state = _pendingGameState
+  _pendingGameState = null
   try {
     const persisted: PersistedGameState = {
       chips: state.chips,
@@ -55,6 +61,15 @@ export function saveGameState(state: GameState): void {
   } catch {
     // ignore storage errors (quota exceeded, etc.)
   }
+}
+
+export function saveGameState(state: GameState): void {
+  _pendingGameState = state
+  if (_saveGameStateTimer) return // already scheduled
+  _saveGameStateTimer = setTimeout(() => {
+    _saveGameStateTimer = null
+    _flushGameState()
+  }, 100)
 }
 
 export function loadGameState(): PersistedGameState | null {

@@ -296,8 +296,9 @@ function App() {
     if (totalSideBets > 0) {
       actions.adjustChips(-totalSideBets)
     }
+    setLastBet(state.bet)
     originalDealCards()
-  }, [originalDealCards, SIDE_BETS_ENABLED, perfectPairsBet, twentyOnePlusThreeBet, actions])
+  }, [originalDealCards, SIDE_BETS_ENABLED, perfectPairsBet, twentyOnePlusThreeBet, actions, state.bet])
 
   // ── Multiplayer (Local Hot-Seat) state ──
   const [mpShowSetup, setMpShowSetup] = useState(false)
@@ -412,6 +413,9 @@ function App() {
   const [winTrigger, setWinTrigger] = useState({ amount: 0, seq: 0 })
   const prevChipsRef = useRef(state.chips)
   const prevGameStateRef = useRef(state.gameState)
+
+  // Track last bet for "Repeat" button
+  const [lastBet, setLastBet] = useState(0)
 
   const handlePlaceBet = useCallback((amount: number) => {
     betSeqRef.current += 1
@@ -659,6 +663,7 @@ function App() {
               onAllIn={handleAllIn}
               onDeal={dealCardsWithSideBets}
               onButtonClick={playButtonClick}
+              lastBet={lastBet}
             />
           ) : (
             <ActionControls

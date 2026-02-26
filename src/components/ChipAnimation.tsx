@@ -53,9 +53,17 @@ export default function ChipAnimation({ betTrigger, winTrigger }: ChipAnimationP
   const idRef = useRef(0)
   const prevBetSeq = useRef(betTrigger.seq)
   const prevWinSeq = useRef(winTrigger.seq)
+  const timersRef = useRef<ReturnType<typeof setTimeout>[]>([])
 
   const removeChip = useCallback((chipId: number) => {
     setChips(prev => prev.filter(c => c.id !== chipId))
+  }, [])
+
+  // Cleanup all timers on unmount
+  useEffect(() => {
+    return () => {
+      timersRef.current.forEach(clearTimeout)
+    }
   }, [])
 
   // Bet placement animation
@@ -72,7 +80,8 @@ export default function ChipAnimation({ betTrigger, winTrigger }: ChipAnimationP
 
     // Auto-remove after animation completes
     const chipId = newChip.id
-    setTimeout(() => removeChip(chipId), 600)
+    const t = setTimeout(() => removeChip(chipId), 600)
+    timersRef.current.push(t)
   }, [betTrigger, removeChip])
 
   // Win payout animation
@@ -81,7 +90,7 @@ export default function ChipAnimation({ betTrigger, winTrigger }: ChipAnimationP
     prevWinSeq.current = winTrigger.seq
 
     const chipAmounts = decomposeIntoChips(winTrigger.amount)
-    const newChips: AnimatedChip[] = chipAmounts.map((amount, i) => ({
+    const newChips: AnimatedChip[] = chipAmounts.map((amount) => ({
       id: ++idRef.current,
       amount,
       direction: 'to-player' as const,
@@ -89,10 +98,12 @@ export default function ChipAnimation({ betTrigger, winTrigger }: ChipAnimationP
 
     // Stagger the win chips slightly
     newChips.forEach((chip, i) => {
-      setTimeout(() => {
+      const t1 = setTimeout(() => {
         setChips(prev => [...prev, chip])
-        setTimeout(() => removeChip(chip.id), 700)
+        const t2 = setTimeout(() => removeChip(chip.id), 700)
+        timersRef.current.push(t2)
       }, i * 100)
+      timersRef.current.push(t1)
     })
   }, [winTrigger, removeChip])
 

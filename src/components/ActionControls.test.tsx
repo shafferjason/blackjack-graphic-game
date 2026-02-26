@@ -230,7 +230,7 @@ describe('ActionControls component', () => {
     expect(onNewRound).toHaveBeenCalled()
   })
 
-  it('calls onReset when Reset is clicked', () => {
+  it('calls onReset when Reset is double-clicked to confirm', () => {
     const onReset = vi.fn()
     renderWithSettings(
       <ActionControls
@@ -241,7 +241,12 @@ describe('ActionControls component', () => {
         onReset={onReset}
       />
     )
+    // First click shows confirmation
     fireEvent.click(screen.getByText('Reset'))
+    expect(onReset).not.toHaveBeenCalled()
+    expect(screen.getByText('Confirm?')).toBeInTheDocument()
+    // Second click confirms reset
+    fireEvent.click(screen.getByText('Confirm?'))
     expect(onReset).toHaveBeenCalled()
   })
 

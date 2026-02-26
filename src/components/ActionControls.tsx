@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { useGameSettings } from '../config/GameSettingsContext'
 import type { GamePhase } from '../types'
 import type { ResolvedAction } from '../utils/basicStrategy'
@@ -29,6 +29,29 @@ interface ActionControlsProps {
 function strategyClass(action: ResolvedAction, optimal: ResolvedAction | null | undefined, enabled: boolean | undefined): string {
   if (!enabled || !optimal) return ''
   return action === optimal ? 'strategy-optimal' : 'strategy-suboptimal'
+}
+
+function ResetConfirmWrapper({ onReset, onButtonClick, children }: { onReset: () => void; onButtonClick?: () => void; children: (handleReset: () => void, confirming: boolean) => React.ReactNode }) {
+  const [confirming, setConfirming] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleReset = useCallback(() => {
+    onButtonClick?.()
+    if (!confirming) {
+      setConfirming(true)
+      timerRef.current = setTimeout(() => setConfirming(false), 3000)
+    } else {
+      if (timerRef.current) clearTimeout(timerRef.current)
+      setConfirming(false)
+      onReset()
+    }
+  }, [confirming, onReset, onButtonClick])
+
+  useEffect(() => {
+    return () => { if (timerRef.current) clearTimeout(timerRef.current) }
+  }, [])
+
+  return <>{children(handleReset, confirming)}</>
 }
 
 export default function ActionControls({ gameState, chips, bet, canDouble, canSplit, canSurrender, canDoubleAfterSplit, maxInsuranceBet, onHit, onStand, onDoubleDown, onSplit, onSurrender, onAcceptInsurance, onDeclineInsurance, onNewRound, onReset, onButtonClick, optimalAction, strategyTrainerEnabled }: ActionControlsProps) {
@@ -121,19 +144,23 @@ export default function ActionControls({ gameState, chips, bet, canDouble, canSp
 
   if (gameState === GAME_STATES.GAME_OVER || gameState === GAME_STATES.RESOLVING) {
     return (
-      <div className="result-panel" role="group" aria-label="Round complete">
-        <div className="chip-info" aria-label={`Bankroll: $${chips}`}>
-          <span className="chip-coin">$</span>{chips}
-        </div>
-        <div className="result-buttons" role="group" aria-label="Start next round or reset">
-          <button ref={primaryButtonRef} className="btn btn-primary" onClick={() => { onButtonClick?.(); onNewRound() }} disabled={chips <= 0} title="New Round (N / Enter)" aria-label={chips <= 0 ? 'New round, unavailable, out of chips' : 'Start new round, press N or Enter'}>
-            New Round
-          </button>
-          <button className="btn btn-outline" onClick={() => { onButtonClick?.(); onReset() }} aria-label="Reset game to starting bankroll">
-            Reset
-          </button>
-        </div>
-      </div>
+      <ResetConfirmWrapper onReset={onReset} onButtonClick={onButtonClick}>
+        {(handleReset, confirming) => (
+          <div className="result-panel" role="group" aria-label="Round complete">
+            <div className="chip-info" aria-label={`Bankroll: $${chips}`}>
+              <span className="chip-coin">$</span>{chips}
+            </div>
+            <div className="result-buttons" role="group" aria-label="Start next round or reset">
+              <button ref={primaryButtonRef} className="btn btn-primary" onClick={() => { onButtonClick?.(); onNewRound() }} disabled={chips <= 0} title="New Round (N / Enter)" aria-label={chips <= 0 ? 'New round, unavailable, out of chips' : 'Start new round, press N or Enter'}>
+                New Round
+              </button>
+              <button className={`btn ${confirming ? 'btn-danger' : 'btn-outline'}`} onClick={handleReset} aria-label={confirming ? 'Click again to confirm reset' : 'Reset game to starting bankroll'}>
+                {confirming ? 'Confirm?' : 'Reset'}
+              </button>
+            </div>
+          </div>
+        )}
+      </ResetConfirmWrapper>
     )
   }
 

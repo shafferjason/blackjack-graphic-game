@@ -11,7 +11,7 @@ export default function PlayerHand({ hand, playerScore }: PlayerHandProps) {
     ? playerScore > 21
       ? `Your score: ${playerScore}, bust`
       : `Your score: ${playerScore}`
-    : 'Your hand empty'
+    : 'Your hand is empty'
 
   return (
     <section className="hand-area" aria-label="Your hand">

@@ -415,6 +415,28 @@ _Goal: Everything works together. No rough edges._
 - Screenshot verification for 10 representative skins at gameplay size (iPhone 14 Pro)
 - All 310 tests passing, Playwright mobile sanity checks passing
 
+### 2026-02-26 — v1.2 Final Polish & QA Completion
+
+**Milestone 2: Gameplay & UX Bug Fixes**
+- Dealer animation threshold fixed: 3rd+ cards get 'hit' animation (was incorrectly threshold=4)
+- "Repeat Bet" button: re-places previous hand's bet in one click
+- "Undo Last Chip" button: removes most recently placed chip (not just full clear)
+- Reset confirmation: requires double-click to prevent accidental bankroll wipes
+- Grammar fix: "Your hand empty" → "Your hand is empty"
+- Achievement toast: `aria-live="assertive"` → `aria-live="polite"`
+
+**Milestone 3: Performance Optimization**
+- Debounced `saveGameState()` with 100ms window (was writing on every dispatch)
+- ChipAnimation and useSoundEffects: all setTimeout handles tracked and cleaned on unmount
+- Removed backdrop-filter from header (scroll jank on low-end devices)
+- Added `will-change: transform, opacity` to card wrappers
+- Controls z-index raised from 2 to 15 (prevents card hover overlap)
+
+**Milestone 4: Final QA**
+- 310 unit tests passing (17 files)
+- 80 Playwright E2E tests passing (mobile modal + face card character suites)
+- Clean production build
+
 ### 2026-02-26 — v1.1 Prework & Quality Updates
 
 **Mandatory Prework (4 items completed):**
