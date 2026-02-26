@@ -713,3 +713,174 @@
     animation: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Canvas 2D Character Art — Layered card rendering
+   ═══════════════════════════════════════════════════════════ */
+
+.canvas-art-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.canvas-art-card .card__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.canvas-art-card .card__art {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background-size: cover;
+  background-position: center;
+}
+
+.canvas-art-card .card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.canvas-art-card .card__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.canvas-art-card .card__rank-top,
+.canvas-art-card .card__rank-bottom {
+  position: absolute;
+  z-index: 5;
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 14px;
+}
+
+.canvas-art-card .card__rank-top {
+  top: 4px;
+  left: 6px;
+}
+
+.canvas-art-card .card__rank-bottom {
+  bottom: 4px;
+  right: 6px;
+  transform: rotate(180deg);
+}
+
+.canvas-art-card .card__suit {
+  display: block;
+  font-size: 10px;
+  text-align: center;
+}
+
+.canvas-art-card .card__fx {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Red suit rank colors on canvas cards */
+.canvas-art-card.red .card__rank-top,
+.canvas-art-card.red .card__rank-bottom {
+  color: #ff4466;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* Classic skin — warm parchment rank labels */
+.canvas-art-card .card__rank-top,
+.canvas-art-card .card__rank-bottom {
+  font-size: clamp(10px, 2.5vw, 14px);
+}
+
+/* ── Neon Nights SVG overlay animations ── */
+
+/* Rain fall */
+.nn-rain {
+  animation: nn-rain-fall 3s linear infinite;
+  will-change: transform;
+}
+
+@keyframes nn-rain-fall {
+  from { transform: translateY(-100%); }
+  to { transform: translateY(100%); }
+}
+
+/* Neon border flicker */
+.neon-border-flicker {
+  animation: nn-neon-flicker 2s steps(8) infinite;
+  will-change: opacity;
+}
+
+@keyframes nn-neon-flicker {
+  0%, 100% { opacity: 0.7; }
+  15% { opacity: 1.0; }
+  30% { opacity: 0.85; }
+  50% { opacity: 1.0; }
+  70% { opacity: 0.75; }
+  85% { opacity: 0.95; }
+}
+
+/* Data text drift upward */
+.nn-data-drift {
+  animation: nn-data-rise 4s linear infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes nn-data-rise {
+  from { transform: translateY(0); opacity: 0.4; }
+  to { transform: translateY(-15px); opacity: 0; }
+}
+
+/* Cybernetic eye glow pulse */
+.nn-eye-glow {
+  animation: nn-glow-pulse 1.5s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes nn-glow-pulse {
+  from { opacity: 0.3; }
+  to { opacity: 0.7; }
+}
+
+/* Hologram building flicker */
+.nn-holo-flicker {
+  animation: nn-holo-anim 2.5s steps(4) infinite;
+  will-change: opacity;
+}
+
+@keyframes nn-holo-anim {
+  0%, 100% { opacity: 0.3; }
+  25% { opacity: 0.5; }
+  50% { opacity: 0.2; }
+  75% { opacity: 0.45; }
+}
+
+/* Deal animation for canvas cards */
+.canvas-art-card .card__fx.deal-glitch {
+  animation: canvas-deal-glitch 180ms steps(3) both;
+}
+
+@keyframes canvas-deal-glitch {
+  0%   { transform: translateX(-3px); opacity: 0; clip-path: inset(0 0 0 0); }
+  33%  { transform: translateX(2px); opacity: 0.5; clip-path: inset(10% 0 30% 0); }
+  66%  { transform: translateX(-1px); opacity: 0.8; clip-path: inset(50% 0 10% 0); }
+  100% { transform: translateX(0); opacity: 1; clip-path: inset(0 0 0 0); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .canvas-art-card .card__overlay * { animation: none !important; }
+  .canvas-art-card .card__fx { display: none; }
+  .neon-border-flicker { animation: none !important; }
+  .nn-rain { animation: none !important; }
+}

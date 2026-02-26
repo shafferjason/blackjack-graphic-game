@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import './Card.css'
 import type { Card as CardType, Suit } from '../types'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
@@ -6,6 +6,7 @@ import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCar
 import { MATERIALS, type CardMaterial, NUMBER_CARD_TREATMENTS, NUMBER_CARD_DEFAULTS, getEffectiveFilterCaps, type NumberCardTreatment } from '../config/designTokens'
 import { getFaceCardVariantOverlays } from './faceCardVariants'
 import { getCharacterOverlays } from './faceCardCharacters'
+import { generateCharacterArt, hasCanvasArt, type FaceRank } from './canvasCharacterArt'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -157,11 +158,12 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
 function useCourtColors(suit: Suit) {
   const c = SUIT_ACCENTS[suit]
   const isRed = suit === 'hearts' || suit === 'diamonds'
-  const skin = getActiveSkin()
-  const palette: FaceCardPalette = isRed ? skin.faceCardPalette.red : skin.faceCardPalette.black
+  const activeSkin = useActiveSkin()
+  const palette: FaceCardPalette = isRed ? activeSkin.faceCardPalette.red : activeSkin.faceCardPalette.black
   return {
     c,
     isRed,
+    activeSkin,
     skin: palette.skin,
     skinShade: palette.skinShade,
     skinHi: palette.skinHi,
@@ -175,7 +177,7 @@ function useCourtColors(suit: Suit) {
 
 /* ── Jack ─────────────────────────────────────────────── */
 function JackSVG({ suit }: { suit: Suit }) {
-  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
+  const { c, isRed, activeSkin, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
   const hair = palette.hair
   const hairHi = palette.hairHi
   const cap = palette.clothing
@@ -340,9 +342,9 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M59.5,27 L61,25.5 L63.5,28" fill="none" stroke="#b0b8b8" strokeWidth="0.2" opacity="0.2" />
       <path d="M64.5,27.5 L63,31.5" fill="none" stroke="#c0c8c8" strokeWidth="0.25" opacity="0.3" />
       {/* Skin-specific variant overlays */}
-      {getFaceCardVariantOverlays('jack', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: palette.clothing, clothingHi: palette.clothingHi, accent: getActiveSkin().previewAccent })}
+      {getFaceCardVariantOverlays('jack', activeSkin.id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: palette.clothing, clothingHi: palette.clothingHi, accent: activeSkin.previewAccent })}
       {/* Per-skin unique character overlays — distinct silhouettes per theme */}
-      {getCharacterOverlays('jack', getActiveSkin().id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: palette.clothing, clothingMid: palette.clothingMid, clothingHi: palette.clothingHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: getActiveSkin().previewAccent })}
+      {getCharacterOverlays('jack', activeSkin.id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: palette.clothing, clothingMid: palette.clothingMid, clothingHi: palette.clothingHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: activeSkin.previewAccent })}
     </>
   )
 
@@ -351,7 +353,7 @@ function JackSVG({ suit }: { suit: Suit }) {
 
 /* ── Queen ────────────────────────────────────────────── */
 function QueenSVG({ suit }: { suit: Suit }) {
-  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
+  const { c, isRed, activeSkin, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
   const hair = palette.hair
   const hairHi = palette.hairHi
   const dress = palette.clothing
@@ -503,9 +505,9 @@ function QueenSVG({ suit }: { suit: Suit }) {
         <path d="M-3,6 Q-4.5,5 -3.5,4" fill="#3a7232" opacity="0.35" />
       </g>
       {/* Skin-specific variant overlays */}
-      {getFaceCardVariantOverlays('queen', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: dress, clothingHi: dressHi, accent: getActiveSkin().previewAccent })}
+      {getFaceCardVariantOverlays('queen', activeSkin.id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: dress, clothingHi: dressHi, accent: activeSkin.previewAccent })}
       {/* Per-skin unique character overlays — distinct silhouettes per theme */}
-      {getCharacterOverlays('queen', getActiveSkin().id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: dress, clothingMid: dressMid, clothingHi: dressHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: getActiveSkin().previewAccent })}
+      {getCharacterOverlays('queen', activeSkin.id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: dress, clothingMid: dressMid, clothingHi: dressHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: activeSkin.previewAccent })}
     </>
   )
 
@@ -514,7 +516,7 @@ function QueenSVG({ suit }: { suit: Suit }) {
 
 /* ── King ─────────────────────────────────────────────── */
 function KingSVG({ suit }: { suit: Suit }) {
-  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
+  const { c, isRed, activeSkin, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
   const hair = palette.hair
   const hairHi = palette.hairHi
   const beard = palette.beard
@@ -664,9 +666,9 @@ function KingSVG({ suit }: { suit: Suit }) {
       <circle cx="17.5" cy="25.5" r="0.4" fill={gold} />
       <circle cx="15" cy="23.2" r="0.4" fill={gold} />
       {/* Skin-specific variant overlays */}
-      {getFaceCardVariantOverlays('king', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: robe, clothingHi: robeHi, accent: getActiveSkin().previewAccent })}
+      {getFaceCardVariantOverlays('king', activeSkin.id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: robe, clothingHi: robeHi, accent: activeSkin.previewAccent })}
       {/* Per-skin unique character overlays — distinct silhouettes per theme */}
-      {getCharacterOverlays('king', getActiveSkin().id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: robe, clothingMid: palette.clothingMid, clothingHi: robeHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: getActiveSkin().previewAccent })}
+      {getCharacterOverlays('king', activeSkin.id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: robe, clothingMid: palette.clothingMid, clothingHi: robeHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: activeSkin.previewAccent })}
     </>
   )
 
@@ -732,20 +734,176 @@ function PipLayout({ rank, suit, treatment }: { rank: string; suit: Suit; treatm
   )
 }
 
+/** Context for overriding the active skin (used by audit/preview pages) */
+const SkinOverrideContext = createContext<CardSkin | null>(null)
+
+/** Wrap cards in this provider to force a specific skin without localStorage */
+export function SkinOverrideProvider({ skin, children }: { skin: CardSkin; children: React.ReactNode }) {
+  return <SkinOverrideContext.Provider value={skin}>{children}</SkinOverrideContext.Provider>
+}
+
 function getActiveSkin(): CardSkin {
   const state = loadCardSkinState()
   return getSkinById(state.activeSkinId) ?? CARD_SKINS[0]
+}
+
+function useActiveSkin(): CardSkin {
+  const override = useContext(SkinOverrideContext)
+  if (override) return override
+  return getActiveSkin()
+}
+
+/* ── Canvas 2D Character Art Card Face ──
+   Used for skins with Canvas-generated illustrated character art.
+   Renders character as background-image (WebP), with SVG overlays and CSS effects. */
+function CanvasArtCardFace({ card }: { card: CardType }) {
+  const symbol = SUIT_SYMBOLS[card.suit]
+  const color = SUIT_COLORS[card.suit]
+  const skin = useActiveSkin()
+  const rank = card.rank as FaceRank
+
+  const artUrl = useMemo(() => generateCharacterArt({
+    rank,
+    skinId: skin.id,
+    suit: card.suit,
+  }), [rank, skin.id, card.suit])
+
+  const isNeonNights = skin.id === 'neon-nights'
+
+  return (
+    <div className={`card card-face canvas-art-card ${color}`}>
+      {/* z-1: Background fill */}
+      <div className="card__bg" />
+      {/* z-2: Character art (Canvas 2D → WebP) */}
+      <div
+        className="card__art"
+        style={{ backgroundImage: `url('${artUrl}')` }}
+      />
+      {/* z-3: SVG overlay (skin-specific animations) */}
+      {isNeonNights && <NeonNightsOverlay rank={rank} />}
+      {/* z-4: Card frame */}
+      <svg className="card__frame" viewBox="0 0 300 420">
+        {skin.id === 'classic' ? (
+          <ClassicFrame />
+        ) : isNeonNights ? (
+          <NeonFrame />
+        ) : null}
+      </svg>
+      {/* z-5: Rank + suit labels */}
+      <div className="card__rank-top">
+        {card.rank}<span className="card__suit">{symbol}</span>
+      </div>
+      <div className="card__rank-bottom">
+        {card.rank}<span className="card__suit">{symbol}</span>
+      </div>
+      {/* z-6: Animation FX layer */}
+      <div className="card__fx" />
+    </div>
+  )
+}
+
+/* ── Classic frame — thin engraved border ── */
+function ClassicFrame() {
+  return (
+    <>
+      <rect x="6" y="6" width="288" height="408" rx="8"
+        fill="none" stroke="#8B7355" strokeWidth="1.5" opacity="0.3" />
+      <rect x="10" y="10" width="280" height="400" rx="6"
+        fill="none" stroke="#D4C5A0" strokeWidth="0.5" opacity="0.2" />
+    </>
+  )
+}
+
+/* ── Neon Nights frame — inner neon border with glow ── */
+function NeonFrame() {
+  return (
+    <>
+      <defs>
+        <filter id="neon-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      <rect x="6" y="6" width="288" height="408" rx="8"
+        fill="none" stroke="#00E5FF" strokeWidth="1.5"
+        className="neon-border-flicker"
+        filter="url(#neon-glow)" />
+    </>
+  )
+}
+
+/* ── Neon Nights SVG Overlay — rain, data fragments, eye glow ── */
+function NeonNightsOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <defs>
+        <filter id="nn-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Rain lines */}
+      <g className="nn-rain">
+        <line x1="42" y1="0" x2="42" y2="420" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.12" />
+        <line x1="98" y1="30" x2="98" y2="450" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.08" />
+        <line x1="155" y1="15" x2="155" y2="435" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.10" />
+        <line x1="210" y1="45" x2="210" y2="465" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.06" />
+        <line x1="248" y1="20" x2="248" y2="440" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.09" />
+        <line x1="275" y1="35" x2="275" y2="455" stroke="#FFFFFF" strokeWidth="0.5" opacity="0.07" />
+      </g>
+      {/* Rank-specific overlays */}
+      {rank === 'Q' && (
+        <>
+          {/* Data text fragments around cyber eye */}
+          <text x="210" y="120" fill="#00E5FF" fontSize="6" opacity="0.4" className="nn-data-drift">0xF4</text>
+          <text x="225" y="108" fill="#00E5FF" fontSize="5" opacity="0.3" className="nn-data-drift" style={{ animationDelay: '1s' }}>SYNC</text>
+          <text x="205" y="132" fill="#00E5FF" fontSize="5" opacity="0.35" className="nn-data-drift" style={{ animationDelay: '2s' }}>//OK</text>
+          <text x="230" y="125" fill="#00E5FF" fontSize="4" opacity="0.25" className="nn-data-drift" style={{ animationDelay: '0.5s' }}>AUTH</text>
+          {/* Eye glow pulse */}
+          <circle cx="192" cy="118" r="5" fill="#00E5FF" opacity="0.4"
+            filter="url(#nn-glow)" className="nn-eye-glow" />
+        </>
+      )}
+      {rank === 'K' && (
+        <>
+          {/* Wireframe building flicker over hologram area */}
+          <rect x="195" y="155" width="12" height="25" fill="none"
+            stroke="#00E5FF" strokeWidth="0.5" opacity="0.3" className="nn-holo-flicker" />
+          <rect x="210" y="160" width="8" height="20" fill="none"
+            stroke="#00E5FF" strokeWidth="0.5" opacity="0.25" className="nn-holo-flicker"
+            style={{ animationDelay: '0.5s' }} />
+          <rect x="220" y="152" width="14" height="28" fill="none"
+            stroke="#00E5FF" strokeWidth="0.5" opacity="0.35" className="nn-holo-flicker"
+            style={{ animationDelay: '1s' }} />
+        </>
+      )}
+    </svg>
+  )
 }
 
 function CardFace({ card }: { card: CardType }) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const color = SUIT_COLORS[card.suit]
   const isFace = ['J', 'Q', 'K'].includes(card.rank)
+  const isAce = card.rank === 'A'
   const FaceComponent = FACE_COMPONENTS[card.rank]
-  const isNumber = !isFace && card.rank !== 'A'
-  const skin = getActiveSkin()
+  const isNumber = !isFace && !isAce
+  const skin = useActiveSkin()
   const material = skin.cardMaterial ? MATERIALS[skin.cardMaterial] : MATERIALS.linen
   const filterCaps = getEffectiveFilterCaps(skin.tier)
+
+  // Use Canvas 2D art for skins that support it (face cards + aces only)
+  const useCanvasArt = (isFace || isAce) && hasCanvasArt(skin.id)
+  if (useCanvasArt) {
+    return <CanvasArtCardFace card={card} />
+  }
+
   const skinStyle: React.CSSProperties = {}
   if (skin.id !== 'classic') {
     if (skin.faceFilter !== 'none') skinStyle.filter = skin.faceFilter
@@ -765,7 +923,7 @@ function CardFace({ card }: { card: CardType }) {
     : undefined
 
   return (
-    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''} ${card.rank === 'A' ? 'ace-card-type' : ''}`} style={skinStyle}>
+    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''} ${isAce ? 'ace-card-type' : ''}`} style={skinStyle}>
       <div className="card-corner top-left">
         <span className="card-rank">{card.rank}</span>
         <span className="card-suit">{symbol}</span>
@@ -775,7 +933,7 @@ function CardFace({ card }: { card: CardType }) {
           <div className="face-card">
             <FaceComponent suit={card.suit} />
           </div>
-        ) : card.rank === 'A' ? (
+        ) : isAce ? (
           <span className="ace-suit">{symbol}</span>
         ) : isNumber ? (
           <PipLayout rank={card.rank} suit={card.suit} treatment={numberTreatment} />
@@ -1041,7 +1199,7 @@ function CardBackSVG({ design }: { design: CardBackDesign }) {
 }
 
 function CardBack() {
-  const skin = getActiveSkin()
+  const skin = useActiveSkin()
   const skinStyle: React.CSSProperties = {}
   if (skin.id !== 'classic') {
     if (skin.glowColor !== 'transparent') skinStyle.boxShadow = `0 0 14px ${skin.glowColor}, 0 2px 4px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.16)`
@@ -1100,7 +1258,7 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
     animationType === 'hit' ? 'hit-animate' : ''
 
   const cardLabel = getCardLabel(card, hidden)
-  const activeSkin = getActiveSkin()
+  const activeSkin = useActiveSkin()
   const caps = getEffectiveFilterCaps(activeSkin.tier)
   // Only expose tier for idle glow if device supports it
   const skinTier = caps.allowIdleGlow ? activeSkin.tier : 'common'

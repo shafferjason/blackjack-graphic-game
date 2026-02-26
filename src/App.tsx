@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
 import FaceCardPreview from './components/FaceCardPreview'
+import CanvasArtPreview from './components/CanvasArtPreview'
 import { useGameEngine } from './hooks/useGameEngine'
 import { useGameSettings } from './config/GameSettingsContext'
 import type { TableFeltTheme } from './types'
@@ -46,6 +47,12 @@ function App() {
   const [showFaceCardPreview, setShowFaceCardPreview] = useState(() => {
     const params = new URLSearchParams(window.location.search)
     return params.get('preview') === 'facecard'
+  })
+
+  // ── Canvas Art Preview Mode (URL param: ?preview=canvas) ──
+  const [showCanvasArtPreview, setShowCanvasArtPreview] = useState(() => {
+    const params = new URLSearchParams(window.location.search)
+    return params.get('preview') === 'canvas'
   })
 
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
@@ -714,6 +721,10 @@ function App() {
 
       {showFaceCardPreview && (
         <FaceCardPreview onClose={() => setShowFaceCardPreview(false)} />
+      )}
+
+      {showCanvasArtPreview && (
+        <CanvasArtPreview onClose={() => setShowCanvasArtPreview(false)} />
       )}
     </div>
   )
