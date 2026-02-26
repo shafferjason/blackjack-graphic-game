@@ -6,6 +6,7 @@ import { useGameSettings } from '../config/GameSettingsContext'
 import { gameReducer, createInitialState, createInitialDetailedStats, ACTIONS } from '../state/gameReducer'
 import { saveGameState, loadGameState, clearAllStorage, saveHandHistory, loadHandHistory, saveAchievements, loadAchievements } from '../utils/storage'
 import { createInitialAchievements, checkAchievements, getAchievementDefs } from '../utils/achievements'
+import { checkAchievementSkinRewards, loadCardSkinState, saveCardSkinState } from '../utils/cardSkinShop'
 import type { Card, Hand, Deck, GameState, GameStats, GameResult, GamePhase, SplitHand, DetailedStats, HandAction, HandHistoryEntry, HandHistoryStep, Achievement } from '../types'
 
 const MAX_HISTORY_LENGTH = 50
@@ -97,6 +98,9 @@ export function useGameEngine() {
     return createInitialAchievements()
   })
 
+  // Track skin reward grants for toast notifications
+  const [skinRewardGrants, setSkinRewardGrants] = useState<string[]>([])
+
   const processAchievements = useCallback((
     updatedStats: DetailedStats,
     chipsAfter: number,
@@ -116,6 +120,20 @@ export function useGameEngine() {
         newlyUnlocked.includes(a.id) ? { ...a, unlockedAt: now } : a
       )
       saveAchievements(updated)
+
+      // Check for achievement-based skin rewards
+      const unlockedAchievementIds = updated.filter(a => a.unlockedAt).map(a => a.id)
+      const skinState = loadCardSkinState()
+      const newSkinRewards = checkAchievementSkinRewards(unlockedAchievementIds, skinState.unlockedSkins)
+      if (newSkinRewards.length > 0) {
+        const updatedSkinState = {
+          ...skinState,
+          unlockedSkins: [...skinState.unlockedSkins, ...newSkinRewards],
+        }
+        saveCardSkinState(updatedSkinState)
+        setSkinRewardGrants(newSkinRewards)
+      }
+
       return updated
     })
   }, [])
@@ -1023,6 +1041,7 @@ export function useGameEngine() {
       cutCardReached: state.cutCardReached,
       handHistory,
       achievements,
+      skinRewardGrants,
     },
     actions: {
       placeBet,

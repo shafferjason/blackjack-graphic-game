@@ -3,7 +3,7 @@ import './Card.css'
 import type { Card as CardType, CardBackTheme, Suit } from '../types'
 import { useGameSettings } from '../config/GameSettingsContext'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
-import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin } from '../utils/cardSkinShop'
+import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette } from '../utils/cardSkinShop'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -151,34 +151,37 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
   )
 }
 
-/* Shared color palette factory for consistent court card styling */
+/* Shared color palette factory — pulls from active skin's custom face card palette */
 function useCourtColors(suit: Suit) {
   const c = SUIT_ACCENTS[suit]
   const isRed = suit === 'hearts' || suit === 'diamonds'
+  const skin = getActiveSkin()
+  const palette: FaceCardPalette = isRed ? skin.faceCardPalette.red : skin.faceCardPalette.black
   return {
     c,
     isRed,
-    skin: '#f0dfc0',
-    skinShade: '#c8a878',
-    skinHi: '#f8ecd8',
-    gold: '#c9a84c',
-    goldDk: '#8b6914',
-    goldLt: '#e0c470',
-    ink: isRed ? '#6a0e1e' : '#0a0a18',
+    skin: palette.skin,
+    skinShade: palette.skinShade,
+    skinHi: palette.skinHi,
+    gold: palette.gold,
+    goldDk: palette.goldDk,
+    goldLt: palette.goldLt,
+    ink: palette.ink,
+    palette,
   }
 }
 
 /* ── Jack ─────────────────────────────────────────────── */
 function JackSVG({ suit }: { suit: Suit }) {
-  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink } = useCourtColors(suit)
-  const hair = isRed ? '#6e4424' : '#1a1020'
-  const hairHi = isRed ? '#8a5a38' : '#2a2040'
-  const cap = isRed ? '#a41428' : '#141430'
-  const capMid = isRed ? '#c82840' : '#262648'
-  const capHi = isRed ? '#d83850' : '#363660'
-  const tunic = isRed ? '#a41428' : '#141430'
-  const tunicMid = isRed ? '#c42e40' : '#242444'
-  const tunicHi = isRed ? '#d84858' : '#343458'
+  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
+  const hair = palette.hair
+  const hairHi = palette.hairHi
+  const cap = palette.clothing
+  const capMid = palette.clothingMid
+  const capHi = palette.clothingHi
+  const tunic = palette.clothing
+  const tunicMid = palette.clothingMid
+  const tunicHi = palette.clothingHi
   const pid = `jack-${suit}`
 
   const halfContent = (
@@ -241,8 +244,8 @@ function JackSVG({ suit }: { suit: Suit }) {
       {/* Jaw modeling — stronger contour */}
       <path d="M30.5,38 Q33.5,44 40,45 Q46.5,44 49.5,38" fill="none" stroke={skinShade} strokeWidth="0.3" opacity="0.3" />
       {/* Cheek warmth — rosier for French portrait style */}
-      <ellipse cx="33.5" cy="36.5" rx="2.5" ry="1.5" fill="#d8a080" opacity="0.22" />
-      <ellipse cx="46.5" cy="36.5" rx="2.5" ry="1.5" fill="#d8a080" opacity="0.22" />
+      <ellipse cx="33.5" cy="36.5" rx="2.5" ry="1.5" fill={palette.cheekWarmth} opacity="0.22" />
+      <ellipse cx="46.5" cy="36.5" rx="2.5" ry="1.5" fill={palette.cheekWarmth} opacity="0.22" />
       {/* Temple shadows — deeper */}
       <ellipse cx="30.5" cy="32" rx="1.5" ry="3" fill={skinShade} opacity="0.1" />
       <ellipse cx="49.5" cy="32" rx="1.5" ry="3" fill={skinShade} opacity="0.1" />
@@ -286,9 +289,9 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M37,37 Q36.5,38.5 37.5,39" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.12" />
       <path d="M43,37 Q43.5,38.5 42.5,39" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.12" />
       {/* Mouth — gradient-layered for painted depth */}
-      <path d="M37.5,39.3 Q40,40.5 42.5,39.3" fill="#be6858" stroke="#985040" strokeWidth="0.3" />
-      <path d="M37.5,39.3 Q40,40.1 42.5,39.3" fill="#d07868" opacity="0.35" />
-      <path d="M38.3,39.4 Q40,39.7 41.7,39.4" fill="#f5e0d0" opacity="0.3" />
+      <path d="M37.5,39.3 Q40,40.5 42.5,39.3" fill={palette.lip} stroke={palette.lipShadow} strokeWidth="0.3" />
+      <path d="M37.5,39.3 Q40,40.1 42.5,39.3" fill={palette.lip} opacity="0.35" />
+      <path d="M38.3,39.4 Q40,39.7 41.7,39.4" fill={skinHi} opacity="0.3" />
 
       {/* ── Pointed collar with gilding and lace detail ── */}
       <path d="M28.5,44.5 L33.5,49 L40,45.5 L46.5,49 L51.5,44.5" fill={gold} stroke={goldDk} strokeWidth="0.4" />
@@ -342,14 +345,14 @@ function JackSVG({ suit }: { suit: Suit }) {
 
 /* ── Queen ────────────────────────────────────────────── */
 function QueenSVG({ suit }: { suit: Suit }) {
-  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink } = useCourtColors(suit)
-  const hair = isRed ? '#5c2c14' : '#100810'
-  const hairHi = isRed ? '#7a4020' : '#201820'
-  const dress = isRed ? '#a41428' : '#141430'
-  const dressMid = isRed ? '#c42e40' : '#242444'
-  const dressHi = isRed ? '#d44858' : '#343458'
-  const jewel = isRed ? '#1e4488' : '#b82828'
-  const jewelHi = isRed ? '#3a68b0' : '#d84848'
+  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
+  const hair = palette.hair
+  const hairHi = palette.hairHi
+  const dress = palette.clothing
+  const dressMid = palette.clothingMid
+  const dressHi = palette.clothingHi
+  const jewel = palette.jewel
+  const jewelHi = palette.jewelHi
   const pid = `queen-${suit}`
 
   const halfContent = (
@@ -409,8 +412,8 @@ function QueenSVG({ suit }: { suit: Suit }) {
       {/* Jaw modeling — stronger contour */}
       <path d="M31.5,37 Q34.5,43.5 40,45 Q45.5,43.5 48.5,37" fill="none" stroke={skinShade} strokeWidth="0.28" opacity="0.3" />
       {/* Cheek warmth — rosier for French portrait */}
-      <ellipse cx="34" cy="37" rx="2.5" ry="1.5" fill="#d8a080" opacity="0.22" />
-      <ellipse cx="46" cy="37" rx="2.5" ry="1.5" fill="#d8a080" opacity="0.22" />
+      <ellipse cx="34" cy="37" rx="2.5" ry="1.5" fill={palette.cheekWarmth} opacity="0.22" />
+      <ellipse cx="46" cy="37" rx="2.5" ry="1.5" fill={palette.cheekWarmth} opacity="0.22" />
       {/* Temple shadows — deeper */}
       <ellipse cx="31" cy="33" rx="1.5" ry="3" fill={skinShade} opacity="0.1" />
       <ellipse cx="49" cy="33" rx="1.5" ry="3" fill={skinShade} opacity="0.1" />
@@ -454,9 +457,9 @@ function QueenSVG({ suit }: { suit: Suit }) {
       <path d="M37,38 Q36.5,39 37.5,39.5" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.1" />
       <path d="M43,38 Q43.5,39 42.5,39.5" fill="none" stroke={skinShade} strokeWidth="0.1" opacity="0.1" />
       {/* Lips — gradient-layered for painted depth */}
-      <path d="M37.4,39.8 Q38.5,39 40,40.1 Q41.5,39 42.6,39.8 Q41,41.5 40,41.5 Q39,41.5 37.4,39.8 Z" fill="#c06060" stroke="#9a4040" strokeWidth="0.25" />
-      <path d="M37.8,39.9 Q40,40.5 42.2,39.9" fill="#d07070" opacity="0.3" />
-      <path d="M38.5,39.6 Q40,39.9 41.5,39.6" fill="#f5e0d0" opacity="0.3" />
+      <path d="M37.4,39.8 Q38.5,39 40,40.1 Q41.5,39 42.6,39.8 Q41,41.5 40,41.5 Q39,41.5 37.4,39.8 Z" fill={palette.lip} stroke={palette.lipShadow} strokeWidth="0.25" />
+      <path d="M37.8,39.9 Q40,40.5 42.2,39.9" fill={palette.lip} opacity="0.3" />
+      <path d="M38.5,39.6 Q40,39.9 41.5,39.6" fill={skinHi} opacity="0.3" />
 
       {/* ── Necklace with pendant ── */}
       <path d="M30.5,45.5 Q35.5,48 40,49 Q44.5,48 49.5,45.5" fill="none" stroke={gold} strokeWidth="0.75" />
@@ -501,15 +504,15 @@ function QueenSVG({ suit }: { suit: Suit }) {
 
 /* ── King ─────────────────────────────────────────────── */
 function KingSVG({ suit }: { suit: Suit }) {
-  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink } = useCourtColors(suit)
-  const hair = isRed ? '#4a2810' : '#100810'
-  const hairHi = isRed ? '#6a3c1c' : '#201820'
-  const beard = isRed ? '#5a3018' : '#161016'
-  const robe = isRed ? '#a41428' : '#141430'
-  const _robeMid = isRed ? '#c42e40' : '#242444'
-  const robeHi = isRed ? '#d44858' : '#343458'
-  const jewel = isRed ? '#1e4488' : '#b82828'
-  const jewelHi = isRed ? '#3a68b0' : '#d84848'
+  const { c, isRed, skin, skinShade, skinHi, gold, goldDk, goldLt, ink, palette } = useCourtColors(suit)
+  const hair = palette.hair
+  const hairHi = palette.hairHi
+  const beard = palette.beard
+  const robe = palette.clothing
+  const _robeMid = palette.clothingMid
+  const robeHi = palette.clothingHi
+  const jewel = palette.jewel
+  const jewelHi = palette.jewelHi
   const ermine = '#f0eadc'
   const pid = `king-${suit}`
 
@@ -565,8 +568,8 @@ function KingSVG({ suit }: { suit: Suit }) {
       <ellipse cx="34" cy="36" rx="2" ry="1.2" fill={skinHi} opacity="0.12" />
       <ellipse cx="46" cy="36" rx="2" ry="1.2" fill={skinHi} opacity="0.12" />
       {/* Cheek warmth — rosier for French portrait */}
-      <ellipse cx="34.5" cy="38" rx="2.5" ry="1.5" fill="#d8a080" opacity="0.2" />
-      <ellipse cx="45.5" cy="38" rx="2.5" ry="1.5" fill="#d8a080" opacity="0.2" />
+      <ellipse cx="34.5" cy="38" rx="2.5" ry="1.5" fill={palette.cheekWarmth} opacity="0.2" />
+      <ellipse cx="45.5" cy="38" rx="2.5" ry="1.5" fill={palette.cheekWarmth} opacity="0.2" />
       {/* Temple shadows — deeper */}
       <ellipse cx="30" cy="34" rx="1.5" ry="3.5" fill={skinShade} opacity="0.1" />
       <ellipse cx="50" cy="34" rx="1.5" ry="3.5" fill={skinShade} opacity="0.1" />
@@ -614,7 +617,7 @@ function KingSVG({ suit }: { suit: Suit }) {
       <path d="M32.5,42 Q30.5,47 34.5,51.5 Q37.5,54 40,55 Q42.5,54 45.5,51.5 Q49.5,47 47.5,42" fill="none" stroke={beard} strokeWidth="0.4" opacity="0.35" />
       <path d="M34,44.5 Q37,48.5 40,49.5 Q43,48.5 46,44.5" fill="none" stroke={beard} strokeWidth="0.25" opacity="0.25" />
       <path d="M35,47 Q38,50.5 40,51 Q42,50.5 45,47" fill="none" stroke={beard} strokeWidth="0.2" opacity="0.2" />
-      <line x1="38.3" y1="42.8" x2="41.7" y2="42.8" stroke="#8a4848" strokeWidth="0.45" strokeLinecap="round" />
+      <line x1="38.3" y1="42.8" x2="41.7" y2="42.8" stroke={palette.lip} strokeWidth="0.45" strokeLinecap="round" />
 
       {/* ── Ermine collar ── */}
       <rect x="22.5" y="53" width="35" height="4.2" rx="1.6" fill={ermine} stroke={goldDk} strokeWidth="0.3" />

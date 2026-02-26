@@ -31,6 +31,8 @@ import CountingOverlay from './components/CountingOverlay'
 import SideBets from './components/SideBets'
 import AudioPanel from './components/AudioPanel'
 import CardSkinShop from './components/CardSkinShop'
+import { loadCardSkinState, getSkinById, CARD_SKINS } from './utils/cardSkinShop'
+import SkinRewardToast from './components/SkinRewardToast'
 import MultiplayerSetup from './components/MultiplayerSetup'
 import type { PlayerConfig } from './components/MultiplayerSetup'
 import MultiplayerBar from './components/MultiplayerBar'
@@ -53,15 +55,30 @@ function App() {
     'royal-purple':  { felt: '#4a1a6b', feltDark: '#331248', feltLight: '#5e2490' },
   }
 
+  const { state, actions } = useGameEngine()
+
+  // Active skin's environment theme overrides table felt for non-classic skins
+  const activeSkinEnv = useMemo(() => {
+    const skinState = loadCardSkinState()
+    const skin = getSkinById(skinState.activeSkinId) ?? CARD_SKINS[0]
+    return skin.id !== 'classic' ? skin.environment : null
+  }, [state.chips]) // re-read on chip changes (purchase triggers re-render)
+
   const feltStyle = useMemo(() => {
+    if (activeSkinEnv) {
+      return {
+        '--felt': activeSkinEnv.felt,
+        '--felt-dark': activeSkinEnv.feltDark,
+        '--felt-light': activeSkinEnv.feltLight,
+      } as React.CSSProperties
+    }
     const colors = FELT_COLORS[TABLE_FELT_THEME] ?? FELT_COLORS['classic-green']
     return {
       '--felt': colors.felt,
       '--felt-dark': colors.feltDark,
       '--felt-light': colors.feltLight,
     } as React.CSSProperties
-  }, [TABLE_FELT_THEME])
-  const { state, actions } = useGameEngine()
+  }, [TABLE_FELT_THEME, activeSkinEnv])
 
   // ── Strategy Trainer state ──
   const [strategyAccuracy, setStrategyAccuracy] = useState({ correct: 0, total: 0 })
@@ -674,6 +691,7 @@ function App() {
       </footer>
 
       <AchievementToast achievements={state.achievements} />
+      <SkinRewardToast skinIds={state.skinRewardGrants} />
 
       {/* Screen reader card deal announcements */}
       <div className="sr-only" aria-live="polite" aria-atomic="true" role="log">
