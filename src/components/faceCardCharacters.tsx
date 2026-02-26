@@ -465,6 +465,111 @@ export function JackCharacterBody({ theme, p }: { theme: CharacterTheme; p: Char
           <path d="M45,54 L47,54 M46,53 L46,55" fill="none" stroke={p.accent} strokeWidth="0.25" opacity="0.25" />
         </g>
       )
+    case 'baroque':
+      return (
+        <g>
+          {/* Embroidered doublet with slashed sleeves */}
+          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Vertical brocade stripes */}
+          {[30, 35, 40, 45, 50].map((x, i) => (
+            <line key={i} x1={x} y1="49" x2={x - 1} y2="60" stroke={p.gold} strokeWidth="0.3" opacity="0.15" />
+          ))}
+          {/* Wide lace collar */}
+          <path d="M28,48 Q34,44 40,46 Q46,44 52,48" fill="#f0f0f0" stroke={p.ink} strokeWidth="0.2" opacity="0.35" />
+          {/* Gold chain with pendant */}
+          <path d="M32,48 Q36,52 40,50 Q44,52 48,48" fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.3" />
+          <circle cx="40" cy="51" r="1.2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.5" />
+        </g>
+      )
+    case 'pharaonic':
+      return (
+        <g>
+          {/* Broad pectoral collar (wesekh) */}
+          <path d="M25,48 L21,60 L59,60 L55,48 Q40,54 25,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Beaded collar bands */}
+          {[48, 51, 54].map((y, i) => (
+            <path key={i} d={`M${26 + i * 2},${y} Q40,${y + 2} ${54 - i * 2},${y}`} fill="none" stroke={p.gold} strokeWidth="0.6" opacity={0.35 - i * 0.08} />
+          ))}
+          {/* Winged scarab center */}
+          <ellipse cx="40" cy="50" rx="2.5" ry="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.4" />
+          <path d="M37.5,50 Q34,48 30,49 M42.5,50 Q46,48 50,49" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.25" />
+        </g>
+      )
+    case 'glacial':
+      return (
+        <g>
+          {/* Frost-plated armor tunic */}
+          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill="#c8e0f0" stroke="#88ccee" strokeWidth="0.4" opacity="0.7" />
+          {/* Ice plate edges */}
+          <path d="M30,50 L28,54 L32,58 L36,54 L34,50" fill="none" stroke="#a0d0f0" strokeWidth="0.3" opacity="0.3" />
+          <path d="M46,50 L48,54 L44,58 L40,54 L42,50" fill="none" stroke="#a0d0f0" strokeWidth="0.3" opacity="0.3" />
+          {/* Snowflake clasp */}
+          <circle cx="40" cy="50" r="2" fill="none" stroke="#bbddff" strokeWidth="0.4" opacity="0.4" />
+          {[0, 60, 120, 180, 240, 300].map((a, i) => (
+            <line key={i} x1="40" y1="48" x2="40" y2="47" stroke="#bbddff" strokeWidth="0.3" opacity="0.3" transform={`rotate(${a},40,50)`} />
+          ))}
+        </g>
+      )
+    case 'infernal':
+      return (
+        <g>
+          {/* Charred plate armor with magma cracks */}
+          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Lava crack lines */}
+          <path d="M32,50 L30,55 L34,58 L32,60" fill="none" stroke="#f0a020" strokeWidth="0.4" opacity="0.3" />
+          <path d="M48,50 L50,55 L46,58 L48,60" fill="none" stroke="#f08020" strokeWidth="0.4" opacity="0.25" />
+          {/* Ember glow center */}
+          <path d="M38,51 L40,56 L42,51" fill="#f0a020" opacity="0.2" />
+          {/* Shoulder spikes */}
+          <path d="M26,49 L23,45 L28,48" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          <path d="M54,49 L57,45 L52,48" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+        </g>
+      )
+    case 'astral':
+      return (
+        <g>
+          {/* Celestial robes with constellation pattern */}
+          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Constellation dots and lines on torso */}
+          {[[32, 52], [36, 55], [40, 51], [44, 54], [48, 52]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="0.5" fill={p.gold} opacity={0.3 + (i % 2) * 0.15} />
+          ))}
+          <path d="M32,52 L36,55 L40,51 L44,54 L48,52" fill="none" stroke={p.gold} strokeWidth="0.25" opacity="0.2" />
+          {/* Glowing sash */}
+          <path d="M30,49 Q40,52 50,49" fill="none" stroke={p.gold} strokeWidth="0.8" opacity="0.2" />
+        </g>
+      )
+    case 'crystalline':
+      return (
+        <g>
+          {/* Gem-encrusted breastplate */}
+          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Faceted plate lines */}
+          <path d="M30,49 L35,54 L40,49 L45,54 L50,49" fill="none" stroke={p.goldDk} strokeWidth="0.3" opacity="0.2" />
+          <path d="M35,54 L40,60 L45,54" fill="none" stroke={p.goldDk} strokeWidth="0.25" opacity="0.15" />
+          {/* Diamond center gem */}
+          <path d="M38,51 L40,49 L42,51 L40,53 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.5" />
+          <circle cx="40" cy="51" r="0.6" fill={p.goldLt} opacity="0.4" />
+        </g>
+      )
+    case 'draconic':
+      return (
+        <g>
+          {/* Dragon scale mail torso */}
+          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Overlapping scale rows */}
+          {[50, 53, 56].map((y, i) => (
+            <g key={i}>
+              {[28, 32, 36, 40, 44, 48].map((x, j) => (
+                <path key={j} d={`M${x},${y} Q${x + 2},${y - 1.5} ${x + 4},${y}`} fill="none" stroke={p.gold} strokeWidth="0.25" opacity={0.25 - i * 0.05} />
+              ))}
+            </g>
+          ))}
+          {/* Dragon eye buckle */}
+          <ellipse cx="40" cy="50" rx="2" ry="1.2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          <ellipse cx="40" cy="50" rx="0.5" ry="1" fill="#ef4444" opacity="0.5" />
+        </g>
+      )
     default:
       return null
   }
@@ -488,18 +593,23 @@ export function JackCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
           {/* Rapier — thin elegant weapon */}
           <line x1="60" y1="22" x2="63" y2="56" stroke="#a0a0a8" strokeWidth="0.8" strokeLinecap="round" />
           <line x1="60" y1="22" x2="63" y2="56" stroke="#d0d0d8" strokeWidth="0.2" opacity="0.3" />
-          {/* Ornate hand guard */}
+          {/* Ornate hand guard — swept S-curve */}
           <ellipse cx="60.5" cy="28" rx="3" ry="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
           <path d="M58,28 Q60.5,32 63,28" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.5" />
+          {/* Pommel jewel */}
+          <circle cx="63" cy="56" r="1.2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" />
         </g>
       )
     case 'pharaonic':
       return (
         <g>
-          {/* Ankh staff */}
-          <line x1="62" y1="30" x2="63" y2="56" stroke={p.gold} strokeWidth="1.2" strokeLinecap="round" />
-          <ellipse cx="62" cy="26" rx="3" ry="4" fill="none" stroke={p.gold} strokeWidth="1" />
-          <line x1="59" y1="30" x2="65" y2="30" stroke={p.gold} strokeWidth="0.8" />
+          {/* Was-scepter (jackal-headed staff) */}
+          <line x1="62" y1="28" x2="63" y2="56" stroke={p.gold} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Jackal head top */}
+          <path d="M60,28 Q58,24 59,20 Q61,22 62,20 Q63,22 65,20 Q66,24 64,28 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          <circle cx="60.5" cy="23" r="0.5" fill={p.ink} opacity="0.5" />
+          {/* Forked bottom */}
+          <path d="M62,54 L61,58 M64,54 L65,58" fill="none" stroke={p.gold} strokeWidth="0.6" strokeLinecap="round" />
         </g>
       )
     case 'glacial':
@@ -613,6 +723,20 @@ export function JackCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
           <path d="M58.5,24 L60,20 L61.5,24" fill={p.goldLt} opacity="0.3" />
           {/* Sparkle */}
           <circle cx="60" cy="20" r="0.5" fill="#fff" opacity="0.4" />
+        </g>
+      )
+    case 'draconic':
+      return (
+        <g>
+          {/* Flamberge — wavy-bladed greatsword */}
+          <line x1="60" y1="20" x2="63" y2="56" stroke={p.goldDk} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Wavy blade edges */}
+          <path d="M59,22 Q58,26 59,30 Q58,34 59,38 Q58,42 59,46" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.4" />
+          <path d="M61,22 Q62,26 61,30 Q62,34 61,38 Q62,42 61,46" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.4" />
+          {/* Dragon wing crossguard */}
+          <path d="M56,26 Q58,22 60,26 Q62,22 64,26" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {/* Dragon eye pommel */}
+          <circle cx="63" cy="56" r="1.2" fill="#ef4444" opacity="0.5" />
         </g>
       )
     default:
@@ -869,6 +993,409 @@ export function QueenCharacterHead({ theme, p }: { theme: CharacterTheme; p: Cha
           {/* Flame wisps from crown */}
           <path d="M37,10 Q35,6 37,4" fill="none" stroke="#f59e0b" strokeWidth="0.35" opacity="0.3" />
           <path d="M43,10 Q45,6 43,4" fill="none" stroke="#f59e0b" strokeWidth="0.35" opacity="0.3" />
+        </g>
+      )
+    default:
+      return null
+  }
+}
+
+// ── Queen Character Body Modifications ──
+export function QueenCharacterBody({ theme, p }: { theme: CharacterTheme; p: CharacterProps }) {
+  switch (theme) {
+    case 'cyberpunk':
+      return (
+        <g>
+          {/* Neon-trimmed bodysuit with tech panels */}
+          <path d="M26,48 L22,60 L58,60 L54,48 Q40,54 26,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Glowing circuit seams */}
+          <path d="M34,50 L34,58" fill="none" stroke={p.accent} strokeWidth="0.4" opacity="0.3" />
+          <path d="M46,50 L46,58" fill="none" stroke={p.accent} strokeWidth="0.4" opacity="0.3" />
+          {/* Chest data port */}
+          <rect x="37" y="50" width="6" height="3" rx="1" fill={p.accent} opacity="0.2" stroke={p.accent} strokeWidth="0.3" />
+        </g>
+      )
+    case 'baroque':
+      return (
+        <g>
+          {/* Corseted gown with panniers (wide hips) */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Corset lacing */}
+          {[50, 53, 56].map((y, i) => (
+            <g key={i}>
+              <path d={`M38,${y} L40,${y + 1} L42,${y}`} fill="none" stroke={p.gold} strokeWidth="0.3" opacity="0.3" />
+            </g>
+          ))}
+          {/* Lace trim at neckline */}
+          <path d="M30,48 Q35,44 40,46 Q45,44 50,48" fill="#f0f0f0" stroke={p.ink} strokeWidth="0.15" opacity="0.3" />
+          {/* Brooch at center */}
+          <circle cx="40" cy="49" r="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.25" opacity="0.5" />
+        </g>
+      )
+    case 'samurai':
+      return (
+        <g>
+          {/* Layered kimono (junihitoe-inspired) */}
+          <path d="M24,48 L20,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Visible kimono layers at collar */}
+          <path d="M34,48 L40,52 L46,48" fill="none" stroke={p.clothingHi} strokeWidth="0.8" opacity="0.4" />
+          <path d="M36,48 L40,50 L44,48" fill="none" stroke={p.isRed ? '#e08080' : '#8080a0'} strokeWidth="0.5" opacity="0.3" />
+          {/* Obi sash */}
+          <rect x="28" y="52" width="24" height="3.5" rx="0.8" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.4" />
+          {/* Obi knot */}
+          <circle cx="40" cy="53.5" r="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.35" />
+        </g>
+      )
+    case 'pharaonic':
+      return (
+        <g>
+          {/* Egyptian queen sheath dress with broad collar */}
+          <path d="M26,48 L22,60 L58,60 L54,48 Q40,54 26,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Wesekh collar — beaded semicircular */}
+          {[48, 50, 52].map((y, i) => (
+            <path key={i} d={`M${28 + i * 2},${y} Q40,${y + 2.5} ${52 - i * 2},${y}`} fill="none" stroke={p.gold} strokeWidth="0.5" opacity={0.35 - i * 0.08} />
+          ))}
+          {/* Winged Isis center motif */}
+          <path d="M38,50 Q36,48 32,49 M42,50 Q44,48 48,49" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.25" />
+          <circle cx="40" cy="50" r="1" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.4" />
+        </g>
+      )
+    case 'glacial':
+      return (
+        <g>
+          {/* Flowing ice gown — trailing crystalline hem */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill="#c8e0f0" stroke="#88ccee" strokeWidth="0.4" opacity="0.65" />
+          {/* Frost pattern on bodice */}
+          <path d="M34,50 Q32,54 34,58" fill="none" stroke="#bbddff" strokeWidth="0.3" opacity="0.3" />
+          <path d="M46,50 Q48,54 46,58" fill="none" stroke="#bbddff" strokeWidth="0.3" opacity="0.3" />
+          {/* Crystal clasp */}
+          <path d="M38,49 L40,47 L42,49 L40,51 Z" fill="#e0f4ff" stroke="#88ccee" strokeWidth="0.3" opacity="0.5" />
+        </g>
+      )
+    case 'infernal':
+      return (
+        <g>
+          {/* Ember-edged gown with smoke hem */}
+          <path d="M24,48 L20,60 L26,58 L32,60 L38,57 L44,60 L50,58 L56,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          {/* Lava glow at edges */}
+          <path d="M24,56 L30,58 L36,55" fill="none" stroke="#f0a020" strokeWidth="0.4" opacity="0.25" />
+          <path d="M44,55 L50,58 L56,56" fill="none" stroke="#f08020" strokeWidth="0.4" opacity="0.2" />
+          {/* Flame pendant */}
+          <path d="M39,50 Q40,48 41,50 Q40,52 39,50" fill="#f0a020" opacity="0.35" />
+        </g>
+      )
+    case 'wraith':
+      return (
+        <g>
+          {/* Flowing spectral robes — ethereal tattered */}
+          <path d="M22,48 L18,60 L24,57 L30,60 L36,56 L42,60 L48,56 L54,60 L60,57 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" opacity="0.7" />
+          {/* Ghost wisps from dress hem */}
+          <path d="M28,55 Q26,52 24,56" fill="none" stroke={p.clothing} strokeWidth="0.3" opacity="0.2" />
+          <path d="M52,55 Q54,52 56,56" fill="none" stroke={p.clothing} strokeWidth="0.3" opacity="0.2" />
+        </g>
+      )
+    case 'ophidian':
+      return (
+        <g>
+          {/* Snakeskin gown — scaled and fitted */}
+          <path d="M24,48 L20,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Scale pattern */}
+          {[50, 53, 56].map((y, i) => (
+            <path key={i} d={`M${26 + i},${y} Q33,${y - 1.5} 40,${y} Q47,${y - 1.5} ${54 - i},${y}`} fill="none" stroke={p.gold} strokeWidth="0.25" opacity="0.2" />
+          ))}
+          {/* Snake armlet accent */}
+          <path d="M28,49 Q34,51 40,49 Q46,51 52,49" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.3" />
+        </g>
+      )
+    case 'astral':
+      return (
+        <g>
+          {/* Nebula robes — cosmic flowing */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Star scatter on gown */}
+          {[[30, 53], [36, 56], [44, 55], [50, 52], [40, 50]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="0.4" fill={p.gold} opacity={0.25 + (i % 2) * 0.15} />
+          ))}
+          {/* Constellation line */}
+          <path d="M30,53 L36,56 L40,50 L44,55 L50,52" fill="none" stroke={p.gold} strokeWidth="0.2" opacity="0.15" />
+        </g>
+      )
+    case 'vampiric':
+      return (
+        <g>
+          {/* Elegant Victorian corset dress */}
+          <path d="M24,48 L20,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Corset boning lines */}
+          {[34, 37, 40, 43, 46].map((x, i) => (
+            <line key={i} x1={x} y1="49" x2={x} y2="58" stroke={p.ink} strokeWidth="0.15" opacity="0.12" />
+          ))}
+          {/* Lace décolletage */}
+          <path d="M32,48 Q36,44 40,46 Q44,44 48,48" fill="none" stroke={p.ink} strokeWidth="0.2" opacity="0.15" />
+          {/* Ruby pendant */}
+          <path d="M39,48 L40,46 L41,48 L40,49 Z" fill="#880808" opacity="0.45" stroke={p.goldDk} strokeWidth="0.2" />
+        </g>
+      )
+    case 'arcane':
+      return (
+        <g>
+          {/* Enchantress robes with mystic trim */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Arcane sigil band at waist */}
+          <rect x="28" y="50" width="24" height="2" rx="0.5" fill={p.gold} opacity="0.2" stroke={p.goldDk} strokeWidth="0.2" />
+          {/* Glowing runes on bodice */}
+          <circle cx="36" cy="54" r="1" fill={p.accent} opacity="0.12" />
+          <circle cx="44" cy="54" r="1" fill={p.accent} opacity="0.12" />
+        </g>
+      )
+    case 'sylvan':
+      return (
+        <g>
+          {/* Petal-layered gown — organic flowing */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Overlapping petal layers */}
+          {[52, 55, 58].map((y, i) => (
+            <path key={i} d={`M${24 + i * 2},${y} Q32,${y - 2} 40,${y} Q48,${y - 2} ${56 - i * 2},${y}`} fill={p.clothingHi} stroke={p.ink} strokeWidth="0.15" opacity={0.3 - i * 0.06} />
+          ))}
+          {/* Flower brooch */}
+          <circle cx="40" cy="49.5" r="1.5" fill={p.accent} opacity="0.25" />
+          {[0, 72, 144, 216, 288].map((a, j) => (
+            <path key={j} d="M40,49.5 Q38.5,47.5 40,46.5 Q41.5,47.5 40,49.5" fill={p.accent} opacity="0.2" transform={`rotate(${a},40,49.5)`} />
+          ))}
+        </g>
+      )
+    case 'noir':
+      return (
+        <g>
+          {/* Slinky evening gown */}
+          <path d="M26,48 L22,60 L58,60 L54,48 Q40,54 26,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Diagonal drape fold */}
+          <path d="M30,48 Q38,54 36,60" fill="none" stroke={p.clothingMid} strokeWidth="0.3" opacity="0.2" />
+          {/* Fur stole at shoulders */}
+          <path d="M28,48 Q34,46 40,48 Q46,46 52,48" fill={p.clothingMid} stroke={p.ink} strokeWidth="0.2" opacity="0.3" />
+          {/* Pearl necklace hint */}
+          <path d="M34,48 Q37,46 40,47 Q43,46 46,48" fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.2" />
+        </g>
+      )
+    case 'crystalline':
+      return (
+        <g>
+          {/* Faceted crystal gown */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Geometric facet lines */}
+          <path d="M30,48 L35,54 L30,60" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
+          <path d="M50,48 L45,54 L50,60" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
+          <path d="M35,54 L40,48 L45,54" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
+          {/* Diamond necklace */}
+          <path d="M34,48 Q37,46 40,47 Q43,46 46,48" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.3" />
+          <circle cx="40" cy="47.5" r="0.8" fill={p.goldLt} opacity="0.4" />
+        </g>
+      )
+    case 'draconic':
+      return (
+        <g>
+          {/* Dragon queen scaled gown */}
+          <path d="M24,48 L20,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Scale overlay */}
+          {[50, 53, 56].map((y, i) => (
+            <g key={i}>
+              {[28, 33, 38, 43, 48].map((x, j) => (
+                <path key={j} d={`M${x},${y} Q${x + 2.5},${y - 1.5} ${x + 5},${y}`} fill="none" stroke={p.gold} strokeWidth="0.2" opacity={0.2 - i * 0.04} />
+              ))}
+            </g>
+          ))}
+          {/* Flame gem pendant */}
+          <circle cx="40" cy="49" r="1.5" fill="#ef4444" opacity="0.4" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    default:
+      return null
+  }
+}
+
+// ── Queen Character Prop Modifications ──
+export function QueenCharacterProp({ theme, p }: { theme: CharacterTheme; p: CharacterProps }) {
+  switch (theme) {
+    case 'cyberpunk':
+      return (
+        <g>
+          {/* Holographic data fan */}
+          <g transform="translate(62,38)">
+            <path d="M-3,0 Q0,-6 3,0" fill={p.accent} opacity="0.2" stroke={p.accent} strokeWidth="0.4" />
+            <path d="M-2,-1 Q0,-4 2,-1" fill={p.accent} opacity="0.15" />
+            <line x1="0" y1="0" x2="0" y2="8" stroke={p.accent} strokeWidth="0.6" opacity="0.4" />
+          </g>
+        </g>
+      )
+    case 'baroque':
+      return (
+        <g>
+          {/* Ornate hand mirror */}
+          <g transform="translate(62,36)">
+            <ellipse cx="0" cy="-3" rx="3" ry="4" fill="#c8d0d8" opacity="0.3" stroke={p.gold} strokeWidth="0.5" />
+            <ellipse cx="0" cy="-3" rx="2" ry="3" fill={p.goldLt} opacity="0.1" />
+            <line x1="0" y1="1" x2="0" y2="10" stroke={p.gold} strokeWidth="0.8" strokeLinecap="round" />
+            <circle cx="0" cy="10" r="1" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" />
+          </g>
+        </g>
+      )
+    case 'samurai':
+      return (
+        <g>
+          {/* Folding fan (sensu) */}
+          <g transform="translate(62,38)">
+            {[0, -15, -30, 15, 30].map((angle, i) => (
+              <path key={i} d={`M0,5 L${Math.sin(angle * Math.PI / 180) * 8},${5 - Math.cos(angle * Math.PI / 180) * 8}`} fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.3" transform={`rotate(0)`} />
+            ))}
+            <path d="M-4,-2 Q0,-8 4,-2" fill={p.isRed ? '#e08080' : '#8080c0'} opacity="0.25" stroke={p.gold} strokeWidth="0.3" />
+            <circle cx="0" cy="5" r="0.8" fill={p.gold} opacity="0.4" />
+          </g>
+        </g>
+      )
+    case 'pharaonic':
+      return (
+        <g>
+          {/* Sistrum (sacred rattle) */}
+          <g transform="translate(62,36)">
+            <path d="M-2,-6 Q-3,-10 0,-12 Q3,-10 2,-6" fill="none" stroke={p.gold} strokeWidth="0.8" />
+            {[-8, -10].map((y, i) => (
+              <line key={i} x1="-1.5" y1={y} x2="1.5" y2={y} stroke={p.gold} strokeWidth="0.4" opacity="0.5" />
+            ))}
+            <line x1="0" y1="-6" x2="0" y2="8" stroke={p.gold} strokeWidth="0.8" strokeLinecap="round" />
+          </g>
+        </g>
+      )
+    case 'glacial':
+      return (
+        <g>
+          {/* Ice crystal scepter */}
+          <g transform="translate(62,36)">
+            <line x1="0" y1="-2" x2="0" y2="12" stroke="#90c8e8" strokeWidth="0.8" strokeLinecap="round" />
+            {/* Crystal head */}
+            <path d="M-2,-2 L0,-8 L2,-2" fill="#c8e8ff" stroke="#88ccee" strokeWidth="0.3" opacity="0.6" />
+            <path d="M-1,-4 L0,-7 L1,-4" fill="#e0f4ff" opacity="0.3" />
+          </g>
+        </g>
+      )
+    case 'infernal':
+      return (
+        <g>
+          {/* Flame orb */}
+          <g transform="translate(62,38)">
+            <circle cx="0" cy="0" r="3.5" fill="#f0a020" opacity="0.2" />
+            <circle cx="0" cy="0" r="2" fill="#f06020" opacity="0.25" />
+            <circle cx="0" cy="0" r="1" fill="#f0c040" opacity="0.3" />
+            {/* Flame wisps */}
+            <path d="M-1,-3 Q0,-5 1,-3" fill="none" stroke="#f0a020" strokeWidth="0.4" opacity="0.35" />
+          </g>
+        </g>
+      )
+    case 'wraith':
+      return (
+        <g>
+          {/* Phantom lantern */}
+          <g transform="translate(62,36)">
+            <path d="M-2,0 L-2,-6 L2,-6 L2,0 Z" fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.3" />
+            <circle cx="0" cy="-3" r="1.2" fill={p.accent} opacity="0.2" />
+            <line x1="0" y1="-6" x2="0" y2="-8" stroke={p.gold} strokeWidth="0.3" opacity="0.3" />
+            <path d="M-1,-8 Q0,-9 1,-8" fill="none" stroke={p.gold} strokeWidth="0.3" opacity="0.25" />
+          </g>
+        </g>
+      )
+    case 'ophidian':
+      return (
+        <g>
+          {/* Serpent scepter */}
+          <g transform="translate(62,36)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke={p.goldDk} strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M-1,0 Q-2,-4 0,-6 Q2,-4 1,0" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+            <circle cx="0" cy="-5" r="0.5" fill={p.accent} opacity="0.4" />
+          </g>
+        </g>
+      )
+    case 'astral':
+      return (
+        <g>
+          {/* Star orb */}
+          <g transform="translate(62,38)">
+            <circle cx="0" cy="0" r="3" fill={p.gold} opacity="0.15" />
+            <circle cx="0" cy="0" r="1.5" fill={p.gold} opacity="0.25" />
+            {[0, 60, 120, 180, 240, 300].map((a, i) => (
+              <line key={i} x1="0" y1="-2" x2="0" y2="-4" stroke={p.gold} strokeWidth="0.3" opacity="0.3" transform={`rotate(${a},0,0)`} />
+            ))}
+          </g>
+        </g>
+      )
+    case 'vampiric':
+      return (
+        <g>
+          {/* Blood rose */}
+          <g transform="translate(62,38)">
+            {[0, 72, 144, 216, 288].map((a, i) => (
+              <path key={i} d="M0,0 Q-1.5,-2 0,-3 Q1.5,-2 0,0" fill="#880808" opacity="0.4" transform={`rotate(${a},0,0)`} />
+            ))}
+            <circle cx="0" cy="0" r="0.8" fill={p.gold} opacity="0.3" />
+            <line x1="0" y1="2" x2="0" y2="10" stroke="#2a4020" strokeWidth="0.6" strokeLinecap="round" />
+          </g>
+        </g>
+      )
+    case 'arcane':
+      return (
+        <g>
+          {/* Crystal ball */}
+          <g transform="translate(62,38)">
+            <circle cx="0" cy="0" r="3.5" fill={p.accent} opacity="0.12" stroke={p.accent} strokeWidth="0.4" />
+            <circle cx="0" cy="0" r="2" fill={p.accent} opacity="0.08" />
+            {/* Inner glow */}
+            <circle cx="-0.5" cy="-0.5" r="0.8" fill={p.accent} opacity="0.2" />
+          </g>
+        </g>
+      )
+    case 'sylvan':
+      return (
+        <g>
+          {/* Flowering branch */}
+          <g transform="translate(62,36)">
+            <path d="M0,0 Q-1,6 0,12" fill="none" stroke="#5a3818" strokeWidth="0.7" strokeLinecap="round" />
+            <path d="M0,2 Q-3,0 -2,-2 Q-1,0 0,2" fill={p.clothing} opacity="0.5" />
+            <path d="M0,6 Q3,4 2,2 Q1,4 0,6" fill={p.clothing} opacity="0.4" />
+            <circle cx="-2" cy="-1" r="0.6" fill={p.accent} opacity="0.3" />
+          </g>
+        </g>
+      )
+    case 'noir':
+      return (
+        <g>
+          {/* Cigarette holder */}
+          <g transform="translate(62,38)">
+            <line x1="0" y1="0" x2="6" y2="-1" stroke="#303030" strokeWidth="0.5" opacity="0.4" />
+            <rect x="5" y="-2" width="3" height="1.5" rx="0.3" fill="#f0e0c0" opacity="0.3" />
+            {/* Smoke wisp */}
+            <path d="M8,-2 Q9,-5 8,-8" fill="none" stroke={p.ink} strokeWidth="0.3" opacity="0.12" />
+          </g>
+        </g>
+      )
+    case 'crystalline':
+      return (
+        <g>
+          {/* Diamond scepter */}
+          <g transform="translate(62,36)">
+            <line x1="0" y1="0" x2="0" y2="10" stroke={p.goldDk} strokeWidth="0.8" strokeLinecap="round" />
+            <path d="M-2,0 L0,-5 L2,0 L0,-1 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" />
+            <circle cx="0" cy="-3" r="0.5" fill="#fff" opacity="0.3" />
+          </g>
+        </g>
+      )
+    case 'draconic':
+      return (
+        <g>
+          {/* Dragon egg */}
+          <g transform="translate(62,38)">
+            <ellipse cx="0" cy="0" rx="3" ry="4.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" />
+            {[-2, 0, 2].map((y, i) => (
+              <path key={i} d={`M-2,${y} Q0,${y - 1.5} 2,${y}`} fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.3" />
+            ))}
+            <ellipse cx="0" cy="-0.5" rx="1.2" ry="1.8" fill="#ef4444" opacity="0.2" />
+          </g>
         </g>
       )
     default:
@@ -1154,6 +1681,443 @@ export function KingCharacterHead({ theme, p }: { theme: CharacterTheme; p: Char
   }
 }
 
+// ── King Character Body Modifications ──
+export function KingCharacterBody({ theme, p }: { theme: CharacterTheme; p: CharacterProps }) {
+  switch (theme) {
+    case 'cyberpunk':
+      return (
+        <g>
+          {/* Heavy mech exosuit torso */}
+          <path d="M24,48 L20,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Shoulder pauldrons */}
+          <path d="M24,48 L20,44 L26,46" fill={p.clothingMid} stroke={p.ink} strokeWidth="0.3" />
+          <path d="M56,48 L60,44 L54,46" fill={p.clothingMid} stroke={p.ink} strokeWidth="0.3" />
+          {/* Chest reactor */}
+          <circle cx="40" cy="52" r="2" fill={p.accent} opacity="0.25" />
+          <circle cx="40" cy="52" r="1" fill={p.accent} opacity="0.4" />
+          {/* Circuit traces */}
+          <line x1="38" y1="52" x2="30" y2="56" stroke={p.accent} strokeWidth="0.3" opacity="0.2" />
+          <line x1="42" y1="52" x2="50" y2="56" stroke={p.accent} strokeWidth="0.3" opacity="0.2" />
+        </g>
+      )
+    case 'baroque':
+      return (
+        <g>
+          {/* Grand royal mantle with ermine trim */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Ermine trim at shoulders */}
+          <path d="M24,48 Q32,46 40,48 Q48,46 56,48" fill="#f0f0f0" stroke={p.ink} strokeWidth="0.2" opacity="0.35" />
+          {/* Gold embroidered vest underneath */}
+          <path d="M34,48 L32,60 L48,60 L46,48" fill={p.gold} opacity="0.12" />
+          {/* Medallion chain */}
+          <path d="M32,48 Q36,52 40,50 Q44,52 48,48" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.3" />
+          <circle cx="40" cy="51" r="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.5" />
+        </g>
+      )
+    case 'samurai':
+      return (
+        <g>
+          {/* Full samurai armor (o-yoroi) */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Layered sode (shoulder guards) */}
+          <path d="M22,48 L18,44 L24,46" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          <path d="M58,48 L62,44 L56,46" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          {/* Horizontal lame bands */}
+          {[50, 53, 56].map((y, i) => (
+            <rect key={i} x="22" y={y} width="36" height="1.8" rx="0.4" fill={p.clothingHi} stroke={p.ink} strokeWidth="0.15" opacity={0.4 - i * 0.08} />
+          ))}
+          {/* Grand mon crest */}
+          <circle cx="40" cy="50" r="2.5" fill={p.gold} opacity="0.2" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    case 'pharaonic':
+      return (
+        <g>
+          {/* Pharaoh's broad wesekh collar and shendyt */}
+          <path d="M24,48 L20,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Grand wesekh collar — multiple beaded bands */}
+          {[48, 50, 52, 54].map((y, i) => (
+            <path key={i} d={`M${24 + i * 2},${y} Q40,${y + 3} ${56 - i * 2},${y}`} fill="none" stroke={p.gold} strokeWidth="0.5" opacity={0.4 - i * 0.07} />
+          ))}
+          {/* Central scarab */}
+          <ellipse cx="40" cy="50" rx="2.5" ry="2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.25" opacity="0.4" />
+        </g>
+      )
+    case 'glacial':
+      return (
+        <g>
+          {/* Frost king plate armor — massive ice plates */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill="#b8d8f0" stroke="#88ccee" strokeWidth="0.4" opacity="0.7" />
+          {/* Large ice plate edges */}
+          <path d="M28,50 L24,56 L32,60 L36,54 L28,50" fill="none" stroke="#a0d0f0" strokeWidth="0.3" opacity="0.25" />
+          <path d="M52,50 L56,56 L48,60 L44,54 L52,50" fill="none" stroke="#a0d0f0" strokeWidth="0.3" opacity="0.25" />
+          {/* Grand snowflake buckle */}
+          <circle cx="40" cy="50" r="2.5" fill="none" stroke="#bbddff" strokeWidth="0.5" opacity="0.4" />
+          {[0, 60, 120, 180, 240, 300].map((a, i) => (
+            <line key={i} x1="40" y1="47.5" x2="40" y2="46.5" stroke="#bbddff" strokeWidth="0.4" opacity="0.35" transform={`rotate(${a},40,50)`} />
+          ))}
+        </g>
+      )
+    case 'infernal':
+      return (
+        <g>
+          {/* Demon king heavy plate — magma-cracked */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Large shoulder spikes */}
+          <path d="M24,48 L18,42 L26,46" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          <path d="M56,48 L62,42 L54,46" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          {/* Lava cracks — larger than Jack's */}
+          <path d="M30,50 L28,56 L34,58 L30,60" fill="none" stroke="#f0a020" strokeWidth="0.5" opacity="0.3" />
+          <path d="M50,50 L52,56 L46,58 L50,60" fill="none" stroke="#f08020" strokeWidth="0.5" opacity="0.25" />
+          {/* Infernal sigil center */}
+          <circle cx="40" cy="52" r="2" fill="#f06020" opacity="0.2" />
+          <path d="M38,52 L40,50 L42,52 L40,54 Z" fill="#f0a020" opacity="0.25" />
+        </g>
+      )
+    case 'wraith':
+      return (
+        <g>
+          {/* Death king tattered grand cloak */}
+          <path d="M20,48 L16,60 L22,57 L28,60 L34,56 L40,60 L46,56 L52,60 L58,57 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          <path d="M26,50 Q34,54 40,52 Q46,54 54,50" fill={p.clothingMid} opacity="0.15" />
+          {/* Deeper shadow wisps */}
+          <path d="M26,55 Q22,52 20,56" fill="none" stroke={p.ink} strokeWidth="0.4" opacity="0.2" />
+          <path d="M54,55 Q58,52 60,56" fill="none" stroke={p.ink} strokeWidth="0.4" opacity="0.2" />
+        </g>
+      )
+    case 'ophidian':
+      return (
+        <g>
+          {/* Serpent king armor — heavy scale plate */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Grand scale rows */}
+          {[50, 53, 56].map((y, i) => (
+            <path key={i} d={`M${22 + i},${y} Q31,${y - 2} 40,${y} Q49,${y - 2} ${58 - i},${y}`} fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.25" />
+          ))}
+          {/* Grand serpent belt with gem */}
+          <path d="M26,49 Q33,51 40,49 Q47,51 54,49" fill="none" stroke={p.gold} strokeWidth="1" opacity="0.4" />
+          <circle cx="40" cy="49.5" r="1.8" fill={p.accent} opacity="0.35" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    case 'astral':
+      return (
+        <g>
+          {/* Cosmic emperor robes */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Grand constellation */}
+          {[[28, 52], [34, 56], [40, 51], [46, 55], [52, 52], [40, 58]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="0.6" fill={p.gold} opacity={0.3 + (i % 2) * 0.15} />
+          ))}
+          <path d="M28,52 L34,56 L40,51 L46,55 L52,52" fill="none" stroke={p.gold} strokeWidth="0.3" opacity="0.2" />
+          <path d="M34,56 L40,58 L46,55" fill="none" stroke={p.gold} strokeWidth="0.2" opacity="0.15" />
+          {/* Cosmic sash */}
+          <path d="M28,49 Q40,52 52,49" fill="none" stroke={p.gold} strokeWidth="1" opacity="0.2" />
+        </g>
+      )
+    case 'vampiric':
+      return (
+        <g>
+          {/* Vampire lord grand cape */}
+          <path d="M20,44 L16,60 L64,60 L60,44" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Massive collar wings */}
+          <path d="M26,44 L20,36 L26,40" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          <path d="M54,44 L60,36 L54,40" fill={p.clothing} stroke={p.ink} strokeWidth="0.3" />
+          {/* Vest with gold buttons */}
+          <path d="M32,46 L30,60 L50,60 L48,46" fill={p.isRed ? '#680808' : '#1a1a1a'} stroke={p.ink} strokeWidth="0.2" opacity="0.4" />
+          {[50, 53, 56].map((y, i) => (
+            <circle key={i} cx="40" cy={y} r="0.7" fill={p.gold} opacity="0.3" />
+          ))}
+          {/* Grand cravat */}
+          <path d="M36,45 L40,50 L44,45" fill={p.isRed ? '#a02020' : '#c02020'} stroke={p.ink} strokeWidth="0.2" opacity="0.5" />
+        </g>
+      )
+    case 'arcane':
+      return (
+        <g>
+          {/* Archmage's grand robes */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Grand rune belt */}
+          <rect x="26" y="48" width="28" height="3" rx="1" fill={p.gold} opacity="0.25" stroke={p.goldDk} strokeWidth="0.25" />
+          {/* Multiple arcane sigils */}
+          {[32, 38, 44, 50].map((x, i) => (
+            <circle key={i} cx={x} cy="54" r="1.5" fill={p.accent} opacity="0.12" />
+          ))}
+          {/* Glowing rune cross */}
+          <path d="M39,54 L41,54 M40,53 L40,55" fill="none" stroke={p.accent} strokeWidth="0.3" opacity="0.2" />
+        </g>
+      )
+    case 'sylvan':
+      return (
+        <g>
+          {/* Forest king bark armor with moss */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Root/vine patterns */}
+          <path d="M28,50 Q32,56 30,60" fill="none" stroke={p.clothingHi} strokeWidth="0.5" opacity="0.3" />
+          <path d="M52,50 Q48,56 50,60" fill="none" stroke={p.clothingHi} strokeWidth="0.5" opacity="0.3" />
+          {/* Grand leaf belt */}
+          {[30, 34, 38, 42, 46, 50].map((x, i) => (
+            <path key={i} d={`M${x},49 Q${x - 1.5},46 ${x},44 Q${x + 1.5},46 ${x},49`} fill={p.clothingHi} stroke={p.ink} strokeWidth="0.15" opacity="0.45" />
+          ))}
+          {/* Moss patches */}
+          <circle cx="34" cy="54" r="1.2" fill={p.clothing} opacity="0.2" />
+          <circle cx="46" cy="56" r="1" fill={p.clothing} opacity="0.15" />
+        </g>
+      )
+    case 'noir':
+      return (
+        <g>
+          {/* Mob boss pinstripe suit */}
+          <path d="M24,48 L20,60 L60,60 L56,48 Q40,54 24,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Pinstripe lines */}
+          {[30, 34, 38, 42, 46, 50].map((x, i) => (
+            <line key={i} x1={x} y1="48" x2={x - 1} y2="60" stroke={p.ink} strokeWidth="0.15" opacity="0.08" />
+          ))}
+          {/* Wide lapels */}
+          <path d="M34,48 L40,56 L32,60" fill={p.clothingMid} stroke={p.ink} strokeWidth="0.2" opacity="0.4" />
+          <path d="M46,48 L40,56 L48,60" fill={p.clothingMid} stroke={p.ink} strokeWidth="0.2" opacity="0.4" />
+          {/* Power tie */}
+          <path d="M39,47 L40,58 L41,47" fill={p.isRed ? '#801010' : '#101010'} stroke={p.ink} strokeWidth="0.15" opacity="0.5" />
+        </g>
+      )
+    case 'crystalline':
+      return (
+        <g>
+          {/* Grand crystal armor */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Grand faceted plates */}
+          <path d="M26,48 L32,54 L26,60" fill="none" stroke={p.goldDk} strokeWidth="0.25" opacity="0.15" />
+          <path d="M54,48 L48,54 L54,60" fill="none" stroke={p.goldDk} strokeWidth="0.25" opacity="0.15" />
+          <path d="M32,54 L40,48 L48,54 L40,60 Z" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.12" />
+          {/* Central great diamond */}
+          <path d="M38,50 L40,48 L42,50 L40,52 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.25" opacity="0.5" />
+          <circle cx="40" cy="50" r="0.6" fill="#fff" opacity="0.3" />
+        </g>
+      )
+    case 'draconic':
+      return (
+        <g>
+          {/* Dragon king grand scale plate */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Grand overlapping scale rows */}
+          {[50, 53, 56].map((y, i) => (
+            <g key={i}>
+              {[22, 27, 32, 37, 42, 47, 52].map((x, j) => (
+                <path key={j} d={`M${x},${y} Q${x + 2.5},${y - 2} ${x + 5},${y}`} fill="none" stroke={p.gold} strokeWidth="0.3" opacity={0.25 - i * 0.05} />
+              ))}
+            </g>
+          ))}
+          {/* Grand dragon eye buckle */}
+          <ellipse cx="40" cy="50" rx="2.5" ry="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          <ellipse cx="40" cy="50" rx="0.6" ry="1.3" fill="#ef4444" opacity="0.5" />
+        </g>
+      )
+    default:
+      return null
+  }
+}
+
+// ── King Character Prop Modifications ──
+export function KingCharacterProp({ theme, p }: { theme: CharacterTheme; p: CharacterProps }) {
+  switch (theme) {
+    case 'cyberpunk':
+      return (
+        <g>
+          {/* Energy blade scepter */}
+          <line x1="15" y1="30" x2="14" y2="56" stroke={p.accent} strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+          {/* Energy blade at top */}
+          <path d="M12,30 L15,18 L18,30" fill={p.accent} opacity="0.25" stroke={p.accent} strokeWidth="0.4" />
+          {/* Power cell rings */}
+          <circle cx="15" cy="36" r="2" fill="none" stroke={p.accent} strokeWidth="0.3" opacity="0.3" />
+          <circle cx="15" cy="44" r="2" fill="none" stroke={p.accent} strokeWidth="0.3" opacity="0.2" />
+        </g>
+      )
+    case 'baroque':
+      return (
+        <g>
+          {/* Ornate royal scepter with fleur-de-lis */}
+          <line x1="15" y1="30" x2="14" y2="56" stroke={p.gold} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Fleur-de-lis top */}
+          <path d="M15,30 Q13,26 12,22 Q14,24 15,22 Q16,24 18,22 Q17,26 15,30" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {/* Ornamented shaft bands */}
+          <rect x="13.5" y="34" width="3" height="1.5" rx="0.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.4" />
+          <rect x="13.5" y="40" width="3" height="1.5" rx="0.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.35" />
+        </g>
+      )
+    case 'samurai':
+      return (
+        <g>
+          {/* Tachi (grand sword) */}
+          <line x1="15" y1="24" x2="13" y2="56" stroke="#606868" strokeWidth="1.2" strokeLinecap="round" />
+          <line x1="15" y1="24" x2="13" y2="56" stroke="#c0c8c8" strokeWidth="0.3" opacity="0.2" />
+          {/* Tsuba (guard) */}
+          <ellipse cx="14.5" cy="32" rx="3" ry="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {/* Sageo cord */}
+          <path d="M12,34 Q10,36 12,38" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.3" />
+        </g>
+      )
+    case 'pharaonic':
+      return (
+        <g>
+          {/* Crook (heka) and flail (nekhakha) */}
+          <path d="M15,28 Q12,24 10,28 Q8,32 12,32 L15,28" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
+          <line x1="15" y1="28" x2="14" y2="56" stroke={p.gold} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Flail with beaded strands */}
+          <line x1="12" y1="30" x2="7" y2="38" stroke={p.gold} strokeWidth="0.6" />
+          <line x1="12" y1="30" x2="6" y2="36" stroke={p.gold} strokeWidth="0.6" />
+          <line x1="12" y1="30" x2="8" y2="40" stroke={p.gold} strokeWidth="0.6" />
+          {/* Beads */}
+          {[[7, 38], [6, 36], [8, 40]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="0.6" fill={p.gold} opacity="0.4" />
+          ))}
+        </g>
+      )
+    case 'glacial':
+      return (
+        <g>
+          {/* Grand ice scepter */}
+          <line x1="15" y1="26" x2="14" y2="56" stroke="#90c8e8" strokeWidth="1.4" strokeLinecap="round" />
+          {/* Large crystal top */}
+          <path d="M12,26 L15,14 L18,26" fill="#c8e8ff" stroke="#88ccee" strokeWidth="0.4" opacity="0.6" />
+          <path d="M13,24 L15,16 L17,24" fill="#e0f4ff" opacity="0.25" />
+          {/* Frost branches */}
+          <path d="M13,34 L10,32 M17,38 L20,36" fill="none" stroke="#bbddff" strokeWidth="0.3" opacity="0.3" />
+        </g>
+      )
+    case 'infernal':
+      return (
+        <g>
+          {/* Demon king inferno staff */}
+          <line x1="15" y1="28" x2="14" y2="56" stroke={p.ink} strokeWidth="1.4" strokeLinecap="round" opacity="0.6" />
+          {/* Massive flame head */}
+          <path d="M15,28 Q11,20 13,12 Q14,18 15,12 Q16,18 17,12 Q19,20 15,28" fill="#f0a020" opacity="0.35" />
+          <path d="M14,24 Q13,18 14,14 Q15,20 16,14 Q17,18 16,24" fill="#f06020" opacity="0.25" />
+          {/* Skull knob at base */}
+          <circle cx="14" cy="56" r="1.5" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.2" />
+        </g>
+      )
+    case 'wraith':
+      return (
+        <g>
+          {/* Spectral great scythe */}
+          <line x1="15" y1="22" x2="14" y2="56" stroke={p.gold} strokeWidth="1.2" opacity="0.4" strokeLinecap="round" />
+          {/* Scythe blade — large curved */}
+          <path d="M10,22 Q15,16 20,22 Q18,18 15,22" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
+          <path d="M20,22 Q24,28 20,36" fill="none" stroke={p.gold} strokeWidth="1" opacity="0.25" />
+        </g>
+      )
+    case 'ophidian':
+      return (
+        <g>
+          {/* Grand serpent staff */}
+          <line x1="15" y1="22" x2="14" y2="56" stroke={p.goldDk} strokeWidth="1.4" strokeLinecap="round" />
+          {/* Double coiling snakes */}
+          <path d="M13,26 Q17,30 13,34 Q17,38 13,42" fill="none" stroke={p.gold} strokeWidth="0.8" opacity="0.4" />
+          <path d="M17,28 Q13,32 17,36 Q13,40 17,44" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.3" />
+          {/* Dual snake heads at top */}
+          <circle cx="13" cy="24" r="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          <circle cx="17" cy="26" r="1.2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    case 'astral':
+      return (
+        <g>
+          {/* Cosmic emperor scepter */}
+          <line x1="15" y1="26" x2="14" y2="56" stroke={p.gold} strokeWidth="1" opacity="0.4" strokeLinecap="round" />
+          {/* Grand star tip */}
+          <circle cx="15" cy="22" r="4" fill={p.gold} opacity="0.2" />
+          <path d="M15,18 L16,20 L18.5,20 L17,21.5 L17.5,24 L15,22.5 L12.5,24 L13,21.5 L11.5,20 L14,20 Z" fill={p.gold} opacity="0.45" />
+          {/* Trailing nebula */}
+          {[32, 38, 44, 50].map((y, i) => (
+            <circle key={i} cx={14.5 + (i % 2) * 0.5} cy={y} r="0.5" fill={p.gold} opacity={0.25 - i * 0.04} />
+          ))}
+        </g>
+      )
+    case 'vampiric':
+      return (
+        <g>
+          {/* Blood chalice (grand goblet) */}
+          <path d="M10,30 Q8,36 10,40 L11,40 L10.5,46 L8,46 L9,47 L21,47 L22,46 L19.5,46 L19,40 L20,40 Q22,36 20,30 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.5" />
+          {/* Blood-red wine — overflowing */}
+          <ellipse cx="15" cy="32" rx="3" ry="1" fill="#880808" opacity="0.45" />
+          {/* Drip */}
+          <path d="M12,34 Q11.5,36 12,38" fill="none" stroke="#880808" strokeWidth="0.3" opacity="0.3" />
+        </g>
+      )
+    case 'arcane':
+      return (
+        <g>
+          {/* Archmage grand staff */}
+          <line x1="15" y1="24" x2="14" y2="56" stroke="#5a3818" strokeWidth="1.4" strokeLinecap="round" />
+          {/* Grand orb at top */}
+          <circle cx="15" cy="20" r="4" fill={p.accent} opacity="0.15" stroke={p.accent} strokeWidth="0.5" />
+          <circle cx="15" cy="20" r="2" fill={p.accent} opacity="0.25" />
+          {/* Orbiting rune particles */}
+          {[0, 120, 240].map((a, i) => (
+            <circle key={i} cx={15 + Math.cos(a * Math.PI / 180) * 5} cy={20 + Math.sin(a * Math.PI / 180) * 5} r="0.6" fill={p.accent} opacity="0.3" />
+          ))}
+        </g>
+      )
+    case 'sylvan':
+      return (
+        <g>
+          {/* Great living staff with branching canopy */}
+          <path d="M15,20 Q14.5,38 14,56" fill="none" stroke="#5a3818" strokeWidth="1.8" strokeLinecap="round" />
+          {/* Branching top */}
+          <path d="M15,20 Q12,16 10,14" fill="none" stroke="#5a3818" strokeWidth="0.8" strokeLinecap="round" />
+          <path d="M15,20 Q18,16 20,14" fill="none" stroke="#5a3818" strokeWidth="0.8" strokeLinecap="round" />
+          {/* Leaf canopy */}
+          <path d="M10,14 Q8,12 10,10 Q11,12 12,12" fill={p.clothing} opacity="0.5" />
+          <path d="M20,14 Q22,12 20,10 Q19,12 18,12" fill={p.clothing} opacity="0.5" />
+          <path d="M15,18 Q13,14 15,12 Q17,14 15,18" fill={p.clothing} opacity="0.4" />
+          {/* Nature glow */}
+          <circle cx="15" cy="16" r="2" fill={p.accent} opacity="0.15" />
+        </g>
+      )
+    case 'noir':
+      return (
+        <g>
+          {/* Tommy gun (silhouette) */}
+          <rect x="10" y="36" width="10" height="3" rx="1" fill="#404040" stroke={p.ink} strokeWidth="0.3" opacity="0.4" />
+          <rect x="7" y="37" width="4" height="1.5" rx="0.3" fill="#505050" stroke={p.ink} strokeWidth="0.2" opacity="0.35" />
+          {/* Magazine */}
+          <rect x="14" y="39" width="2.5" height="6" rx="0.5" fill="#404040" stroke={p.ink} strokeWidth="0.2" opacity="0.35" />
+          {/* Barrel */}
+          <rect x="19" y="36.5" width="5" height="2" rx="0.4" fill="#505050" stroke={p.ink} strokeWidth="0.15" opacity="0.3" />
+        </g>
+      )
+    case 'crystalline':
+      return (
+        <g>
+          {/* Grand diamond scepter */}
+          <line x1="15" y1="28" x2="14" y2="56" stroke={p.goldDk} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Grand diamond head */}
+          <path d="M11,28 L15,16 L19,28 L15,24 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          <path d="M13,26 L15,18 L17,26" fill={p.goldLt} opacity="0.25" />
+          {/* Sparkle at apex */}
+          <g>
+            <line x1="14" y1="18" x2="16" y2="18" stroke="#fff" strokeWidth="0.4" opacity="0.5" />
+            <line x1="15" y1="17" x2="15" y2="19" stroke="#fff" strokeWidth="0.4" opacity="0.5" />
+          </g>
+        </g>
+      )
+    case 'draconic':
+      return (
+        <g>
+          {/* Dragon king great flame staff */}
+          <line x1="15" y1="28" x2="14" y2="56" stroke={p.goldDk} strokeWidth="1.4" strokeLinecap="round" />
+          {/* Grand flame */}
+          <path d="M15,28 Q11,20 13,10 Q14,16 15,10 Q16,16 17,10 Q19,20 15,28" fill="#ef4444" opacity="0.35" />
+          <path d="M14,24 Q13,18 14.5,12 Q15.5,18 16,24" fill="#fbbf24" opacity="0.3" />
+          {/* Dragon coil on shaft */}
+          <path d="M13,36 Q11,34 13,32 Q15,34 13,36" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
+          <path d="M15,42 Q17,40 15,38 Q13,40 15,42" fill={p.gold} opacity="0.25" stroke={p.goldDk} strokeWidth="0.2" />
+        </g>
+      )
+    default:
+      return null
+  }
+}
+
 // ── Master accessor: get character overlay for a face card role ──
 // This replaces the headwear/body sections with unique themed characters
 export function getCharacterOverlays(
@@ -1175,11 +2139,19 @@ export function getCharacterOverlays(
       )
     case 'queen':
       return (
-        <QueenCharacterHead theme={theme} p={props} />
+        <>
+          <QueenCharacterHead theme={theme} p={props} />
+          <QueenCharacterBody theme={theme} p={props} />
+          <QueenCharacterProp theme={theme} p={props} />
+        </>
       )
     case 'king':
       return (
-        <KingCharacterHead theme={theme} p={props} />
+        <>
+          <KingCharacterHead theme={theme} p={props} />
+          <KingCharacterBody theme={theme} p={props} />
+          <KingCharacterProp theme={theme} p={props} />
+        </>
       )
   }
 }

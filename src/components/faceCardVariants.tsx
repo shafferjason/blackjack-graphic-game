@@ -133,6 +133,77 @@ export function JackHeadwearVariant({ variant, p }: { variant: SkinVariant; p: V
           <circle cx="40" cy="19.5" r="1.5" fill="#ef4444" opacity="0.7" />
         </g>
       )
+    case 'royal':
+      return (
+        <g opacity="0.85">
+          {/* Powdered wig ribbon */}
+          <path d="M36,20 Q33,18 34,16 L40,18 L46,16 Q47,18 44,20" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.5" />
+        </g>
+      )
+    case 'shadow':
+      return (
+        <g opacity="0.7">
+          {/* Hood shadow over eyes */}
+          <ellipse cx="40" cy="26" rx="10" ry="3" fill={p.ink} opacity="0.1" />
+        </g>
+      )
+    case 'serpent':
+      return (
+        <g opacity="0.85">
+          {/* Third eye gem */}
+          <circle cx="40" cy="14" r="1.5" fill={p.accent} opacity="0.4" stroke={p.goldDk} strokeWidth="0.2" />
+        </g>
+      )
+    case 'celestial':
+      return (
+        <g opacity="0.8">
+          {/* Star circlet */}
+          {[[34, 14], [40, 12], [46, 14]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="0.6" fill={p.gold} opacity="0.35" />
+          ))}
+        </g>
+      )
+    case 'blood-moon':
+      return (
+        <g opacity="0.85">
+          {/* Widow's peak accent */}
+          <path d="M36,18 L40,14 L44,18" fill={p.ink} opacity="0.08" />
+        </g>
+      )
+    case 'midnight':
+      return (
+        <g opacity="0.8">
+          {/* Wizard hat brim accent */}
+          <ellipse cx="40" cy="22" rx="14" ry="2" fill="none" stroke={p.accent} strokeWidth="0.3" opacity="0.2" />
+        </g>
+      )
+    case 'emerald':
+      return (
+        <g opacity="0.85">
+          {/* Vine wreath accent */}
+          <path d="M30,16 Q26,12 28,8" fill="none" stroke={p.clothing} strokeWidth="0.4" opacity="0.3" strokeLinecap="round" />
+          <path d="M50,16 Q54,12 52,8" fill="none" stroke={p.clothing} strokeWidth="0.4" opacity="0.3" strokeLinecap="round" />
+        </g>
+      )
+    case 'velvet':
+      return (
+        <g opacity="0.8">
+          {/* Fedora brim shadow */}
+          <ellipse cx="40" cy="24" rx="14" ry="2" fill={p.ink} opacity="0.06" />
+        </g>
+      )
+    case 'diamond':
+      return (
+        <g opacity="0.85">
+          {/* Crystal facets on crown */}
+          {[[34, 14], [40, 10], [46, 14]].map(([x, y], i) => (
+            <g key={i}>
+              <line x1={x! - 1} y1={y} x2={x! + 1} y2={y} stroke={p.goldLt} strokeWidth="0.3" opacity="0.4" />
+              <line x1={x} y1={y! - 1} x2={x} y2={y! + 1} stroke={p.goldLt} strokeWidth="0.3" opacity="0.4" />
+            </g>
+          ))}
+        </g>
+      )
     default:
       return null
   }
@@ -237,6 +308,103 @@ export function QueenCrownVariant({ variant, p }: { variant: SkinVariant; p: Var
           {/* Flame wisps */}
           <path d="M36,12 Q35,8 37,6" fill="none" stroke="#f59e0b" strokeWidth="0.4" opacity="0.4" />
           <path d="M44,12 Q45,8 43,6" fill="none" stroke="#f59e0b" strokeWidth="0.4" opacity="0.4" />
+        </g>
+      )
+    case 'royal':
+      return (
+        <g opacity="0.85">
+          {/* Ornate tiara with pearls */}
+          <path d="M30,20 L32,14 L36,18 L40,10 L44,18 L48,14 L50,20" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
+          {[36, 40, 44].map((x, i) => (
+            <circle key={i} cx={x} cy={18 - (i === 1 ? 8 : 4)} r="1" fill={p.isRed ? '#ff88aa' : p.goldLt} opacity="0.5" />
+          ))}
+        </g>
+      )
+    case 'frost':
+      return (
+        <g opacity="0.8">
+          {/* Ice crystal tiara */}
+          <path d="M32,18 L34,10 L37,16 L40,6 L43,16 L46,10 L48,18" fill="none" stroke="#88ccee" strokeWidth="0.6" opacity="0.5" />
+          <circle cx="40" cy="8" r="1.5" fill="#e0f4ff" opacity="0.4" />
+        </g>
+      )
+    case 'flame':
+      return (
+        <g opacity="0.8">
+          {/* Ember crown */}
+          <path d="M32,18 Q34,12 37,16 Q39,8 41,16 Q43,12 45,18" fill="none" stroke="#f0a020" strokeWidth="0.5" opacity="0.4" />
+          <circle cx="40" cy="10" r="1.2" fill="#ef4444" opacity="0.4" />
+        </g>
+      )
+    case 'shadow':
+      return (
+        <g opacity="0.7">
+          {/* Phantom crown outline */}
+          <path d="M32,18 L34,12 L37,16 L40,8 L43,16 L46,12 L48,18" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.2" />
+        </g>
+      )
+    case 'serpent':
+      return (
+        <g opacity="0.85">
+          {/* Snake crown with gem */}
+          <path d="M34,18 Q36,12 40,8 Q44,12 46,18" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.4" />
+          <circle cx="40" cy="10" r="1.5" fill={p.accent} opacity="0.4" />
+        </g>
+      )
+    case 'celestial':
+      return (
+        <g opacity="0.8">
+          {/* Star crown points */}
+          <path d="M34,16 L36,8 L40,14 L44,8 L46,16" fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.3" />
+          <circle cx="40" cy="10" r="1.2" fill={p.gold} opacity="0.35" />
+        </g>
+      )
+    case 'blood-moon':
+      return (
+        <g opacity="0.85">
+          {/* Dark tiara with blood drop */}
+          <path d="M32,18 Q28,12 24,14 L30,18" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
+          <path d="M48,18 Q52,12 56,14 L50,18" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
+          <path d="M40,12 Q38,16 40,18 Q42,16 40,12" fill="#880808" opacity="0.4" />
+        </g>
+      )
+    case 'midnight':
+      return (
+        <g opacity="0.8">
+          {/* Moon tiara */}
+          <path d="M34,18 Q36,10 40,6 Q44,10 46,18" fill="none" stroke={p.accent} strokeWidth="0.5" opacity="0.3" />
+          <path d="M42,10 Q38,8 39,4 Q43,6 42,10" fill={p.accent} opacity="0.25" />
+        </g>
+      )
+    case 'emerald':
+      return (
+        <g opacity="0.85">
+          {/* Flower wreath crown */}
+          {[-10, 0, 10].map((angle, i) => (
+            <g key={i} transform={`rotate(${angle},40,14)`}>
+              {[0, 72, 144, 216, 288].map((a, j) => (
+                <path key={j} d="M40,10 Q38.5,8 40,7 Q41.5,8 40,10" fill={i % 2 === 0 ? '#f472b6' : '#fbbf24'} opacity="0.35" transform={`rotate(${a},40,10)`} />
+              ))}
+            </g>
+          ))}
+        </g>
+      )
+    case 'velvet':
+      return (
+        <g opacity="0.8">
+          {/* Jeweled hair clip */}
+          <circle cx="46" cy="14" r="1.5" fill={p.isRed ? '#881010' : p.gold} opacity="0.35" />
+          <circle cx="46" cy="14" r="0.6" fill={p.goldLt} opacity="0.3" />
+        </g>
+      )
+    case 'diamond':
+      return (
+        <g opacity="0.85">
+          {/* Crystal tiara — geometric */}
+          <path d="M32,18 L35,10 L38,16 L40,6 L42,16 L45,10 L48,18" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" opacity="0.4" />
+          {[35, 40, 45].map((x, i) => (
+            <circle key={i} cx={x} cy={i === 1 ? 8 : 12} r="0.8" fill={p.goldLt} opacity="0.4" />
+          ))}
         </g>
       )
     default:
@@ -352,6 +520,101 @@ export function KingCrownVariant({ variant, p }: { variant: SkinVariant; p: Vari
           {/* Crown horns */}
           <path d="M30,15 Q27,6 24,0" fill="none" stroke={p.gold} strokeWidth="1.4" strokeLinecap="round" />
           <path d="M50,15 Q53,6 56,0" fill="none" stroke={p.gold} strokeWidth="1.4" strokeLinecap="round" />
+        </g>
+      )
+    case 'royal':
+      return (
+        <g opacity="0.85">
+          {/* Grand baroque crown */}
+          <path d="M27,22 L25,8 L31,14 L36,4 L40,12 L44,4 L49,14 L55,8 L53,22 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
+          <rect x="27" y="20" width="26" height="3" rx="0.8" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {[36, 40, 44].map((x, i) => (
+            <circle key={i} cx={x} cy={4 + i * 0.5} r="1.2" fill={p.isRed ? '#cc2244' : p.goldLt} opacity="0.5" />
+          ))}
+        </g>
+      )
+    case 'frost':
+      return (
+        <g opacity="0.8">
+          {/* Grand ice crown */}
+          <path d="M28,22 L30,12 L34,18 L38,4 L40,-2 L42,4 L46,18 L50,12 L52,22" fill="none" stroke="#88ccee" strokeWidth="0.6" opacity="0.5" />
+          <path d="M38,4 L40,-4 L42,4" fill="#c8e8ff" opacity="0.3" stroke="#88ccee" strokeWidth="0.3" />
+        </g>
+      )
+    case 'flame':
+      return (
+        <g opacity="0.8">
+          {/* Inferno crown with horns */}
+          <path d="M30,22 L32,14 L36,18 L40,8 L44,18 L48,14 L50,22" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" opacity="0.5" />
+          <path d="M38,8 Q36,2 38,-2 Q40,2 42,-2 Q44,2 42,8" fill="#f0a020" opacity="0.25" />
+        </g>
+      )
+    case 'shadow':
+      return (
+        <g opacity="0.7">
+          {/* Phantom king crown — barely visible */}
+          <path d="M30,18 L32,10 L36,14 L40,4 L44,14 L48,10 L50,18" fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.15" />
+        </g>
+      )
+    case 'serpent':
+      return (
+        <g opacity="0.85">
+          {/* Cobra hood crown with third eye */}
+          <path d="M26,22 Q24,14 30,8 Q36,2 40,0 Q44,2 50,8 Q56,14 54,22" fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.3" />
+          <circle cx="40" cy="6" r="2" fill={p.accent} opacity="0.4" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    case 'celestial':
+      return (
+        <g opacity="0.8">
+          {/* Constellation crown */}
+          <path d="M32,16 L36,6 L40,14 L44,6 L48,16" fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.25" />
+          {[[32, 16], [36, 6], [40, 14], [44, 6], [48, 16]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="0.7" fill={p.gold} opacity="0.3" />
+          ))}
+        </g>
+      )
+    case 'blood-moon':
+      return (
+        <g opacity="0.85">
+          {/* Dark crown with bat wings */}
+          <path d="M30,16 L28,8 L34,12 L40,4 L46,12 L52,8 L50,16" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" opacity="0.35" />
+          <path d="M28,8 Q24,4 22,8 Q24,6 28,8" fill={p.gold} opacity="0.2" />
+          <path d="M52,8 Q56,4 58,8 Q56,6 52,8" fill={p.gold} opacity="0.2" />
+          <circle cx="40" cy="6" r="1.2" fill="#880808" opacity="0.5" />
+        </g>
+      )
+    case 'midnight':
+      return (
+        <g opacity="0.8">
+          {/* Archmage pointed hat crown */}
+          <path d="M30,22 Q34,10 40,-4 Q46,10 50,22" fill="none" stroke={p.accent} strokeWidth="0.4" opacity="0.2" />
+          <circle cx="40" cy="-4" r="1.5" fill={p.accent} opacity="0.3" />
+        </g>
+      )
+    case 'emerald':
+      return (
+        <g opacity="0.85">
+          {/* Antler crown */}
+          <path d="M32,16 Q28,8 24,2" fill="none" stroke="#5a3818" strokeWidth="0.8" opacity="0.4" strokeLinecap="round" />
+          <path d="M48,16 Q52,8 56,2" fill="none" stroke="#5a3818" strokeWidth="0.8" opacity="0.4" strokeLinecap="round" />
+          <path d="M28,6 Q26,2 24,4" fill="none" stroke="#5a3818" strokeWidth="0.5" opacity="0.3" strokeLinecap="round" />
+          <path d="M52,6 Q54,2 56,4" fill="none" stroke="#5a3818" strokeWidth="0.5" opacity="0.3" strokeLinecap="round" />
+        </g>
+      )
+    case 'velvet':
+      return (
+        <g opacity="0.8">
+          {/* Mob boss slicked hair — no crown, authority through presence */}
+          <path d="M32,16 Q36,10 40,9 Q44,10 48,16" fill="none" stroke={p.ink} strokeWidth="0.3" opacity="0.1" />
+        </g>
+      )
+    case 'diamond':
+      return (
+        <g opacity="0.85">
+          {/* Grand crystal crown */}
+          <path d="M26,22 L28,14 L33,6 L38,12 L40,-2 L42,12 L47,6 L52,14 L54,22" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" opacity="0.4" />
+          <path d="M38,-2 L40,-8 L42,-2 L40,0 Z" fill={p.goldLt} opacity="0.3" stroke={p.goldDk} strokeWidth="0.2" />
         </g>
       )
     default:
