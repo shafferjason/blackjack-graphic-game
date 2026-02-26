@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
@@ -211,7 +212,7 @@ export default function HandHistory({ history }: HandHistoryProps) {
         &#x1F4D6;
       </button>
 
-      {open && (
+      {open && createPortal(
         <div ref={focusTrapRef} className="stats-overlay" onClick={() => { setOpen(false); setReplayEntry(null) }} role="dialog" aria-modal="true" aria-label="Hand History">
           <div className="hh-panel" onClick={e => e.stopPropagation()} ref={panelRef}>
             <div className="stats-header">
@@ -281,7 +282,8 @@ export default function HandHistory({ history }: HandHistoryProps) {
               </div>
             )}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

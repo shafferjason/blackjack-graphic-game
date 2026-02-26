@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
@@ -67,7 +68,7 @@ export default function TutorialOverlay() {
         ?
       </button>
 
-      {open && (
+      {open && createPortal(
         <div
           ref={focusTrapRef}
           className="tutorial-overlay"
@@ -214,7 +215,8 @@ export default function TutorialOverlay() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

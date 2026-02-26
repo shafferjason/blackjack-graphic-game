@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
@@ -73,7 +74,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
         &#9881;
       </button>
 
-      {open && (
+      {open && createPortal(
         <div ref={focusTrapRef} className="settings-overlay" onClick={() => { setOpen(false); setShowResetConfirm(false) }} role="dialog" aria-modal="true" aria-label="House Rules Settings">
           <div className="settings-panel" onClick={e => e.stopPropagation()}>
             <div className="settings-header">
@@ -345,7 +346,8 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

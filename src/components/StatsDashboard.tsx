@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
@@ -182,7 +183,7 @@ export default function StatsDashboard({ stats, detailedStats, chips, achievemen
         &#x1F4CA;
       </button>
 
-      {open && (
+      {open && createPortal(
         <div ref={focusTrapRef} className="stats-overlay" onClick={() => setOpen(false)} role="dialog" aria-modal="true" aria-label="Statistics">
           <div className="stats-panel" onClick={e => e.stopPropagation()}>
             <div className="stats-header">
@@ -283,7 +284,8 @@ export default function StatsDashboard({ stats, detailedStats, chips, achievemen
               <AchievementsGrid achievements={achievements} />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
