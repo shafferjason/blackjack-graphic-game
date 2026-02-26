@@ -204,9 +204,10 @@ export default function HandHistory({ history }: HandHistoryProps) {
     <>
       <button
         className="stats-toggle"
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen(o => !o)}
         title="Hand History"
-        aria-label="Open hand history"
+        aria-label={open ? 'Close hand history' : 'Open hand history'}
+        aria-expanded={open}
       >
         &#x1F4D6;
       </button>

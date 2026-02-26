@@ -42,18 +42,25 @@ export default function TutorialOverlay() {
     setOpen(false)
   }, [dontShowAgain])
 
-  const handleOpen = useCallback(() => {
-    setOpen(true)
-    setDontShowAgain(false)
-  }, [])
+  const handleToggle = useCallback(() => {
+    setOpen(prev => {
+      if (prev) {
+        persistDismiss(dontShowAgain)
+        return false
+      }
+      setDontShowAgain(false)
+      return true
+    })
+  }, [dontShowAgain])
 
   return (
     <>
       <button
         className="help-toggle"
-        onClick={handleOpen}
+        onClick={handleToggle}
         title="How to Play"
-        aria-label="Open how to play tutorial"
+        aria-label={open ? 'Close tutorial' : 'Open how to play tutorial'}
+        aria-expanded={open}
       >
         ?
       </button>

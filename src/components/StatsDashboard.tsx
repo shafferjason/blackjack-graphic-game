@@ -172,9 +172,10 @@ export default function StatsDashboard({ stats, detailedStats, chips, achievemen
     <>
       <button
         className="stats-toggle"
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen(o => !o)}
         title="Statistics"
-        aria-label="Open statistics dashboard"
+        aria-label={open ? 'Close statistics dashboard' : 'Open statistics dashboard'}
+        aria-expanded={open}
       >
         &#x1F4CA;
       </button>

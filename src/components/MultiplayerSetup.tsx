@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 export interface PlayerConfig {
   name: string
@@ -37,9 +37,17 @@ export default function MultiplayerSetup({ onStart, onCancel }: MultiplayerSetup
 
   const canStart = players.length >= 2 && players.every(p => p.name.trim().length > 0)
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onCancel()
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [onCancel])
+
   return (
-    <div className="mp-setup-overlay" role="dialog" aria-modal="true" aria-label="Multiplayer setup">
-      <div className="mp-setup-panel">
+    <div className="mp-setup-overlay" role="dialog" aria-modal="true" aria-label="Multiplayer setup" onClick={onCancel}>
+      <div className="mp-setup-panel" onClick={e => e.stopPropagation()}>
         <div className="mp-setup-header">
           <h2>Local Multiplayer</h2>
           <button className="settings-close" onClick={onCancel} aria-label="Cancel">&times;</button>

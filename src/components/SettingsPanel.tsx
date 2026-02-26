@@ -68,7 +68,8 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
         className="settings-toggle"
         onClick={() => setOpen(!open)}
         title="House Rules"
-        aria-label="Open house rules settings"
+        aria-label={open ? 'Close house rules settings' : 'Open house rules settings'}
+        aria-expanded={open}
       >
         &#9881;
       </button>
