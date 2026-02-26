@@ -3,6 +3,7 @@ import './Card.css'
 import type { Card as CardType, Suit } from '../types'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette, type CardBackDesign } from '../utils/cardSkinShop'
+import { MATERIALS, type CardMaterial } from '../config/designTokens'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -717,11 +718,15 @@ function CardFace({ card }: { card: CardType }) {
   const FaceComponent = FACE_COMPONENTS[card.rank]
   const isNumber = !isFace && card.rank !== 'A'
   const skin = getActiveSkin()
+  const material = skin.cardMaterial ? MATERIALS[skin.cardMaterial] : MATERIALS.linen
   const skinStyle: React.CSSProperties = {}
   if (skin.id !== 'classic') {
     if (skin.faceFilter !== 'none') skinStyle.filter = skin.faceFilter
     if (skin.borderColor !== 'transparent') skinStyle.borderColor = skin.borderColor
     if (skin.glowColor !== 'transparent') skinStyle.boxShadow = `0 0 14px ${skin.glowColor}, 0 2px 4px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.1)`
+    // Apply material-based card stock
+    skinStyle.background = `${material.textureOverlay}, ${material.background}`
+    skinStyle.borderColor = skinStyle.borderColor || material.border
   }
 
   return (
