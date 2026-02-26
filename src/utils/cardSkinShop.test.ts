@@ -5,10 +5,13 @@ import {
   loadCardSkinState,
   saveCardSkinState,
   getSkinById,
+  getSortedSkins,
+  getSkinsByTier,
+  getCollectionStats,
   checkAchievementSkinRewards,
   ACHIEVEMENT_SKIN_REWARDS,
   type CardSkinState,
-  type CardSkin,
+  type SkinTier,
 } from './cardSkinShop'
 
 // Mock localStorage
@@ -30,8 +33,8 @@ beforeEach(() => {
 })
 
 describe('CARD_SKINS definitions', () => {
-  it('has at least 10 skins (full overhaul catalog)', () => {
-    expect(CARD_SKINS.length).toBeGreaterThanOrEqual(10)
+  it('has at least 15 skins (expanded catalog)', () => {
+    expect(CARD_SKINS.length).toBeGreaterThanOrEqual(15)
   })
 
   it('has unique IDs', () => {
@@ -74,16 +77,17 @@ describe('CARD_SKINS definitions', () => {
     }
   })
 
-  it('every skin has an environment theme', () => {
+  it('every skin has an environment theme with accent', () => {
     for (const skin of CARD_SKINS) {
       expect(skin.environment.felt, `${skin.id} missing felt`).toBeTruthy()
       expect(skin.environment.feltDark, `${skin.id} missing feltDark`).toBeTruthy()
       expect(skin.environment.feltLight, `${skin.id} missing feltLight`).toBeTruthy()
+      expect(skin.environment.accent, `${skin.id} missing accent`).toBeTruthy()
     }
   })
 
   it('every skin has unique environment colors', () => {
-    const envs = CARD_SKINS.map(s => JSON.stringify(s.environment))
+    const envs = CARD_SKINS.map(s => JSON.stringify({ felt: s.environment.felt, feltDark: s.environment.feltDark, feltLight: s.environment.feltLight }))
     expect(new Set(envs).size).toBe(envs.length)
   })
 
@@ -91,6 +95,47 @@ describe('CARD_SKINS definitions', () => {
     for (const skin of CARD_SKINS) {
       expect(['common', 'rare', 'epic', 'legendary']).toContain(skin.tier)
     }
+  })
+
+  it('every skin has a flavorText', () => {
+    for (const skin of CARD_SKINS) {
+      expect(skin.flavorText, `${skin.id} missing flavorText`).toBeTruthy()
+      expect(skin.flavorText.length).toBeGreaterThan(5)
+    }
+  })
+
+  it('every skin has a sortOrder', () => {
+    for (const skin of CARD_SKINS) {
+      expect(typeof skin.sortOrder).toBe('number')
+    }
+  })
+})
+
+describe('new skins in expanded catalog', () => {
+  it('includes Velvet Noir as a rare skin', () => {
+    const vn = getSkinById('velvet-noir')
+    expect(vn).toBeDefined()
+    expect(vn!.tier).toBe('rare')
+    expect(vn!.price).toBeGreaterThan(0)
+  })
+
+  it('includes Celestial as an epic skin', () => {
+    const cel = getSkinById('celestial')
+    expect(cel).toBeDefined()
+    expect(cel!.tier).toBe('epic')
+  })
+
+  it('includes Blood Moon as an epic skin', () => {
+    const bm = getSkinById('blood-moon')
+    expect(bm).toBeDefined()
+    expect(bm!.tier).toBe('epic')
+  })
+
+  it('includes Gilded Serpent as a legendary skin', () => {
+    const gs = getSkinById('gilded-serpent')
+    expect(gs).toBeDefined()
+    expect(gs!.tier).toBe('legendary')
+    expect(gs!.achievementUnlock).toBe('bankroll_5000')
   })
 })
 
@@ -124,6 +169,69 @@ describe('getSkinById', () => {
 
   it('returns undefined for invalid id', () => {
     expect(getSkinById('nonexistent')).toBeUndefined()
+  })
+})
+
+describe('getSortedSkins', () => {
+  it('returns all skins sorted by tier then sortOrder', () => {
+    const sorted = getSortedSkins()
+    expect(sorted.length).toBe(CARD_SKINS.length)
+
+    const tierOrder: Record<SkinTier, number> = { common: 0, rare: 1, epic: 2, legendary: 3 }
+    for (let i = 1; i < sorted.length; i++) {
+      const prev = sorted[i - 1]
+      const curr = sorted[i]
+      const prevTier = tierOrder[prev.tier]
+      const currTier = tierOrder[curr.tier]
+      if (prevTier === currTier) {
+        expect(prev.sortOrder).toBeLessThanOrEqual(curr.sortOrder)
+      } else {
+        expect(prevTier).toBeLessThan(currTier)
+      }
+    }
+  })
+})
+
+describe('getSkinsByTier', () => {
+  it('groups skins into all four tiers', () => {
+    const grouped = getSkinsByTier()
+    expect(grouped.common.length).toBeGreaterThanOrEqual(1)
+    expect(grouped.rare.length).toBeGreaterThanOrEqual(4)
+    expect(grouped.epic.length).toBeGreaterThanOrEqual(4)
+    expect(grouped.legendary.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('every skin in a tier group has that tier', () => {
+    const grouped = getSkinsByTier()
+    for (const [tier, skins] of Object.entries(grouped)) {
+      for (const skin of skins) {
+        expect(skin.tier).toBe(tier)
+      }
+    }
+  })
+})
+
+describe('getCollectionStats', () => {
+  it('returns correct counts for default state', () => {
+    const stats = getCollectionStats(['classic'])
+    expect(stats.owned).toBe(1)
+    expect(stats.total).toBe(CARD_SKINS.length)
+    expect(stats.byTier.common.owned).toBe(1)
+    expect(stats.byTier.rare.owned).toBe(0)
+  })
+
+  it('tracks multi-tier ownership', () => {
+    const stats = getCollectionStats(['classic', 'neon-nights', 'crimson-flame', 'diamond-dynasty'])
+    expect(stats.owned).toBe(4)
+    expect(stats.byTier.common.owned).toBe(1)
+    expect(stats.byTier.rare.owned).toBe(1)
+    expect(stats.byTier.epic.owned).toBe(1)
+    expect(stats.byTier.legendary.owned).toBe(1)
+  })
+
+  it('ignores invalid skin IDs', () => {
+    const stats = getCollectionStats(['classic', 'nonexistent-skin'])
+    expect(stats.owned).toBe(1)
   })
 })
 
@@ -191,6 +299,15 @@ describe('purchaseSkin', () => {
     const result = purchaseSkin('diamond-dynasty', 99999, defaultState)
     expect(result.success).toBe(false)
     expect(result.error).toContain('Not enough chips')
+  })
+
+  it('can purchase new skins (velvet-noir, celestial, blood-moon, gilded-serpent)', () => {
+    for (const id of ['velvet-noir', 'celestial', 'blood-moon', 'gilded-serpent']) {
+      const skin = getSkinById(id)!
+      const result = purchaseSkin(id, skin.price, defaultState)
+      expect(result.success).toBe(true)
+      expect(result.newBankroll).toBe(0)
+    }
   })
 })
 
@@ -269,6 +386,13 @@ describe('skin environment theme switching', () => {
     expect(neon.environment.felt).toBe('#0a1e2e')
     expect(neon.environment.feltDark).toBe('#050e18')
     expect(neon.environment.feltLight).toBe('#0e3040')
+    expect(neon.environment.accent).toBe('#00ffcc')
+  })
+
+  it('every skin has a valid accent color', () => {
+    for (const skin of CARD_SKINS) {
+      expect(skin.environment.accent).toMatch(/^#[0-9a-fA-F]{6}$/)
+    }
   })
 })
 
@@ -293,17 +417,29 @@ describe('custom face card palette per skin', () => {
     const dd = getSkinById('diamond-dynasty')!
     expect(dd.faceCardPalette.red.hair).toBe('#c0c8d8')
   })
+
+  it('new skins have distinct palettes from each other', () => {
+    const newIds = ['velvet-noir', 'celestial', 'blood-moon', 'gilded-serpent']
+    const palettes = newIds.map(id => JSON.stringify(getSkinById(id)!.faceCardPalette))
+    expect(new Set(palettes).size).toBe(palettes.length)
+  })
 })
 
 describe('achievement-based skin unlock rewards', () => {
-  it('has defined achievement-to-skin mappings', () => {
-    expect(ACHIEVEMENT_SKIN_REWARDS.length).toBeGreaterThanOrEqual(3)
+  it('has defined achievement-to-skin mappings including new gilded-serpent', () => {
+    expect(ACHIEVEMENT_SKIN_REWARDS.length).toBeGreaterThanOrEqual(4)
   })
 
   it('all reward skin IDs are valid', () => {
     for (const reward of ACHIEVEMENT_SKIN_REWARDS) {
       expect(getSkinById(reward.skinId), `${reward.skinId} should exist`).toBeDefined()
     }
+  })
+
+  it('includes gilded-serpent linked to bankroll_5000', () => {
+    const gs = ACHIEVEMENT_SKIN_REWARDS.find(r => r.skinId === 'gilded-serpent')
+    expect(gs).toBeDefined()
+    expect(gs!.achievementId).toBe('bankroll_5000')
   })
 
   it('grants skins for matching unlocked achievements', () => {
@@ -322,12 +458,13 @@ describe('achievement-based skin unlock rewards', () => {
   })
 
   it('grants multiple skins if multiple achievements match', () => {
-    const unlockedAchievements = ['streak_10', 'hands_500', 'blackjack_20']
+    const unlockedAchievements = ['streak_10', 'hands_500', 'blackjack_20', 'bankroll_5000']
     const ownedSkins = ['classic']
     const grants = checkAchievementSkinRewards(unlockedAchievements, ownedSkins)
     expect(grants).toContain('crimson-flame')
     expect(grants).toContain('shadow-dynasty')
     expect(grants).toContain('solar-pharaoh')
+    expect(grants).toContain('gilded-serpent')
   })
 
   it('returns empty array when no achievements match', () => {
@@ -335,5 +472,33 @@ describe('achievement-based skin unlock rewards', () => {
     const ownedSkins = ['classic']
     const grants = checkAchievementSkinRewards(unlockedAchievements, ownedSkins)
     expect(grants).toHaveLength(0)
+  })
+})
+
+describe('tier distribution', () => {
+  it('has exactly 1 common skin', () => {
+    expect(CARD_SKINS.filter(s => s.tier === 'common').length).toBe(1)
+  })
+
+  it('has multiple rare skins', () => {
+    expect(CARD_SKINS.filter(s => s.tier === 'rare').length).toBeGreaterThanOrEqual(6)
+  })
+
+  it('has multiple epic skins', () => {
+    expect(CARD_SKINS.filter(s => s.tier === 'epic').length).toBeGreaterThanOrEqual(5)
+  })
+
+  it('has at least 2 legendary skins', () => {
+    expect(CARD_SKINS.filter(s => s.tier === 'legendary').length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('prices increase with tier', () => {
+    const avgByTier = (tier: SkinTier) => {
+      const skins = CARD_SKINS.filter(s => s.tier === tier && s.price > 0)
+      if (skins.length === 0) return 0
+      return skins.reduce((sum, s) => sum + s.price, 0) / skins.length
+    }
+    expect(avgByTier('rare')).toBeLessThan(avgByTier('epic'))
+    expect(avgByTier('epic')).toBeLessThan(avgByTier('legendary'))
   })
 })

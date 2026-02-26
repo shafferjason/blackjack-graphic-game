@@ -1,6 +1,6 @@
-// ── Card Skin Shop — theme definitions, purchase logic, persistence ──
+// ── Card Skin Shop — premium theme definitions, purchase logic, persistence ──
 // Full custom skin overhaul: each skin has unique face card palettes,
-// environment themes, and visual identity. No reused generic/default face art.
+// environment themes, rarity tiers, and rich visual identity.
 
 export interface FaceCardPalette {
   /** Skin/face base tone */
@@ -48,12 +48,18 @@ export interface EnvironmentTheme {
   feltDark: string
   /** Felt light (radial center) */
   feltLight: string
+  /** UI accent color for buttons, highlights, etc. */
+  accent: string
 }
+
+export type SkinTier = 'common' | 'rare' | 'epic' | 'legendary'
 
 export interface CardSkin {
   id: string
   name: string
   description: string
+  /** Short flavor text / lore tagline */
+  flavorText: string
   price: number
   /** CSS filter applied to .card-face */
   faceFilter: string
@@ -79,7 +85,11 @@ export interface CardSkin {
   /** Long description for endgame/legendary skins */
   shopNote?: string
   /** Tier label for display */
-  tier?: 'common' | 'rare' | 'epic' | 'legendary'
+  tier: SkinTier
+  /** Progression hint shown when skin is locked */
+  unlockHint?: string
+  /** Sort order within tier group */
+  sortOrder: number
 }
 
 // ── Classic: Traditional European court card palette ──
@@ -104,12 +114,15 @@ const CLASSIC_BLACK_PALETTE: FaceCardPalette = {
 }
 
 export const CARD_SKINS: CardSkin[] = [
+  // ── COMMON ──
   {
     id: 'classic',
     name: 'Classic',
     description: 'The original European court card design',
+    flavorText: 'Where every legend begins.',
     price: 0,
     tier: 'common',
+    sortOrder: 0,
     faceFilter: 'none',
     backFilter: 'none',
     borderColor: 'transparent',
@@ -117,14 +130,17 @@ export const CARD_SKINS: CardSkin[] = [
     previewGradient: 'linear-gradient(135deg, #faf7f0, #f0ece2)',
     previewAccent: '#18182e',
     faceCardPalette: { red: CLASSIC_RED_PALETTE, black: CLASSIC_BLACK_PALETTE },
-    environment: { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
+    environment: { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b', accent: '#4ade80' },
   },
+  // ── RARE ──
   {
     id: 'neon-nights',
     name: 'Neon Nights',
     description: 'Cyberpunk court with electric neon glow',
+    flavorText: 'The future plays with light.',
     price: 500,
     tier: 'rare',
+    sortOrder: 10,
     faceFilter: 'saturate(1.3) brightness(1.05)',
     backFilter: 'saturate(1.4) hue-rotate(180deg)',
     borderColor: '#00ffcc',
@@ -151,14 +167,16 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#c08898', beard: '#006050',
       },
     },
-    environment: { felt: '#0a1e2e', feltDark: '#050e18', feltLight: '#0e3040' },
+    environment: { felt: '#0a1e2e', feltDark: '#050e18', feltLight: '#0e3040', accent: '#00ffcc' },
   },
   {
     id: 'royal-gold',
     name: 'Royal Gold',
     description: 'Opulent gilded court in Baroque splendor',
+    flavorText: 'Draped in riches, crowned in gold.',
     price: 750,
     tier: 'rare',
+    sortOrder: 11,
     faceFilter: 'sepia(0.15) saturate(1.2)',
     backFilter: 'sepia(0.2) brightness(1.1)',
     borderColor: '#d4a644',
@@ -185,14 +203,16 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#d0a070', beard: '#0a0808',
       },
     },
-    environment: { felt: '#2a1f0a', feltDark: '#1a1204', feltLight: '#3a2e14' },
+    environment: { felt: '#2a1f0a', feltDark: '#1a1204', feltLight: '#3a2e14', accent: '#e8c040' },
   },
   {
     id: 'midnight-purple',
     name: 'Midnight Purple',
     description: 'Mystic court shrouded in arcane purple haze',
+    flavorText: 'The cards whisper forgotten spells.',
     price: 600,
     tier: 'rare',
+    sortOrder: 12,
     faceFilter: 'hue-rotate(20deg) saturate(1.15)',
     backFilter: 'hue-rotate(240deg) saturate(1.3)',
     borderColor: '#a855f7',
@@ -219,48 +239,16 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#c08898', beard: '#180620',
       },
     },
-    environment: { felt: '#1a0a3a', feltDark: '#0e0420', feltLight: '#281450' },
-  },
-  {
-    id: 'crimson-flame',
-    name: 'Crimson Flame',
-    description: 'Infernal court ablaze with hellfire',
-    price: 800,
-    tier: 'epic',
-    faceFilter: 'saturate(1.25) contrast(1.05)',
-    backFilter: 'hue-rotate(330deg) saturate(1.5)',
-    borderColor: '#ef4444',
-    glowColor: 'rgba(239, 68, 68, 0.35)',
-    previewGradient: 'linear-gradient(135deg, #2e0a0a, #ef4444)',
-    previewAccent: '#ef4444',
-    faceCardPalette: {
-      red: {
-        skin: '#f0d8c0', skinShade: '#c8a070', skinHi: '#f8e8d0',
-        hair: '#8a2010', hairHi: '#b03020',
-        clothing: '#b01010', clothingMid: '#d02020', clothingHi: '#e83838',
-        gold: '#f0a020', goldDk: '#b07010', goldLt: '#f8c040',
-        jewel: '#f04040', jewelHi: '#f87070',
-        ink: '#3a0808', lip: '#e06050', lipShadow: '#b04030',
-        cheekWarmth: '#e0a070', beard: '#601810',
-      },
-      black: {
-        skin: '#e8d0b8', skinShade: '#c09868', skinHi: '#f0e0c8',
-        hair: '#401010', hairHi: '#601818',
-        clothing: '#2a0808', clothingMid: '#401010', clothingHi: '#581818',
-        gold: '#e89818', goldDk: '#a06810', goldLt: '#f0b838',
-        jewel: '#e02828', jewelHi: '#f05050',
-        ink: '#180404', lip: '#d85848', lipShadow: '#a83828',
-        cheekWarmth: '#d89868', beard: '#280808',
-      },
-    },
-    environment: { felt: '#2e0808', feltDark: '#1a0404', feltLight: '#441010' },
+    environment: { felt: '#1a0a3a', feltDark: '#0e0420', feltLight: '#281450', accent: '#c084fc' },
   },
   {
     id: 'arctic-frost',
     name: 'Arctic Frost',
     description: 'Frozen court of ice queens and frost kings',
+    flavorText: 'Cold hands, cold heart, cold cards.',
     price: 650,
     tier: 'rare',
+    sortOrder: 13,
     faceFilter: 'hue-rotate(190deg) saturate(1.1) brightness(1.05)',
     backFilter: 'hue-rotate(190deg) saturate(1.3)',
     borderColor: '#38bdf8',
@@ -287,14 +275,16 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#b0a0b0', beard: '#406888',
       },
     },
-    environment: { felt: '#0a2038', feltDark: '#041020', feltLight: '#103050' },
+    environment: { felt: '#0a2038', feltDark: '#041020', feltLight: '#103050', accent: '#38bdf8' },
   },
   {
     id: 'emerald-fortune',
     name: 'Emerald Fortune',
     description: 'Lucky Irish court draped in emerald riches',
+    flavorText: 'Fortune favors the bold and green.',
     price: 700,
     tier: 'rare',
+    sortOrder: 14,
     faceFilter: 'hue-rotate(100deg) saturate(1.15)',
     backFilter: 'hue-rotate(100deg) saturate(1.4)',
     borderColor: '#22c55e',
@@ -321,14 +311,91 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#c09870', beard: '#0a1808',
       },
     },
-    environment: { felt: '#0a2e10', feltDark: '#041a08', feltLight: '#0e4018' },
+    environment: { felt: '#0a2e10', feltDark: '#041a08', feltLight: '#0e4018', accent: '#22c55e' },
+  },
+  {
+    id: 'velvet-noir',
+    name: 'Velvet Noir',
+    description: 'Noir detective court — monochrome elegance with crimson accents',
+    flavorText: 'In the shadows, every card has a secret.',
+    price: 550,
+    tier: 'rare',
+    sortOrder: 15,
+    faceFilter: 'saturate(0.6) contrast(1.12)',
+    backFilter: 'saturate(0.5) contrast(1.15)',
+    borderColor: '#dc2626',
+    glowColor: 'rgba(220, 38, 38, 0.3)',
+    previewGradient: 'linear-gradient(135deg, #1a1a1a, #dc2626)',
+    previewAccent: '#dc2626',
+    faceCardPalette: {
+      red: {
+        skin: '#e0d8d0', skinShade: '#b0a098', skinHi: '#ece4dc',
+        hair: '#2a2228', hairHi: '#3a3038',
+        clothing: '#8b1a1a', clothingMid: '#a82828', clothingHi: '#c03838',
+        gold: '#a0989080', goldDk: '#787068', goldLt: '#c0b8b0',
+        jewel: '#dc2626', jewelHi: '#ef4444',
+        ink: '#1a1418', lip: '#c05050', lipShadow: '#984040',
+        cheekWarmth: '#c8a0a0', beard: '#221820',
+      },
+      black: {
+        skin: '#d8d0c8', skinShade: '#a89890', skinHi: '#e4dcd4',
+        hair: '#181418', hairHi: '#282028',
+        clothing: '#141418', clothingMid: '#1e1e22', clothingHi: '#28282e',
+        gold: '#908888', goldDk: '#686060', goldLt: '#b0a8a0',
+        jewel: '#b91c1c', jewelHi: '#dc2626',
+        ink: '#0e0c10', lip: '#b04848', lipShadow: '#883838',
+        cheekWarmth: '#b89898', beard: '#141018',
+      },
+    },
+    environment: { felt: '#141414', feltDark: '#0a0a0a', feltLight: '#1e1e1e', accent: '#dc2626' },
+  },
+  // ── EPIC ──
+  {
+    id: 'crimson-flame',
+    name: 'Crimson Flame',
+    description: 'Infernal court ablaze with hellfire',
+    flavorText: 'Burn the house down.',
+    price: 800,
+    tier: 'epic',
+    sortOrder: 20,
+    achievementUnlock: 'streak_10',
+    unlockHint: 'Win 10 hands in a row',
+    faceFilter: 'saturate(1.25) contrast(1.05)',
+    backFilter: 'hue-rotate(330deg) saturate(1.5)',
+    borderColor: '#ef4444',
+    glowColor: 'rgba(239, 68, 68, 0.35)',
+    previewGradient: 'linear-gradient(135deg, #2e0a0a, #ef4444)',
+    previewAccent: '#ef4444',
+    faceCardPalette: {
+      red: {
+        skin: '#f0d8c0', skinShade: '#c8a070', skinHi: '#f8e8d0',
+        hair: '#8a2010', hairHi: '#b03020',
+        clothing: '#b01010', clothingMid: '#d02020', clothingHi: '#e83838',
+        gold: '#f0a020', goldDk: '#b07010', goldLt: '#f8c040',
+        jewel: '#f04040', jewelHi: '#f87070',
+        ink: '#3a0808', lip: '#e06050', lipShadow: '#b04030',
+        cheekWarmth: '#e0a070', beard: '#601810',
+      },
+      black: {
+        skin: '#e8d0b8', skinShade: '#c09868', skinHi: '#f0e0c8',
+        hair: '#401010', hairHi: '#601818',
+        clothing: '#2a0808', clothingMid: '#401010', clothingHi: '#581818',
+        gold: '#e89818', goldDk: '#a06810', goldLt: '#f0b838',
+        jewel: '#e02828', jewelHi: '#f05050',
+        ink: '#180404', lip: '#d85848', lipShadow: '#a83828',
+        cheekWarmth: '#d89868', beard: '#280808',
+      },
+    },
+    environment: { felt: '#2e0808', feltDark: '#1a0404', feltLight: '#441010', accent: '#ef4444' },
   },
   {
     id: 'sakura-bloom',
     name: 'Sakura Bloom',
     description: 'Japanese court under cherry blossoms',
+    flavorText: 'Petals fall, empires rise.',
     price: 900,
     tier: 'epic',
+    sortOrder: 21,
     faceFilter: 'saturate(1.1) brightness(1.02)',
     backFilter: 'hue-rotate(330deg) saturate(1.1)',
     borderColor: '#f472b6',
@@ -355,14 +422,18 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#d8a0a8', beard: '#180410',
       },
     },
-    environment: { felt: '#2a0818', feltDark: '#18040c', feltLight: '#3a1028' },
+    environment: { felt: '#2a0818', feltDark: '#18040c', feltLight: '#3a1028', accent: '#f472b6' },
   },
   {
     id: 'shadow-dynasty',
     name: 'Shadow Dynasty',
     description: 'Dark sovereign court of obsidian and ash',
+    flavorText: 'Rule from the darkness.',
     price: 1200,
     tier: 'epic',
+    sortOrder: 22,
+    achievementUnlock: 'hands_500',
+    unlockHint: 'Play 500 hands',
     faceFilter: 'contrast(1.1) brightness(0.95)',
     backFilter: 'brightness(0.85) contrast(1.15)',
     borderColor: '#6b7280',
@@ -389,14 +460,18 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#a88880', beard: '#080810',
       },
     },
-    environment: { felt: '#0a0a10', feltDark: '#040408', feltLight: '#141418' },
+    environment: { felt: '#0a0a10', feltDark: '#040408', feltLight: '#141418', accent: '#9ca3af' },
   },
   {
     id: 'solar-pharaoh',
     name: 'Solar Pharaoh',
     description: 'Ancient Egyptian court of sun gods',
+    flavorText: 'The sun god deals in eternity.',
     price: 1500,
     tier: 'epic',
+    sortOrder: 23,
+    achievementUnlock: 'blackjack_20',
+    unlockHint: 'Get 20 Blackjacks',
     faceFilter: 'sepia(0.2) saturate(1.3)',
     backFilter: 'sepia(0.25) saturate(1.2)',
     borderColor: '#f59e0b',
@@ -423,15 +498,130 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#b88050', beard: '#080808',
       },
     },
-    environment: { felt: '#1a1408', feltDark: '#0e0a04', feltLight: '#2a2010' },
+    environment: { felt: '#1a1408', feltDark: '#0e0a04', feltLight: '#2a2010', accent: '#f59e0b' },
+  },
+  {
+    id: 'celestial',
+    name: 'Celestial',
+    description: 'Astral court of stars and constellations',
+    flavorText: 'Written in the stars, dealt by fate.',
+    price: 1100,
+    tier: 'epic',
+    sortOrder: 24,
+    faceFilter: 'saturate(1.15) brightness(1.06)',
+    backFilter: 'saturate(1.2) brightness(1.05)',
+    borderColor: '#818cf8',
+    glowColor: 'rgba(129, 140, 248, 0.35)',
+    previewGradient: 'linear-gradient(135deg, #0c0a2e, #818cf8)',
+    previewAccent: '#818cf8',
+    faceCardPalette: {
+      red: {
+        skin: '#e8e0e8', skinShade: '#b8a8c0', skinHi: '#f4eef4',
+        hair: '#4848a0', hairHi: '#6868c0',
+        clothing: '#3838a0', clothingMid: '#5050b8', clothingHi: '#6868d0',
+        gold: '#b8b8f0', goldDk: '#7878b0', goldLt: '#d0d0ff',
+        jewel: '#f0c060', jewelHi: '#f8d888',
+        ink: '#181840', lip: '#c088a8', lipShadow: '#986888',
+        cheekWarmth: '#c8a8c0', beard: '#303068',
+      },
+      black: {
+        skin: '#e0d8e4', skinShade: '#b0a0b8', skinHi: '#ece4f0',
+        hair: '#282858', hairHi: '#383878',
+        clothing: '#101038', clothingMid: '#181850', clothingHi: '#202068',
+        gold: '#a8a8e0', goldDk: '#6868a0', goldLt: '#c8c8f8',
+        jewel: '#e8b850', jewelHi: '#f0d078',
+        ink: '#0c0c28', lip: '#b87898', lipShadow: '#905878',
+        cheekWarmth: '#c0a0b8', beard: '#1c1c48',
+      },
+    },
+    environment: { felt: '#0c0a2e', feltDark: '#060420', feltLight: '#18143e', accent: '#818cf8' },
+  },
+  {
+    id: 'blood-moon',
+    name: 'Blood Moon',
+    description: 'Vampiric court beneath the crimson moon',
+    flavorText: 'The moon bleeds. The table calls.',
+    price: 1000,
+    tier: 'epic',
+    sortOrder: 25,
+    faceFilter: 'saturate(1.2) contrast(1.08)',
+    backFilter: 'hue-rotate(340deg) saturate(1.35)',
+    borderColor: '#b91c1c',
+    glowColor: 'rgba(185, 28, 28, 0.4)',
+    previewGradient: 'linear-gradient(135deg, #1a0808, #b91c1c)',
+    previewAccent: '#b91c1c',
+    faceCardPalette: {
+      red: {
+        skin: '#e0c8c0', skinShade: '#b89080', skinHi: '#ecdcd4',
+        hair: '#200808', hairHi: '#381010',
+        clothing: '#6a0a0a', clothingMid: '#881818', clothingHi: '#a82828',
+        gold: '#c8a040', goldDk: '#907020', goldLt: '#e0c060',
+        jewel: '#b01010', jewelHi: '#d83030',
+        ink: '#280404', lip: '#c04040', lipShadow: '#982828',
+        cheekWarmth: '#d09080', beard: '#180808',
+      },
+      black: {
+        skin: '#d8c0b8', skinShade: '#b08878', skinHi: '#e4d4cc',
+        hair: '#140808', hairHi: '#280c0c',
+        clothing: '#180808', clothingMid: '#280c0c', clothingHi: '#381414',
+        gold: '#b89838', goldDk: '#886818', goldLt: '#d0b058',
+        jewel: '#981818', jewelHi: '#c02828',
+        ink: '#140404', lip: '#b83838', lipShadow: '#882020',
+        cheekWarmth: '#c88878', beard: '#100404',
+      },
+    },
+    environment: { felt: '#1a0808', feltDark: '#0e0404', feltLight: '#2e0c0c', accent: '#f87171' },
+  },
+  // ── LEGENDARY ──
+  {
+    id: 'gilded-serpent',
+    name: 'Gilded Serpent',
+    description: 'Mythic court of the serpent king — scales of gold and venom',
+    flavorText: 'Coiled in gold, striking with fortune.',
+    price: 5000,
+    tier: 'legendary',
+    sortOrder: 30,
+    shopNote: 'A mythic prize for dedicated players. Earn your place among the serpent royalty.',
+    unlockHint: 'Reach $5,000 bankroll',
+    achievementUnlock: 'bankroll_5000',
+    faceFilter: 'saturate(1.35) contrast(1.06)',
+    backFilter: 'saturate(1.3) brightness(1.05)',
+    borderColor: '#84cc16',
+    glowColor: 'rgba(132, 204, 22, 0.4)',
+    previewGradient: 'linear-gradient(135deg, #0a1a08, #84cc16)',
+    previewAccent: '#84cc16',
+    faceCardPalette: {
+      red: {
+        skin: '#d8d0b8', skinShade: '#a89868', skinHi: '#e8e0c8',
+        hair: '#2a3808', hairHi: '#3a4818',
+        clothing: '#486010', clothingMid: '#608018', clothingHi: '#78a020',
+        gold: '#c8d040', goldDk: '#889020', goldLt: '#e0e868',
+        jewel: '#a0d020', jewelHi: '#c0e848',
+        ink: '#1a2808', lip: '#b89058', lipShadow: '#987040',
+        cheekWarmth: '#c8a870', beard: '#1a2008',
+      },
+      black: {
+        skin: '#d0c8b0', skinShade: '#a09060', skinHi: '#e0d8c0',
+        hair: '#141c08', hairHi: '#202c10',
+        clothing: '#0a1808', clothingMid: '#102810', clothingHi: '#183818',
+        gold: '#b8c038', goldDk: '#788018', goldLt: '#d0d858',
+        jewel: '#88b018', jewelHi: '#a8d030',
+        ink: '#0a1408', lip: '#a88850', lipShadow: '#886838',
+        cheekWarmth: '#c0a068', beard: '#0e1408',
+      },
+    },
+    environment: { felt: '#0a1a08', feltDark: '#040e04', feltLight: '#142a10', accent: '#84cc16' },
   },
   {
     id: 'diamond-dynasty',
     name: 'Diamond Dynasty',
-    description: 'The ultimate legendary court — dripping with diamonds and platinum. A true endgame trophy for blackjack masters.',
+    description: 'The ultimate legendary court — dripping with diamonds and platinum',
+    flavorText: 'The pinnacle. The endgame. The dynasty.',
     price: 100000,
     tier: 'legendary',
+    sortOrder: 31,
     shopNote: 'The crown jewel of the collection. This legendary skin is a long-term goal — play your way to 100,000 chips to unlock the most exclusive court cards in the game.',
+    unlockHint: 'Amass $100,000 in chips',
     faceFilter: 'saturate(1.4) brightness(1.08) contrast(1.05)',
     backFilter: 'saturate(1.3) brightness(1.1)',
     borderColor: '#e0e7ff',
@@ -458,9 +648,47 @@ export const CARD_SKINS: CardSkin[] = [
         cheekWarmth: '#d0b0b8', beard: '#7888a0',
       },
     },
-    environment: { felt: '#0a0a1e', feltDark: '#040410', feltLight: '#141430' },
+    environment: { felt: '#0a0a1e', feltDark: '#040410', feltLight: '#141430', accent: '#e0e7ff' },
   },
 ]
+
+/** Get all skins sorted by tier and sortOrder */
+export function getSortedSkins(): CardSkin[] {
+  const tierOrder: Record<SkinTier, number> = { common: 0, rare: 1, epic: 2, legendary: 3 }
+  return [...CARD_SKINS].sort((a, b) => {
+    const tierDiff = tierOrder[a.tier] - tierOrder[b.tier]
+    if (tierDiff !== 0) return tierDiff
+    return a.sortOrder - b.sortOrder
+  })
+}
+
+/** Get skins grouped by tier */
+export function getSkinsByTier(): Record<SkinTier, CardSkin[]> {
+  const grouped: Record<SkinTier, CardSkin[]> = { common: [], rare: [], epic: [], legendary: [] }
+  for (const skin of getSortedSkins()) {
+    grouped[skin.tier].push(skin)
+  }
+  return grouped
+}
+
+/** Get collection progress stats */
+export function getCollectionStats(unlockedSkins: string[]): { owned: number; total: number; byTier: Record<SkinTier, { owned: number; total: number }> } {
+  const byTier: Record<SkinTier, { owned: number; total: number }> = {
+    common: { owned: 0, total: 0 },
+    rare: { owned: 0, total: 0 },
+    epic: { owned: 0, total: 0 },
+    legendary: { owned: 0, total: 0 },
+  }
+  for (const skin of CARD_SKINS) {
+    byTier[skin.tier].total++
+    if (unlockedSkins.includes(skin.id)) byTier[skin.tier].owned++
+  }
+  return {
+    owned: unlockedSkins.filter(id => CARD_SKINS.some(s => s.id === id)).length,
+    total: CARD_SKINS.length,
+    byTier,
+  }
+}
 
 const STORAGE_KEY = 'blackjack-card-skins'
 
@@ -554,6 +782,11 @@ export const ACHIEVEMENT_SKIN_REWARDS: AchievementSkinReward[] = [
     achievementId: 'blackjack_20',
     skinId: 'solar-pharaoh',
     description: 'Get 20 Blackjacks to unlock Solar Pharaoh',
+  },
+  {
+    achievementId: 'bankroll_5000',
+    skinId: 'gilded-serpent',
+    description: 'Reach a $5,000 bankroll to unlock Gilded Serpent',
   },
 ]
 

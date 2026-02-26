@@ -25,7 +25,7 @@ test.describe('Mobile modal visibility and close behavior', () => {
     })
     await page.goto('/', { waitUntil: 'domcontentloaded' })
     // Wait for the app to render (settings toggle is always present)
-    await page.locator('.settings-toggle').waitFor({ state: 'visible', timeout: 10000 })
+    await page.locator('.settings-toggle[aria-label="Open house rules settings"]').waitFor({ state: 'visible', timeout: 10000 })
   })
 
   // ── Settings Panel Tests ──────────────────────────────────
@@ -37,7 +37,7 @@ test.describe('Mobile modal visibility and close behavior', () => {
     await page.screenshot({ path: screenshotPath(project, 'settings_01_before'), fullPage: false })
 
     // Open settings
-    await page.locator('.settings-toggle').click()
+    await page.locator('.settings-toggle[aria-label="Open house rules settings"]').click()
     await expect(page.locator('.settings-overlay')).toBeVisible()
 
     // Header must be visible
@@ -59,7 +59,7 @@ test.describe('Mobile modal visibility and close behavior', () => {
   test('settings panel: closes via close button', async ({ page }, testInfo) => {
     const project = testInfo.project.name
 
-    await page.locator('.settings-toggle').click()
+    await page.locator('.settings-toggle[aria-label="Open house rules settings"]').click()
     await expect(page.locator('.settings-overlay')).toBeVisible()
 
     // Click close button
@@ -72,7 +72,7 @@ test.describe('Mobile modal visibility and close behavior', () => {
   test('settings panel: closes via outside click', async ({ page }, testInfo) => {
     const project = testInfo.project.name
 
-    await page.locator('.settings-toggle').click()
+    await page.locator('.settings-toggle[aria-label="Open house rules settings"]').click()
     await expect(page.locator('.settings-overlay')).toBeVisible()
 
     // Click on overlay backdrop (top-left corner, outside the panel)
@@ -86,7 +86,7 @@ test.describe('Mobile modal visibility and close behavior', () => {
   test('settings panel: closes via Escape key', async ({ page }, testInfo) => {
     const project = testInfo.project.name
 
-    await page.locator('.settings-toggle').click()
+    await page.locator('.settings-toggle[aria-label="Open house rules settings"]').click()
     await expect(page.locator('.settings-overlay')).toBeVisible()
 
     // Press Escape to close
@@ -99,7 +99,7 @@ test.describe('Mobile modal visibility and close behavior', () => {
   test('settings panel: internal scrolling works, page locked', async ({ page }, testInfo) => {
     const project = testInfo.project.name
 
-    await page.locator('.settings-toggle').click()
+    await page.locator('.settings-toggle[aria-label="Open house rules settings"]').click()
     await expect(page.locator('.settings-overlay')).toBeVisible()
 
     // Check body scroll is locked

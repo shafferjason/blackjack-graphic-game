@@ -70,6 +70,7 @@ function App() {
         '--felt': activeSkinEnv.felt,
         '--felt-dark': activeSkinEnv.feltDark,
         '--felt-light': activeSkinEnv.feltLight,
+        '--skin-accent': activeSkinEnv.accent,
       } as React.CSSProperties
     }
     const colors = FELT_COLORS[TABLE_FELT_THEME] ?? FELT_COLORS['classic-green']
@@ -77,6 +78,7 @@ function App() {
       '--felt': colors.felt,
       '--felt-dark': colors.feltDark,
       '--felt-light': colors.feltLight,
+      '--skin-accent': '#4ade80',
     } as React.CSSProperties
   }, [TABLE_FELT_THEME, activeSkinEnv])
 
