@@ -151,14 +151,17 @@
   transform-style: preserve-3d;
 }
 
-.card:hover {
-  transform: translateY(-6px) rotate(0.5deg);
-  z-index: 10;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.08),
-    0 4px 8px rgba(0, 0, 0, 0.1),
-    0 8px 18px rgba(0, 0, 0, 0.12),
-    0 14px 30px rgba(0, 0, 0, 0.16);
+/* Only apply hover effects on devices with hover capability (excludes touch) */
+@media (hover: hover) {
+  .card:hover {
+    transform: translateY(-6px) rotate(0.5deg);
+    z-index: 10;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.08),
+      0 4px 8px rgba(0, 0, 0, 0.1),
+      0 8px 18px rgba(0, 0, 0, 0.12),
+      0 14px 30px rgba(0, 0, 0, 0.16);
+  }
 }
 
 /* ── Face-up card — premium card stock ── */
@@ -340,6 +343,18 @@
 
 .pip-symbol.pip-inverted {
   transform: translate(-50%, -50%) rotate(180deg);
+}
+
+/* Number card watermark — translucent skin motif behind pips */
+.pip-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 48px;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
 }
 
 /* Legacy pip-grid (kept for backward compatibility) */

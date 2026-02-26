@@ -3,7 +3,7 @@ import './Card.css'
 import type { Card as CardType, Suit } from '../types'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette, type CardBackDesign } from '../utils/cardSkinShop'
-import { MATERIALS, type CardMaterial } from '../config/designTokens'
+import { MATERIALS, type CardMaterial, NUMBER_CARD_TREATMENTS, NUMBER_CARD_DEFAULTS, getEffectiveFilterCaps, type NumberCardTreatment } from '../config/designTokens'
 import { getFaceCardVariantOverlays } from './faceCardVariants'
 import { getCharacterOverlays } from './faceCardCharacters'
 
@@ -519,7 +519,6 @@ function KingSVG({ suit }: { suit: Suit }) {
   const hairHi = palette.hairHi
   const beard = palette.beard
   const robe = palette.clothing
-  const _robeMid = palette.clothingMid
   const robeHi = palette.clothingHi
   const jewel = palette.jewel
   const jewelHi = palette.jewelHi
@@ -697,13 +696,26 @@ const PIP_POSITIONS: Record<string, [number, number, boolean?][]> = {
   '10': [[0.25, 0.13], [0.75, 0.13], [0.5, 0.26], [0.25, 0.38], [0.75, 0.38], [0.25, 0.62, true], [0.75, 0.62, true], [0.5, 0.74, true], [0.25, 0.87, true], [0.75, 0.87, true]],
 }
 
-function PipLayout({ rank, suit }: { rank: string; suit: Suit }) {
+function PipLayout({ rank, suit, treatment }: { rank: string; suit: Suit; treatment?: NumberCardTreatment }) {
   const symbol = SUIT_SYMBOLS[suit]
   const positions = PIP_POSITIONS[rank]
   if (!positions) return null
 
+  const pipStyle: React.CSSProperties = treatment && treatment.pipHueShift !== 0
+    ? { filter: `hue-rotate(${treatment.pipHueShift}deg)` }
+    : {}
+
   return (
-    <div className="pip-layout">
+    <div className="pip-layout" style={pipStyle}>
+      {treatment && treatment.watermarkOpacity > 0 && (
+        <span
+          className="pip-watermark"
+          style={{ opacity: treatment.watermarkOpacity }}
+          aria-hidden="true"
+        >
+          {treatment.watermarkSymbol === 'suit' ? symbol : '\u2726'}
+        </span>
+      )}
       {positions.map((pos, i) => (
         <span
           key={i}
@@ -733,15 +745,24 @@ function CardFace({ card }: { card: CardType }) {
   const isNumber = !isFace && card.rank !== 'A'
   const skin = getActiveSkin()
   const material = skin.cardMaterial ? MATERIALS[skin.cardMaterial] : MATERIALS.linen
+  const filterCaps = getEffectiveFilterCaps(skin.tier)
   const skinStyle: React.CSSProperties = {}
   if (skin.id !== 'classic') {
     if (skin.faceFilter !== 'none') skinStyle.filter = skin.faceFilter
     if (skin.borderColor !== 'transparent') skinStyle.borderColor = skin.borderColor
     if (skin.glowColor !== 'transparent') skinStyle.boxShadow = `0 0 14px ${skin.glowColor}, 0 2px 4px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.1)`
-    // Apply material-based card stock
-    skinStyle.background = `${material.textureOverlay}, ${material.background}`
+    // Apply material-based card stock (respect device texture layer cap)
+    if (filterCaps.maxTextureLayers >= 2) {
+      skinStyle.background = `${material.textureOverlay}, ${material.background}`
+    } else {
+      skinStyle.background = material.background
+    }
     skinStyle.borderColor = skinStyle.borderColor || material.border
   }
+  // Number card treatment — tier-based pip tinting and watermark
+  const numberTreatment: NumberCardTreatment | undefined = isNumber && skin.id !== 'classic'
+    ? (NUMBER_CARD_TREATMENTS[skin.tier] || NUMBER_CARD_DEFAULTS)
+    : undefined
 
   return (
     <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''} ${card.rank === 'A' ? 'ace-card-type' : ''}`} style={skinStyle}>
@@ -757,7 +778,7 @@ function CardFace({ card }: { card: CardType }) {
         ) : card.rank === 'A' ? (
           <span className="ace-suit">{symbol}</span>
         ) : isNumber ? (
-          <PipLayout rank={card.rank} suit={card.suit} />
+          <PipLayout rank={card.rank} suit={card.suit} treatment={numberTreatment} />
         ) : null}
       </div>
       <div className="card-corner bottom-right">
@@ -1079,7 +1100,10 @@ function Card({ card, hidden, index, flipReveal, animationType = 'deal' }: CardP
     animationType === 'hit' ? 'hit-animate' : ''
 
   const cardLabel = getCardLabel(card, hidden)
-  const skinTier = getActiveSkin().tier
+  const activeSkin = getActiveSkin()
+  const caps = getEffectiveFilterCaps(activeSkin.tier)
+  // Only expose tier for idle glow if device supports it
+  const skinTier = caps.allowIdleGlow ? activeSkin.tier : 'common'
 
   // For the 3D-flip dealer hole card
   if (flipReveal) {

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { GameResult, GamePhase } from '../types'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin } from '../utils/cardSkinShop'
+import { mulberry32 } from '../config/designTokens'
 import './CelebrationEffects.css'
 
 interface CelebrationEffectsProps {
@@ -113,17 +114,20 @@ export default function CelebrationEffects({ result, gameState, winAmount, bet }
     const particleColors = STYLE_PARTICLE_COLORS[style]
     const confettiColors = STYLE_CONFETTI_COLORS[style]
 
+    // Deterministic PRNG seeded by effect counter — reproducible animations
+    const rng = mulberry32(idRef.current + 42)
+
     if (result === 'blackjack') {
       const newParticles: Particle[] = []
       const shapes: Particle['shape'][] = style === 'petals' ? ['petal'] : style === 'jewels' ? ['diamond'] : style === 'electric' ? ['spark'] : ['circle']
       for (let i = 0; i < PARTICLE_COUNT; i++) {
         const angle = (i / PARTICLE_COUNT) * Math.PI * 2
-        const speed = 20 + Math.random() * 30
+        const speed = 20 + rng() * 30
         newParticles.push({
           id: ++idRef.current,
           dx: Math.cos(angle) * speed,
           dy: Math.sin(angle) * speed - 10,
-          size: 4 + Math.random() * 6,
+          size: 4 + rng() * 6,
           color: particleColors[i % particleColors.length],
           shape: shapes[i % shapes.length],
         })
@@ -137,13 +141,13 @@ export default function CelebrationEffects({ result, gameState, winAmount, bet }
       for (let i = 0; i < CONFETTI_COUNT; i++) {
         pieces.push({
           id: ++idRef.current,
-          left: Math.random() * 100,
+          left: rng() * 100,
           color: confettiColors[i % confettiColors.length],
-          delay: Math.random() * 0.4,
-          sway: (Math.random() - 0.5) * 60,
-          spin: 360 + Math.random() * 720,
-          fallDuration: 1.2 + Math.random() * 0.6,
-          fallDist: 300 + Math.random() * 200,
+          delay: rng() * 0.4,
+          sway: (rng() - 0.5) * 60,
+          spin: 360 + rng() * 720,
+          fallDuration: 1.2 + rng() * 0.6,
+          fallDist: 300 + rng() * 200,
         })
       }
       setConfetti(pieces)

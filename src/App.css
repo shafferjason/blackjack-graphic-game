@@ -1531,7 +1531,7 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  min-height: 36px;
+  min-height: 44px;
   touch-action: manipulation;
 }
 
@@ -3528,7 +3528,7 @@
 }
 
 .side-bet-chip {
-  padding: 3px 8px;
+  padding: 6px 8px;
   font-size: 0.7rem;
   font-weight: 700;
   border-radius: 12px;
@@ -3537,7 +3537,11 @@
   color: rgba(240, 236, 228, 0.7);
   cursor: pointer;
   transition: all 0.15s;
-  min-width: 36px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
 }
 

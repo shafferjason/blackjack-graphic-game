@@ -414,3 +414,39 @@ _Goal: Everything works together. No rough edges._
 - Character system uses reusable structural layers for performance
 - Screenshot verification for 10 representative skins at gameplay size (iPhone 14 Pro)
 - All 310 tests passing, Playwright mobile sanity checks passing
+
+### 2026-02-26 — v1.1 Prework & Quality Updates
+
+**Mandatory Prework (4 items completed):**
+
+1. **Number Card Treatment Defined** — Added `NumberCardTreatment` config to designTokens.ts:
+   - Common: clean pips, no tint, no watermark
+   - Rare: subtle suit watermark (opacity 0.035)
+   - Epic: motif watermark (0.045) + 5deg hue shift
+   - Legendary: motif watermark (0.055) + 10deg hue shift
+   - Standard suit colors preserved for WCAG AA readability
+
+2. **SVG Filter Performance Caps** — Added `SVGFilterCaps` system to designTokens.ts:
+   - Per-tier caps: max SVG elements (200), max filter ops (2-4), max texture layers (3-5)
+   - Device profiling: `getDeviceProfile()` detects low/mid/high via viewport + cores
+   - Low-end devices: reduced to 150 elements, 2 filters, 2 textures, no idle glow
+   - `getEffectiveFilterCaps()` merges tier defaults with device overrides
+   - Card component respects caps for texture layers and idle glow
+
+3. **Deterministic Animation** — Replaced `Math.random()` in CelebrationEffects.tsx:
+   - Added `mulberry32()` PRNG to designTokens.ts (fast 32-bit deterministic)
+   - All particle bursts and confetti now seeded by effect counter
+   - Deck shuffling intentionally remains non-deterministic (gameplay correctness)
+
+4. **WebP Target Validated** — Analyzed all 5 texture PNGs:
+   - Total decoded: 55.2 KB (73.6 KB base64 in JS)
+   - WebP lossless: ~48.5 KB (only 12% savings for noise textures)
+   - WebP lossy: visible artifacts in mathematical noise patterns
+   - **Decision: Keep PNG base64.** Better optimization path is lazy-loading.
+
+**Additional Quality Fixes:**
+- Touch targets: `.shop-buy-btn` and `.side-bet-chip` raised to 44px minimum
+- Mobile card hover: wrapped in `@media (hover: hover)` to prevent sticky hover on touch
+- Removed unused `_robeMid` variable (P3 #40)
+- Number card pip treatment integrated into Card.tsx with tier-based styling
+- All 310 tests passing, clean production build

@@ -83,7 +83,7 @@ Every skin now has uniquely different J/Q/K character silhouettes via `faceCardC
 | `f53a02c` | Shop Visual Redesign |
 | `b41344c` | Legendary Skin Tier |
 | `5714353` | Face Card Gallery |
-| _pending_ | Per-Skin Unique Face Card Characters |
+| `b522799` | Per-Skin Unique Face Card Characters |
 
 ---
 
@@ -114,6 +114,22 @@ Every skin now has uniquely different J/Q/K character silhouettes via `faceCardC
 
 ---
 
+## v1.1 Quality Updates (2026-02-26)
+
+### Mandatory Prework Completed
+1. **Number card treatment**: Tier-based pip hue shift + watermark system for number cards (2-10)
+2. **SVG filter performance caps**: Device-aware caps limit visual complexity on low-end mobile
+3. **Deterministic animations**: Celebration particles/confetti use Mulberry32 PRNG (reproducible)
+4. **WebP validation**: Tested 5 textures — PNG retained (noise patterns don't compress well in WebP)
+
+### Additional Fixes
+- Touch targets raised to 44px minimum on shop buy buttons and side bet chips
+- Card hover effects wrapped in `@media (hover: hover)` — no more sticky hover on mobile
+- Removed unused `_robeMid` variable
+- Device profiling: low-end devices get reduced texture layers and no idle glow
+
+---
+
 ## Known Follow-ups
 - "Try Before You Buy" preview mode (deferred from Step 10)
 - Full-screen face card gallery with zoom/share (deferred from Step 14)
@@ -121,3 +137,4 @@ Every skin now has uniquely different J/Q/K character silhouettes via `faceCardC
 - Per-skin deal sound variations
 - Purchase reveal animation
 - Lighthouse performance audit
+- Lazy-load face card textures (better than WebP conversion for perf)

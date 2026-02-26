@@ -353,6 +353,154 @@ export const FACE_CARD = {
   maxElements: 200,
 } as const
 
+// ── Number Card Treatment ──
+// Design decision: Number cards (2-10) are gameplay-critical — rank and suit
+// must remain instantly readable at all sizes. Skin treatment is applied via:
+//   1. Card material (background gradient, border, texture overlay) — already applied
+//   2. Card glow/shadow from skin's glowColor — already applied
+//   3. Pip accent tint — optional subtle hue shift (max ±15deg) for thematic feel
+//   4. Card center watermark — optional translucent skin motif behind pips
+// Pips ALWAYS use standard suit colors (#bf1b35 red, #18182e black) for WCAG AA.
+
+export interface NumberCardTreatment {
+  /** Subtle CSS hue-rotate on pips (clamped to ±15deg). 0 = no tint. */
+  pipHueShift: number
+  /** Optional watermark opacity (0 = none, max 0.06 for readability) */
+  watermarkOpacity: number
+  /** Watermark symbol (suit pip or skin motif) */
+  watermarkSymbol: 'none' | 'suit' | 'motif'
+}
+
+/** Default: no tinting, no watermark — classic clean look */
+export const NUMBER_CARD_DEFAULTS: NumberCardTreatment = {
+  pipHueShift: 0,
+  watermarkOpacity: 0,
+  watermarkSymbol: 'none',
+}
+
+/** Per-tier number card treatment presets */
+export const NUMBER_CARD_TREATMENTS: Record<string, NumberCardTreatment> = {
+  classic: { pipHueShift: 0, watermarkOpacity: 0, watermarkSymbol: 'none' },
+  /** Rare skins get subtle watermark */
+  rare: { pipHueShift: 0, watermarkOpacity: 0.035, watermarkSymbol: 'suit' },
+  /** Epic skins get watermark + slight tint */
+  epic: { pipHueShift: 5, watermarkOpacity: 0.045, watermarkSymbol: 'motif' },
+  /** Legendary skins get full treatment */
+  legendary: { pipHueShift: 10, watermarkOpacity: 0.055, watermarkSymbol: 'motif' },
+} as const
+
+// ── SVG Filter Performance Caps ──
+// Controls maximum visual complexity by tier and device capability.
+// Prevents frame drops on low-end mobile during deal animations.
+
+export interface SVGFilterCaps {
+  /** Maximum SVG elements per face card */
+  maxElements: number
+  /** Maximum CSS filter operations (contrast, saturate, hue-rotate, etc.) */
+  maxFilterOps: number
+  /** Maximum texture pattern layers per card */
+  maxTextureLayers: number
+  /** Allow idle glow animation */
+  allowIdleGlow: boolean
+  /** Allow canvas grain texture overlay */
+  allowCanvasGrain: boolean
+  /** Allow brush overlay texture */
+  allowBrushOverlay: boolean
+}
+
+/** Device performance profiles */
+export type DeviceProfile = 'low' | 'mid' | 'high'
+
+/** Detect device profile from viewport width and hardware concurrency */
+export function getDeviceProfile(): DeviceProfile {
+  const width = typeof window !== 'undefined' ? window.innerWidth : 768
+  const cores = typeof navigator !== 'undefined' && 'hardwareConcurrency' in navigator
+    ? navigator.hardwareConcurrency : 4
+  // Low-end: small screen + few cores (iPhone SE, budget Android)
+  if (width < 375 && cores <= 4) return 'low'
+  if (width < 414 || cores <= 2) return 'low'
+  // High-end: large screen + many cores (iPad, desktop)
+  if (width >= 768 && cores >= 6) return 'high'
+  return 'mid'
+}
+
+/** Filter caps by skin tier */
+export const TIER_FILTER_CAPS: Record<string, SVGFilterCaps> = {
+  common: {
+    maxElements: 200,
+    maxFilterOps: 2,
+    maxTextureLayers: 3,
+    allowIdleGlow: false,
+    allowCanvasGrain: true,
+    allowBrushOverlay: true,
+  },
+  rare: {
+    maxElements: 200,
+    maxFilterOps: 3,
+    maxTextureLayers: 4,
+    allowIdleGlow: false,
+    allowCanvasGrain: true,
+    allowBrushOverlay: true,
+  },
+  epic: {
+    maxElements: 200,
+    maxFilterOps: 3,
+    maxTextureLayers: 5,
+    allowIdleGlow: false,
+    allowCanvasGrain: true,
+    allowBrushOverlay: true,
+  },
+  legendary: {
+    maxElements: 200,
+    maxFilterOps: 4,
+    maxTextureLayers: 5,
+    allowIdleGlow: true,
+    allowCanvasGrain: true,
+    allowBrushOverlay: true,
+  },
+} as const
+
+/** Device-level overrides — low-end devices get reduced effects */
+export const DEVICE_FILTER_OVERRIDES: Record<DeviceProfile, Partial<SVGFilterCaps>> = {
+  low: {
+    maxElements: 150,
+    maxFilterOps: 2,
+    maxTextureLayers: 2,
+    allowIdleGlow: false,
+    allowCanvasGrain: false,
+    allowBrushOverlay: false,
+  },
+  mid: {
+    // Mid uses tier defaults unchanged
+  },
+  high: {
+    // High uses tier defaults unchanged
+  },
+} as const
+
+/** Get effective filter caps for a skin tier on the current device */
+export function getEffectiveFilterCaps(tier: string): SVGFilterCaps {
+  const tierCaps = TIER_FILTER_CAPS[tier] || TIER_FILTER_CAPS.common
+  const device = getDeviceProfile()
+  const overrides = DEVICE_FILTER_OVERRIDES[device]
+  return { ...tierCaps, ...overrides }
+}
+
+// ── Deterministic PRNG ──
+// Mulberry32 — fast, deterministic 32-bit PRNG for reproducible animation values.
+// Used instead of Math.random() for celebration particles, confetti, chip physics.
+
+/** Mulberry32 PRNG — returns a function that yields [0,1) deterministically */
+export function mulberry32(seed: number): () => number {
+  let t = seed | 0
+  return () => {
+    t = (t + 0x6D2B79F5) | 0
+    let x = Math.imul(t ^ (t >>> 15), 1 | t)
+    x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x
+    return ((x ^ (x >>> 14)) >>> 0) / 4294967296
+  }
+}
+
 // ── Helpers ──
 
 /** Convert hex color to r,g,b string for use in rgba() */
