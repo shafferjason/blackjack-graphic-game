@@ -4,6 +4,7 @@ import type { Card as CardType, Suit } from '../types'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette, type CardBackDesign } from '../utils/cardSkinShop'
 import { MATERIALS, type CardMaterial } from '../config/designTokens'
+import { getFaceCardVariantOverlays } from './faceCardVariants'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -337,6 +338,8 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M58.5,26 L60,24 L64.5,27.5 L63,31.5 Z" fill={isRed ? '#788888' : '#888898'} stroke={ink} strokeWidth="0.35" />
       <path d="M59.5,27 L61,25.5 L63.5,28" fill="none" stroke="#b0b8b8" strokeWidth="0.2" opacity="0.2" />
       <path d="M64.5,27.5 L63,31.5" fill="none" stroke="#c0c8c8" strokeWidth="0.25" opacity="0.3" />
+      {/* Skin-specific variant overlays */}
+      {getFaceCardVariantOverlays('jack', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: palette.clothing, clothingHi: palette.clothingHi, accent: getActiveSkin().previewAccent })}
     </>
   )
 
@@ -496,6 +499,8 @@ function QueenSVG({ suit }: { suit: Suit }) {
         <path d="M-0.5,7.5 Q-3,6.5 -3.5,5.5" fill="none" stroke="#3a7232" strokeWidth="0.45" strokeLinecap="round" />
         <path d="M-3,6 Q-4.5,5 -3.5,4" fill="#3a7232" opacity="0.35" />
       </g>
+      {/* Skin-specific variant overlays */}
+      {getFaceCardVariantOverlays('queen', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: dress, clothingHi: dressHi, accent: getActiveSkin().previewAccent })}
     </>
   )
 
@@ -654,6 +659,8 @@ function KingSVG({ suit }: { suit: Suit }) {
       <circle cx="12.5" cy="25.5" r="0.4" fill={gold} />
       <circle cx="17.5" cy="25.5" r="0.4" fill={gold} />
       <circle cx="15" cy="23.2" r="0.4" fill={gold} />
+      {/* Skin-specific variant overlays */}
+      {getFaceCardVariantOverlays('king', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: robe, clothingHi: robeHi, accent: getActiveSkin().previewAccent })}
     </>
   )
 
