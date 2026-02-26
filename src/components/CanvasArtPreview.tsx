@@ -5,7 +5,7 @@ import Card, { SkinOverrideProvider } from './Card'
 import type { Suit, Rank } from '../types'
 import './CanvasArtPreview.css'
 
-const CANVAS_SKINS = ['classic', 'neon-nights'] as const
+const CANVAS_SKINS = ['classic', 'neon-nights', 'crimson-flame', 'royal-gold', 'midnight-purple', 'arctic-frost', 'emerald-fortune'] as const
 const RANKS: FaceRank[] = ['J', 'Q', 'K', 'A']
 const SUITS: Suit[] = ['spades', 'hearts', 'diamonds', 'clubs']
 
@@ -62,7 +62,7 @@ export default function CanvasArtPreview({ onClose }: { onClose: () => void }) {
       <div className="cap-panel" onClick={e => e.stopPropagation()}>
         <div className="cap-header">
           <h2>Canvas 2D Character Art Preview</h2>
-          <p>Review slice: Classic + Neon Nights skins with Canvas 2D &rarr; WebP pipeline</p>
+          <p>Canvas 2D &rarr; WebP character art pipeline — all implemented skins</p>
           <button className="cap-close" onClick={onClose}>&times; Close</button>
         </div>
 
@@ -76,7 +76,7 @@ export default function CanvasArtPreview({ onClose }: { onClose: () => void }) {
                 className={`cap-btn ${activeSkin === id ? 'active' : ''}`}
                 onClick={() => setActiveSkin(id)}
               >
-                {id === 'classic' ? 'Classic (Common)' : 'Neon Nights (Rare)'}
+                {getSkinById(id)?.name ?? id} ({getSkinById(id)?.tier ?? ''})
               </button>
             ))}
           </div>
@@ -127,7 +127,7 @@ export default function CanvasArtPreview({ onClose }: { onClose: () => void }) {
         {/* Card grid */}
         <div className="cap-grid">
           <h3 className="cap-skin-title">
-            {activeSkin === 'classic' ? 'Classic — Card Maker\'s Workshop' : 'Neon Nights — Tokyo 2087'}
+            {getSkinById(activeSkin)?.name ?? activeSkin}
           </h3>
 
           {showRaw ? (

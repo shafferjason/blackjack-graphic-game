@@ -815,6 +815,7 @@ function CanvasOverlay({ skinId, rank }: { skinId: string; rank: FaceRank }) {
     case 'midnight-purple': return <MidnightPurpleOverlay rank={rank} />
     case 'arctic-frost': return <ArcticFrostOverlay />
     case 'emerald-fortune': return <EmeraldFortuneOverlay rank={rank} />
+    case 'crimson-flame': return <CrimsonFlameOverlay rank={rank} />
     default: return null
   }
 }
@@ -837,6 +838,7 @@ function CanvasFrame({ skinId }: { skinId: string }) {
     case 'midnight-purple': return <MidnightPurpleFrame />
     case 'arctic-frost': return <ArcticFrostFrame />
     case 'emerald-fortune': return <EmeraldFortuneFrame />
+    case 'crimson-flame': return <CrimsonFlameFrame />
     default: return null
   }
 }

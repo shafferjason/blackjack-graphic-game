@@ -75,6 +75,11 @@ const SKIN_DRAW_MAP: Record<string, DrawFunction> = {
   'sakura-bloom': drawSakuraBloom,
   'blood-moon': drawBloodMoon,
   'gilded-serpent': drawGildedSerpent,
+  'crimson-flame': drawCrimsonFlame,
+  'royal-gold': drawRoyalGold,
+  'midnight-purple': drawMidnightPurple,
+  'arctic-frost': drawArcticFrost,
+  'emerald-fortune': drawEmeraldFortune,
 }
 // NOTE: Do not add entries for skins without draw functions below.
 // Unimplemented skins use the SVG fallback path in Card.tsx.
