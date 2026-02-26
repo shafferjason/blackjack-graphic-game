@@ -327,20 +327,20 @@ _Goal: Everything works together. No rough edges._
 | Step | Status | Started | Completed | Commit | Notes |
 |------|--------|---------|-----------|--------|-------|
 | 1. Design Token System | ✅ Complete | 2026-02-25 | 2026-02-25 | (see git log) | `src/config/designTokens.ts` — 280 lines, 13 token categories |
-| 2. Card Back Overhaul | ⬜ Not Started | — | — | — | — |
-| 3. Card Stock Materials | ⬜ Not Started | — | — | — | — |
-| 4. Jack Pose Variants | ⬜ Not Started | — | — | — | — |
-| 5. Queen Pose Variants | ⬜ Not Started | — | — | — | — |
-| 6. King Pose Variants | ⬜ Not Started | — | — | — | — |
-| 7. Deal Animation Polish | ⬜ Not Started | — | — | — | — |
-| 8. Win/Loss Celebrations | ⬜ Not Started | — | — | — | — |
-| 9. Chip Microanimations | ⬜ Not Started | — | — | — | — |
-| 10. Skin Shop Redesign | ⬜ Not Started | — | — | — | — |
-| 11. Legendary Skins | ⬜ Not Started | — | — | — | — |
-| 12. Mobile Optimization | ⬜ Not Started | — | — | — | — |
-| 13. Visual Consistency QA | ⬜ Not Started | — | — | — | — |
-| 14. Face Card Gallery | ⬜ Not Started | — | — | — | — |
-| 15. Integration Test & Ship | ⬜ Not Started | — | — | — | — |
+| 2. Card Back Overhaul | ✅ Complete | 2026-02-26 | 2026-02-26 | `81a177f` | 7 SVG pattern styles, 9 center logos, per-skin card backs |
+| 3. Card Stock Materials | ✅ Complete | 2026-02-26 | 2026-02-26 | `d3682b0` | 5 materials (linen, vellum, metallic, silk, washi) |
+| 4. Jack Pose Variants | ✅ Complete | 2026-02-26 | 2026-02-26 | `f4b2e2e` | Overlay system for 6+ skin variants |
+| 5. Queen Pose Variants | ✅ Complete | 2026-02-26 | 2026-02-26 | `f4b2e2e` | Crowns, props, cultural accessories |
+| 6. King Pose Variants | ✅ Complete | 2026-02-26 | 2026-02-26 | `f4b2e2e` | Crowns, scepters, armor per skin |
+| 7. Deal Animation Polish | ✅ Complete | 2026-02-26 | 2026-02-26 | `a8d3d82` | Multi-stage spring wobble, anticipation flip |
+| 8. Win/Loss Celebrations | ✅ Complete | 2026-02-26 | 2026-02-26 | `08e8181` | 8 celebration styles, shape-variant particles |
+| 9. Chip Microanimations | ✅ Complete | 2026-02-26 | 2026-02-26 | `e97b3cd` | Physics-based rotation & bounce cascade |
+| 10. Skin Shop Redesign | ✅ Complete | 2026-02-26 | 2026-02-26 | `f53a02c` | Tier-colored headers, legendary shimmer, animated previews |
+| 11. Legendary Skins | ✅ Complete | 2026-02-26 | 2026-02-26 | `b41344c` | Dragon's Hoard + idle glow animation |
+| 12. Mobile Optimization | ✅ Complete | 2026-02-26 | 2026-02-26 | — | Audit pass — all breakpoints verified |
+| 13. Visual Consistency QA | ✅ Complete | 2026-02-26 | 2026-02-26 | — | All 15 skins verified: materials, celebrations, card backs |
+| 14. Face Card Gallery | ✅ Complete | 2026-02-26 | 2026-02-26 | `5714353` | J/Q/K mini-preview strip in shop |
+| 15. Integration Test & Ship | ✅ Complete | 2026-02-26 | 2026-02-26 | — | 310 tests passing, clean build |
 
 ---
 
@@ -355,3 +355,36 @@ _Goal: Everything works together. No rough edges._
 | **5. Polish & Ship** | 12-15 | Mobile perf, QA, gallery, release | Production release |
 
 **Rule: Do not deploy until Phase 1 (Steps 1-3) is complete and visually coherent.**
+
+---
+
+## 7. Changelog
+
+### 2026-02-26 — Full Masterplan Execution (Steps 2-15)
+
+**Phase 1: Foundation (Steps 2-3)**
+- Per-skin card back SVGs with 7 unique pattern styles and 9 center logo variants
+- 5-material card stock system (linen, vellum, metallic, silk, washi) with texture overlays
+
+**Phase 2: Face Card Art (Steps 4-6)**
+- New `faceCardVariants.tsx` overlay system for skin-specific J/Q/K accessories
+- Implemented variants for neon (cyberpunk), sakura (Japanese), pharaoh (Egyptian), frost (ice), flame (fire), dragon (legendary)
+- Each variant adds headwear, held items, and cultural accessories via SVG overlays
+
+**Phase 3: Animation Polish (Steps 7-9)**
+- Enhanced deal animation: 0.62s multi-stage spring wobble with rotation on landing
+- Enhanced flip reveal: anticipation pause + dramatic overshoot
+- 8 skin-themed celebration styles with shape-variant particles (circle, petal, diamond, spark)
+- Chip animations with physics-based rotation bounce and spread cascade
+
+**Phase 4: Shop & Collection (Steps 10-11)**
+- Shop redesign: tier-colored gradient headers, legendary shimmer sweep, animated preview cards
+- Collection bar with animated gradient shine
+- New legendary skin: Dragon's Hoard ($3,000, bankroll_10000 achievement)
+- Idle glow animation on all legendary-tier card wrappers
+
+**Phase 5: Polish & Ship (Steps 12-15)**
+- Mobile audit: all breakpoints verified, reduced motion preferences respected
+- Cross-skin consistency: all 15 skins verified for materials, celebrations, card backs
+- Face card gallery: J/Q/K mini-preview strip with clothing/gold swatches in shop
+- Full test suite: 310 tests passing, clean production build
