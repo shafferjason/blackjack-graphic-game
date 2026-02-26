@@ -72,6 +72,70 @@ describe('gameReducer — state transitions', () => {
     })
   })
 
+  describe('All In (CLEAR_BET + PLACE_BET for full bankroll)', () => {
+    it('bets entire bankroll from zero bet', () => {
+      let state = createInitialState(1000)
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 1000 } })
+      expect(state.bet).toBe(1000)
+      expect(state.chips).toBe(1000) // chips not deducted until DEAL
+    })
+
+    it('clears partial bet then bets entire bankroll', () => {
+      let state = createInitialState(500)
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 100 } })
+      expect(state.bet).toBe(100)
+      // Clear and re-bet full amount (simulates All In handler)
+      state = gameReducer(state, { type: ACTIONS.CLEAR_BET })
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 500 } })
+      expect(state.bet).toBe(500)
+    })
+
+    it('does nothing when bankroll is 0', () => {
+      const state = createInitialState(0)
+      const next = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 0 } })
+      expect(next.bet).toBe(0)
+    })
+
+    it('all-in bet followed by deal deducts full bankroll', () => {
+      let state = createInitialState(750)
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 750 } })
+
+      const playerHand = [{ rank: 'K' as const, suit: 'hearts' as const, id: 1 }, { rank: '5' as const, suit: 'clubs' as const, id: 2 }]
+      const dealerHand = [{ rank: '9' as const, suit: 'spades' as const, id: 3 }, { rank: '7' as const, suit: 'diamonds' as const, id: 4 }]
+      const deck = [{ rank: '2' as const, suit: 'hearts' as const }]
+
+      state = gameReducer(state, {
+        type: ACTIONS.DEAL,
+        payload: { deck, playerHand, dealerHand },
+      })
+
+      expect(state.chips).toBe(0) // entire bankroll wagered
+      expect(state.bet).toBe(750)
+      expect(state.phase).toBe(GAME_STATES.DEALING)
+    })
+
+    it('all-in is compatible with insurance flow (no chips for insurance)', () => {
+      let state = createInitialState(200)
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 200 } })
+
+      const playerHand = [{ rank: '10' as const, suit: 'hearts' as const, id: 1 }, { rank: '5' as const, suit: 'clubs' as const, id: 2 }]
+      const dealerHand = [{ rank: 'A' as const, suit: 'spades' as const, id: 3 }, { rank: '7' as const, suit: 'diamonds' as const, id: 4 }]
+
+      state = gameReducer(state, {
+        type: ACTIONS.DEAL,
+        payload: { deck: [], playerHand, dealerHand },
+      })
+
+      expect(state.chips).toBe(0) // all in, no chips left for insurance
+      // Decline insurance since no chips available
+      const insuranceState = { ...state, phase: 'insurance_offer' as const }
+      const afterInsure = gameReducer(insuranceState, { type: ACTIONS.INSURE, payload: { amount: 0 } })
+      expect(afterInsure.insuranceBet).toBe(0)
+      expect(afterInsure.chips).toBe(0)
+      expect(afterInsure.phase).toBe('player_turn')
+    })
+  })
+
   describe('DEAL', () => {
     it('transitions to DEALING, deducts bet, sets hands', () => {
       let state = createInitialState(1000)

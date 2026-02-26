@@ -179,6 +179,7 @@ export default function TutorialOverlay() {
                 <h3 className="tutorial-section-title">Betting Shortcuts</h3>
                 <div className="tutorial-shortcuts">
                   <span><kbd className="tutorial-key">1</kbd>–<kbd className="tutorial-key">4</kbd> Chip amounts</span>
+                  <span><kbd className="tutorial-key">A</kbd> All In</span>
                   <span><kbd className="tutorial-key">C</kbd> Clear bet</span>
                   <span><kbd className="tutorial-key">Enter</kbd> Deal</span>
                   <span><kbd className="tutorial-key">Space</kbd> New round</span>

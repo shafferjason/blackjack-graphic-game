@@ -15,6 +15,7 @@ interface KeyboardShortcutActions {
   // Betting actions
   onPlaceBet: (amount: number) => void
   onClearBet: () => void
+  onAllIn: () => void
   // Sound
   onButtonClick?: () => void
 }
@@ -69,6 +70,13 @@ export function useKeyboardShortcuts(
       if (key === 'c' && state.bet > 0) {
         actions.onButtonClick?.()
         actions.onClearBet()
+        return
+      }
+
+      // A = All In
+      if (key === 'a' && (state.chips > 0 || state.bet > 0)) {
+        actions.onButtonClick?.()
+        actions.onAllIn()
         return
       }
 

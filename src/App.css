@@ -375,6 +375,17 @@
   color: #fff;
 }
 
+.btn-allin {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-allin:not(:disabled):hover {
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+  transform: translateY(-1px);
+}
+
 .btn-hit {
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   color: #fff;

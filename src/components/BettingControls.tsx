@@ -7,11 +7,12 @@ interface BettingControlsProps {
   bet: number
   onPlaceBet: (amount: number) => void
   onClearBet: () => void
+  onAllIn: () => void
   onDeal: () => void
   onButtonClick?: () => void
 }
 
-export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, onDeal, onButtonClick }: BettingControlsProps) {
+export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, onAllIn, onDeal, onButtonClick }: BettingControlsProps) {
   const { CHIP_DENOMINATIONS } = useGameSettings()
   const firstChipRef = useRef<HTMLButtonElement>(null)
 
@@ -43,6 +44,7 @@ export default function BettingControls({ chips, bet, onPlaceBet, onClearBet, on
       </div>
       <div className="bet-actions" role="group" aria-label="Bet actions">
         <button className="btn btn-outline" onClick={() => { onButtonClick?.(); onClearBet() }} disabled={bet === 0} title="Clear bet (C)" aria-label="Clear bet, press C">Clear</button>
+        <button className="btn btn-allin" onClick={() => { onButtonClick?.(); onAllIn() }} disabled={chips === 0 && bet === 0} title="All In (A)" aria-label={`All in, bet entire bankroll of $${chips}, press A`}>All In</button>
         <button className="btn btn-primary" onClick={() => { onButtonClick?.(); onDeal() }} disabled={bet === 0} title="Deal (N / Enter)" aria-label={bet === 0 ? 'Deal cards, place a bet first' : `Deal cards with $${bet} bet, press Enter`}>Deal</button>
       </div>
     </div>

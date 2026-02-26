@@ -9,6 +9,7 @@ describe('BettingControls component', () => {
     bet: 0,
     onPlaceBet: vi.fn(),
     onClearBet: vi.fn(),
+    onAllIn: vi.fn(),
     onDeal: vi.fn(),
   }
 
@@ -72,5 +73,27 @@ describe('BettingControls component', () => {
     renderWithSettings(<BettingControls {...defaultProps} bet={50} onDeal={onDeal} />)
     fireEvent.click(screen.getByText('Deal'))
     expect(onDeal).toHaveBeenCalled()
+  })
+
+  it('renders All In button', () => {
+    renderWithSettings(<BettingControls {...defaultProps} />)
+    expect(screen.getByText('All In')).toBeInTheDocument()
+  })
+
+  it('calls onAllIn when All In is clicked', () => {
+    const onAllIn = vi.fn()
+    renderWithSettings(<BettingControls {...defaultProps} chips={500} onAllIn={onAllIn} />)
+    fireEvent.click(screen.getByText('All In'))
+    expect(onAllIn).toHaveBeenCalled()
+  })
+
+  it('disables All In button when chips is 0 and bet is 0', () => {
+    renderWithSettings(<BettingControls {...defaultProps} chips={0} bet={0} />)
+    expect(screen.getByText('All In')).toBeDisabled()
+  })
+
+  it('enables All In button when chips > 0', () => {
+    renderWithSettings(<BettingControls {...defaultProps} chips={100} bet={0} />)
+    expect(screen.getByText('All In')).not.toBeDisabled()
   })
 })

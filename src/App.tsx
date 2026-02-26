@@ -400,6 +400,18 @@ function App() {
     actions.placeBet(amount)
   }, [actions])
 
+  const handleAllIn = useCallback(() => {
+    const available = state.chips - state.bet
+    if (available <= 0) return
+    // Clear existing partial bet first, then bet the full bankroll
+    if (state.bet > 0) {
+      actions.clearBet()
+    }
+    betSeqRef.current += 1
+    setBetTrigger({ amount: state.chips, seq: betSeqRef.current })
+    actions.placeBet(state.chips)
+  }, [actions, state.chips, state.bet])
+
   // ── Keyboard shortcuts ──
   const isBetting = state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE
   const isGameOver = state.gameState === GAME_STATES.GAME_OVER || state.gameState === GAME_STATES.RESOLVING
@@ -417,6 +429,7 @@ function App() {
       onDeal: dealCardsWithSideBets,
       onPlaceBet: handlePlaceBet,
       onClearBet: actions.clearBet,
+      onAllIn: handleAllIn,
       onButtonClick: playButtonClick,
     },
     {
@@ -624,6 +637,7 @@ function App() {
               bet={state.bet}
               onPlaceBet={handlePlaceBet}
               onClearBet={actions.clearBet}
+              onAllIn={handleAllIn}
               onDeal={dealCardsWithSideBets}
               onButtonClick={playButtonClick}
             />
