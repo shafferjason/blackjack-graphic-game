@@ -877,10 +877,406 @@
   100% { transform: translateX(0); opacity: 1; clip-path: inset(0 0 0 0); }
 }
 
+/* ── Shadow Dynasty animations ── */
+.sd-string-sway {
+  animation: sd-sway 3s ease-in-out infinite alternate;
+  will-change: transform;
+  transform-origin: top center;
+}
+@keyframes sd-sway {
+  from { transform: rotate(-1deg); }
+  to { transform: rotate(1deg); }
+}
+.sd-backlight-flicker {
+  animation: sd-flicker 2s steps(5) infinite;
+  will-change: opacity;
+}
+@keyframes sd-flicker {
+  0%, 100% { opacity: 0.03; }
+  20% { opacity: 0.06; }
+  40% { opacity: 0.02; }
+  60% { opacity: 0.05; }
+  80% { opacity: 0.04; }
+}
+.sd-hands-grasp {
+  animation: sd-grasp 4s ease-in-out infinite;
+  will-change: transform;
+}
+@keyframes sd-grasp {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(3px); }
+}
+
+/* ── Solar Pharaoh animations ── */
+.sp-dust-mote {
+  animation: sp-dust-rise 4s linear infinite;
+  will-change: transform, opacity;
+}
+@keyframes sp-dust-rise {
+  from { transform: translateY(0); opacity: 0.3; }
+  to { transform: translateY(-25px); opacity: 0; }
+}
+.sp-sunburst-rotate {
+  animation: sp-sun-rotate 20s linear infinite;
+  will-change: transform;
+  transform-origin: 150px 115px;
+}
+@keyframes sp-sun-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.sp-disk-glow {
+  animation: sp-glow-pulse 2s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+@keyframes sp-glow-pulse {
+  from { opacity: 0.2; }
+  to { opacity: 0.5; }
+}
+.sp-beam-sweep {
+  animation: sp-beam 5s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+@keyframes sp-beam {
+  from { opacity: 0.05; }
+  to { opacity: 0.15; }
+}
+
+/* ── Celestial animations ── */
+.cel-star-twinkle {
+  animation: cel-twinkle 2s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+@keyframes cel-twinkle {
+  from { opacity: 0.2; }
+  to { opacity: 0.7; }
+}
+.cel-galaxy-rotate {
+  animation: cel-galaxy 30s linear infinite;
+  will-change: transform;
+  transform-origin: 150px 220px;
+}
+@keyframes cel-galaxy {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.cel-constellation-connect {
+  animation: cel-dash 4s linear infinite;
+  will-change: stroke-dashoffset;
+}
+@keyframes cel-dash {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 24; }
+}
+
+/* ── Dragon's Hoard animations ── */
+.dh-smoke-drift {
+  animation: dh-smoke 4s ease-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes dh-smoke {
+  from { transform: translateY(0); opacity: 0.12; }
+  to { transform: translateY(-20px); opacity: 0; }
+}
+.dh-treasure-sparkle {
+  animation: dh-sparkle 1.5s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+@keyframes dh-sparkle {
+  from { opacity: 0.1; }
+  to { opacity: 0.5; }
+}
+.dh-egg-heartbeat {
+  animation: dh-heartbeat 1.2s ease-in-out infinite;
+  will-change: opacity, transform;
+}
+@keyframes dh-heartbeat {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.05); }
+}
+.dh-scale-border {
+  animation: dh-scale-shimmer 3s linear infinite;
+  will-change: opacity;
+}
+@keyframes dh-scale-shimmer {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+
+/* ── Diamond Dynasty animations ── */
+.dd-facet-catch {
+  animation: dd-catch 2s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+@keyframes dd-catch {
+  from { opacity: 0.04; }
+  to { opacity: 0.12; }
+}
+.dd-inclusion-shift {
+  animation: dd-inclusion 10s ease-in-out infinite;
+  will-change: opacity;
+}
+@keyframes dd-inclusion {
+  0%, 100% { opacity: 0.04; }
+  50% { opacity: 0.1; }
+}
+.dd-prismatic-sweep {
+  animation: dd-prismatic 5s linear infinite;
+  will-change: transform;
+}
+@keyframes dd-prismatic {
+  from { transform: translateX(-50px); }
+  to { transform: translateX(50px); }
+}
+.dd-rainbow-border {
+  animation: dd-rainbow 3s linear infinite;
+  will-change: stroke;
+}
+@keyframes dd-rainbow {
+  0% { stroke: #FF0000; }
+  17% { stroke: #FF8800; }
+  33% { stroke: #FFFF00; }
+  50% { stroke: #00FF00; }
+  67% { stroke: #0088FF; }
+  83% { stroke: #8800FF; }
+  100% { stroke: #FF0000; }
+}
+
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .canvas-art-card .card__overlay * { animation: none !important; }
   .canvas-art-card .card__fx { display: none; }
   .neon-border-flicker { animation: none !important; }
   .nn-rain { animation: none !important; }
+  .sd-string-sway, .sd-backlight-flicker, .sd-hands-grasp { animation: none !important; }
+  .sp-dust-mote, .sp-sunburst-rotate, .sp-disk-glow, .sp-beam-sweep { animation: none !important; }
+  .cel-star-twinkle, .cel-galaxy-rotate, .cel-constellation-connect { animation: none !important; }
+  .dh-smoke-drift, .dh-treasure-sparkle, .dh-egg-heartbeat, .dh-scale-border { animation: none !important; }
+  .dd-facet-catch, .dd-inclusion-shift, .dd-prismatic-sweep, .dd-rainbow-border { animation: none !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Velvet Noir SVG overlay animations
+   ═══════════════════════════════════════════════════════════ */
+
+/* Venetian blind shadows pan slowly */
+.vn-blinds {
+  animation: vn-blinds-pan 10s linear infinite;
+  will-change: transform;
+}
+
+@keyframes vn-blinds-pan {
+  from { transform: translateY(0); }
+  to { transform: translateY(60px); }
+}
+
+/* Smoke drift */
+.vn-smoke {
+  animation: vn-smoke-drift 6s ease-in-out infinite alternate;
+  will-change: transform, opacity;
+}
+
+@keyframes vn-smoke-drift {
+  from { transform: translateX(0) translateY(0); opacity: 0.06; }
+  to { transform: translateX(5px) translateY(-10px); opacity: 0.02; }
+}
+
+/* Camera flash deal animation */
+.skin--velvet-noir .card__fx.deal-active {
+  animation: vn-flash 300ms ease-out both;
+}
+
+@keyframes vn-flash {
+  0% { background: rgba(255, 255, 255, 0.8); }
+  100% { background: transparent; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Sakura Bloom SVG overlay animations
+   ═══════════════════════════════════════════════════════════ */
+
+/* Petal fall — gentle drift down with sway */
+.sb-petal {
+  animation: sb-petal-fall 5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes sb-petal-fall {
+  0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0.5; }
+  50% { transform: translateY(100px) translateX(15px) rotate(180deg); opacity: 0.4; }
+  100% { transform: translateY(200px) translateX(-5px) rotate(360deg); opacity: 0; }
+}
+
+/* Steam rise */
+.sb-steam {
+  animation: sb-steam-rise 3s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes sb-steam-rise {
+  from { transform: translateY(0); opacity: 0.1; }
+  to { transform: translateY(-20px); opacity: 0; }
+}
+
+/* Water ripple */
+.sb-ripple {
+  animation: sb-ripple-expand 4s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes sb-ripple-expand {
+  from { transform: scale(0.8); opacity: 0.08; }
+  to { transform: scale(1.5); opacity: 0; }
+}
+
+/* Deal — petal gust sweep */
+.skin--sakura-bloom .card__fx.deal-active {
+  animation: sb-petal-gust 500ms ease-out both;
+}
+
+@keyframes sb-petal-gust {
+  0% { clip-path: inset(0 100% 0 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Blood Moon SVG overlay animations
+   ═══════════════════════════════════════════════════════════ */
+
+/* Dust motes — nearly frozen, barely drift */
+.bm-dust {
+  animation: bm-dust-drift 8s linear infinite;
+  will-change: transform;
+}
+
+@keyframes bm-dust-drift {
+  0% { transform: translateY(0) translateX(0); }
+  50% { transform: translateY(-3px) translateX(1px); }
+  100% { transform: translateY(0) translateX(0); }
+}
+
+/* Moonlight intensity shift */
+.bm-moonshift {
+  animation: bm-moon-pulse 6s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes bm-moon-pulse {
+  from { opacity: 0.02; }
+  to { opacity: 0.06; }
+}
+
+/* Card breathe */
+.skin--blood-moon {
+  animation: bm-breathe 3s ease-in-out infinite;
+}
+
+@keyframes bm-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.002); }
+}
+
+/* Deal — heartbeat */
+.skin--blood-moon .card__fx.deal-active {
+  animation: bm-heartbeat 400ms ease-in-out both;
+}
+
+@keyframes bm-heartbeat {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.015); }
+  60% { transform: scale(1); }
+  80% { transform: scale(1.008); }
+  100% { transform: scale(1); }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Gilded Serpent SVG overlay animations (Legendary)
+   ═══════════════════════════════════════════════════════════ */
+
+/* Eye glow cascade */
+.gs-eye-glow {
+  animation: gs-eye-pulse 1.5s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes gs-eye-pulse {
+  from { opacity: 0.2; }
+  to { opacity: 0.6; }
+}
+
+/* Cobra hood breathing */
+.gs-hood-breathe {
+  animation: gs-hood-breathe 2s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes gs-hood-breathe {
+  from { transform: scale(1); }
+  to { transform: scale(1.08); }
+}
+
+/* Throne serpent shift */
+.gs-serpent-shift {
+  animation: gs-serpent-wave 4s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@keyframes gs-serpent-wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(3px); }
+}
+
+/* Living border — LEGENDARY BONUS: animated flowing scale pattern */
+.gs-living-border {
+  animation: gs-border-flow 3s linear infinite;
+  will-change: stroke-dashoffset;
+}
+
+@keyframes gs-border-flow {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: 24; }
+}
+
+/* Scale shimmer on tilt */
+.gs-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(212,160,23,0.15) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: gs-shimmer-sweep 4s linear infinite;
+}
+
+@keyframes gs-shimmer-sweep {
+  from { background-position: -100% 0; }
+  to { background-position: 200% 0; }
+}
+
+/* Deal — golden snake traces card border */
+.skin--gilded-serpent .card__fx.deal-active {
+  animation: gs-snake-trace 500ms ease-out both;
+}
+
+@keyframes gs-snake-trace {
+  0% { box-shadow: inset 0 0 0 0 rgba(212, 160, 23, 0); }
+  50% { box-shadow: inset 0 0 15px 2px rgba(212, 160, 23, 0.5); }
+  100% { box-shadow: inset 0 0 0 0 rgba(212, 160, 23, 0); }
+}
+
+/* Win — all serpents rise (Legendary) */
+@keyframes gs-serpent-rise {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(-5px) scale(1.02); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Reduced motion: disable all new skin animations */
+@media (prefers-reduced-motion: reduce) {
+  .vn-blinds, .vn-smoke,
+  .sb-petal, .sb-steam, .sb-ripple,
+  .bm-dust, .bm-moonshift,
+  .gs-eye-glow, .gs-hood-breathe, .gs-serpent-shift,
+  .gs-living-border, .gs-shimmer {
+    animation: none !important;
+  }
+  .skin--blood-moon {
+    animation: none !important;
+  }
 }

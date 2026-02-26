@@ -768,10 +768,10 @@ function CanvasArtCardFace({ card }: { card: CardType }) {
     suit: card.suit,
   }), [rank, skin.id, card.suit])
 
-  const isNeonNights = skin.id === 'neon-nights'
+  const skinId = skin.id
 
   return (
-    <div className={`card card-face canvas-art-card ${color}`}>
+    <div className={`card card-face canvas-art-card skin--${skinId} ${color}`}>
       {/* z-1: Background fill */}
       <div className="card__bg" />
       {/* z-2: Character art (Canvas 2D → WebP) */}
@@ -780,14 +780,10 @@ function CanvasArtCardFace({ card }: { card: CardType }) {
         style={{ backgroundImage: `url('${artUrl}')` }}
       />
       {/* z-3: SVG overlay (skin-specific animations) */}
-      {isNeonNights && <NeonNightsOverlay rank={rank} />}
+      <CanvasOverlay skinId={skinId} rank={rank} />
       {/* z-4: Card frame */}
       <svg className="card__frame" viewBox="0 0 300 420">
-        {skin.id === 'classic' ? (
-          <ClassicFrame />
-        ) : isNeonNights ? (
-          <NeonFrame />
-        ) : null}
+        <CanvasFrame skinId={skinId} />
       </svg>
       {/* z-5: Rank + suit labels */}
       <div className="card__rank-top">
@@ -799,6 +795,169 @@ function CanvasArtCardFace({ card }: { card: CardType }) {
       {/* z-6: Animation FX layer */}
       <div className="card__fx" />
     </div>
+  )
+}
+
+/* ── Canvas Overlay dispatcher — routes to skin-specific SVG overlays ── */
+function CanvasOverlay({ skinId, rank }: { skinId: string; rank: FaceRank }) {
+  switch (skinId) {
+    case 'neon-nights': return <NeonNightsOverlay rank={rank} />
+    case 'velvet-noir': return <VelvetNoirOverlay />
+    case 'sakura-bloom': return <SakuraBloomOverlay rank={rank} />
+    case 'blood-moon': return <BloodMoonOverlay />
+    case 'gilded-serpent': return <GildedSerpentOverlay rank={rank} />
+    case 'shadow-dynasty': return <ShadowDynastyOverlay rank={rank} />
+    case 'solar-pharaoh': return <SolarPharaohOverlay rank={rank} />
+    case 'celestial': return <CelestialOverlay rank={rank} />
+    case 'dragons-hoard': return <DragonsHoardOverlay rank={rank} />
+    case 'diamond-dynasty': return <DiamondDynastyOverlay rank={rank} />
+    default: return null
+  }
+}
+
+/* ── Canvas Frame dispatcher — routes to skin-specific frame ── */
+function CanvasFrame({ skinId }: { skinId: string }) {
+  switch (skinId) {
+    case 'classic': return <ClassicFrame />
+    case 'neon-nights': return <NeonFrame />
+    case 'velvet-noir': return <VelvetNoirFrame />
+    case 'sakura-bloom': return <SakuraBloomFrame />
+    case 'blood-moon': return <BloodMoonFrame />
+    case 'gilded-serpent': return <GildedSerpentFrame />
+    case 'shadow-dynasty': return <ShadowDynastyFrame />
+    case 'solar-pharaoh': return <SolarPharaohFrame />
+    case 'celestial': return <CelestialFrame />
+    case 'dragons-hoard': return <DragonsHoardFrame />
+    case 'diamond-dynasty': return <DiamondDynastyFrame />
+    default: return null
+  }
+}
+
+/* ── Velvet Noir overlay — venetian blind shadows, film grain ── */
+function VelvetNoirOverlay() {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <g className="vn-blinds">
+        {[0, 60, 120, 180, 240, 300, 360].map((y, i) => (
+          <rect key={i} x="0" y={y} width="300" height="25" fill="rgba(255,240,200,0.04)" />
+        ))}
+      </g>
+      <path d="M250,380 Q260,340 245,300 Q255,260 240,220" stroke="#D4D4D4" strokeWidth="1" fill="none" opacity="0.06" className="vn-smoke" />
+    </svg>
+  )
+}
+
+function VelvetNoirFrame() {
+  return (
+    <>
+      <rect x="6" y="6" width="288" height="408" rx="8" fill="none" stroke="#D4D4D4" strokeWidth="1" opacity="0.15" />
+      <rect x="10" y="10" width="280" height="400" rx="6" fill="none" stroke="#9B111E" strokeWidth="0.5" opacity="0.1" />
+    </>
+  )
+}
+
+/* ── Sakura Bloom overlay — falling petals, steam, water ripple ── */
+function SakuraBloomOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      {[
+        { cx: 40, cy: 60, r: 3, d: '0s' }, { cx: 120, cy: 100, r: 2.5, d: '1.5s' },
+        { cx: 200, cy: 40, r: 3, d: '0.8s' }, { cx: 260, cy: 80, r: 2, d: '2.2s' },
+        { cx: 80, cy: 200, r: 2.5, d: '3s' }, { cx: 230, cy: 160, r: 3, d: '1s' },
+      ].map((p, i) => (
+        <ellipse key={i} cx={p.cx} cy={p.cy} rx={p.r} ry={p.r * 0.5}
+          fill="#FFB7C5" opacity="0.5" className="sb-petal"
+          style={{ animationDelay: p.d }} transform={`rotate(${i * 30}, ${p.cx}, ${p.cy})`} />
+      ))}
+      {rank === 'Q' && (
+        <>
+          <path d="M145,280 Q142,260 146,240" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.1" className="sb-steam" />
+          <path d="M155,280 Q158,255 153,235" stroke="#FFFFFF" strokeWidth="1" fill="none" opacity="0.08" className="sb-steam" style={{ animationDelay: '1s' }} />
+        </>
+      )}
+      {rank === 'J' && (
+        <ellipse cx="150" cy="370" rx="40" ry="5" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" className="sb-ripple" />
+      )}
+    </svg>
+  )
+}
+
+function SakuraBloomFrame() {
+  return (
+    <>
+      <rect x="6" y="6" width="288" height="408" rx="8" fill="none" stroke="#FFB7C5" strokeWidth="1" opacity="0.2" />
+      <rect x="10" y="10" width="280" height="400" rx="6" fill="none" stroke="#FFD700" strokeWidth="0.5" opacity="0.12" />
+    </>
+  )
+}
+
+/* ── Blood Moon overlay — dust motes, moonlight shift ── */
+function BloodMoonOverlay() {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      {[
+        { cx: 160, cy: 120, r: 1 }, { cx: 200, cy: 180, r: 0.8 },
+        { cx: 140, cy: 250, r: 1.2 }, { cx: 180, cy: 80, r: 0.7 },
+        { cx: 220, cy: 300, r: 1 }, { cx: 130, cy: 350, r: 0.9 },
+      ].map((d, i) => (
+        <circle key={i} cx={d.cx} cy={d.cy} r={d.r} fill="#BDBDBD" opacity="0.12"
+          className="bm-dust" style={{ animationDelay: `${i * 0.8}s` }} />
+      ))}
+      <rect x="100" y="0" width="120" height="420" fill="#8B0000" opacity="0.03" className="bm-moonshift" />
+    </svg>
+  )
+}
+
+function BloodMoonFrame() {
+  return (
+    <>
+      <rect x="6" y="6" width="288" height="408" rx="8" fill="none" stroke="#424242" strokeWidth="1" opacity="0.2" />
+      <rect x="10" y="10" width="280" height="400" rx="6" fill="none" stroke="#8B0000" strokeWidth="0.5" opacity="0.1" />
+    </>
+  )
+}
+
+/* ── Gilded Serpent overlay — cobra breathing, eye glow, living border ── */
+function GildedSerpentOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <defs>
+        <filter id="gs-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {rank === 'Q' && (
+        <>
+          <circle cx="142" cy="137" r="4" fill="#046A38" opacity="0.3" filter="url(#gs-glow)" className="gs-eye-glow" />
+          <circle cx="158" cy="137" r="4" fill="#046A38" opacity="0.3" filter="url(#gs-glow)" className="gs-eye-glow" style={{ animationDelay: '0.3s' }} />
+        </>
+      )}
+      {rank === 'J' && (
+        <ellipse cx="92" cy="115" rx="10" ry="13" fill="none" stroke="#D4A017" strokeWidth="0.5" opacity="0.2" className="gs-hood-breathe" />
+      )}
+      {rank === 'K' && (
+        <>
+          <path d="M75,200 Q65,240 75,280" stroke="#D4A017" strokeWidth="1" fill="none" opacity="0.15" className="gs-serpent-shift" />
+          <path d="M225,200 Q235,240 225,280" stroke="#D4A017" strokeWidth="1" fill="none" opacity="0.15" className="gs-serpent-shift" style={{ animationDelay: '2s' }} />
+        </>
+      )}
+      <rect x="4" y="4" width="292" height="412" rx="8" fill="none"
+        stroke="#D4A017" strokeWidth="2" opacity="0.3" className="gs-living-border"
+        strokeDasharray="8 4" />
+    </svg>
+  )
+}
+
+function GildedSerpentFrame() {
+  return (
+    <>
+      <rect x="6" y="6" width="288" height="408" rx="8" fill="none" stroke="#D4A017" strokeWidth="1.5" opacity="0.25" />
+      <rect x="10" y="10" width="280" height="400" rx="6" fill="none" stroke="#046A38" strokeWidth="0.5" opacity="0.15" />
+    </>
   )
 }
 
@@ -884,6 +1043,204 @@ function NeonNightsOverlay({ rank }: { rank: FaceRank }) {
         </>
       )}
     </svg>
+  )
+}
+
+/* ── Shadow Dynasty overlays — strings, backlight flicker ── */
+function ShadowDynastyOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      {/* Puppet strings swaying */}
+      <line x1="100" y1="0" x2="100" y2="150" stroke="#000" strokeWidth="0.8" opacity="0.3" className="sd-string-sway" />
+      <line x1="150" y1="0" x2="150" y2="120" stroke="#000" strokeWidth="0.8" opacity="0.25" className="sd-string-sway" style={{ animationDelay: '0.5s' }} />
+      <line x1="200" y1="0" x2="200" y2="140" stroke="#000" strokeWidth="0.8" opacity="0.2" className="sd-string-sway" style={{ animationDelay: '1s' }} />
+      {/* Backlight flicker */}
+      <rect x="0" y="0" width="300" height="420" fill="#F5A623" opacity="0.03" className="sd-backlight-flicker" />
+      {rank === 'K' && (
+        /* Puppeteer hands grasping from above */
+        <g className="sd-hands-grasp" opacity="0.15">
+          <path d="M75,0 L65,40 L60,50 L65,45 L70,55 L75,42 L80,0" fill="#1A0A00" />
+          <path d="M225,0 L230,40 L235,50 L232,45 L228,55 L223,42 L218,0" fill="#1A0A00" />
+        </g>
+      )}
+    </svg>
+  )
+}
+
+function ShadowDynastyFrame() {
+  return (
+    <rect x="4" y="4" width="292" height="412" rx="8"
+      fill="none" stroke="#1A0A00" strokeWidth="3" opacity="0.3" />
+  )
+}
+
+/* ── Solar Pharaoh overlays — sun rays, dust motes ── */
+function SolarPharaohOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <defs>
+        <filter id="sp-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Dust motes */}
+      {[80, 150, 220, 260].map((cx, i) => (
+        <circle key={i} cx={cx} cy={350 - i * 40} r="1" fill="#FFD700" opacity="0.3"
+          className="sp-dust-mote" style={{ animationDelay: `${i * 0.8}s` }} />
+      ))}
+      {rank === 'K' && (
+        /* Sunburst rotation behind King */
+        <g className="sp-sunburst-rotate" opacity="0.08">
+          {Array.from({ length: 12 }, (_, i) => {
+            const angle = (i * 30 * Math.PI) / 180
+            return (
+              <line key={i} x1={150 + Math.cos(angle) * 30} y1={115 + Math.sin(angle) * 30}
+                x2={150 + Math.cos(angle) * 120} y2={115 + Math.sin(angle) * 120}
+                stroke="#FFD700" strokeWidth="2" />
+            )
+          })}
+        </g>
+      )}
+      {rank === 'Q' && (
+        /* Sun disk glow pulse on Queen's crown */
+        <circle cx="150" cy="80" r="8" fill="#FFD700" opacity="0.3"
+          filter="url(#sp-glow)" className="sp-disk-glow" />
+      )}
+      {rank === 'J' && (
+        /* Light beam sweep on Jack's ankh */
+        <line x1="90" y1="30" x2="230" y2="190" stroke="#FFD700" strokeWidth="1.5"
+          opacity="0.1" className="sp-beam-sweep" />
+      )}
+    </svg>
+  )
+}
+
+function SolarPharaohFrame() {
+  return (
+    <>
+      <rect x="5" y="5" width="290" height="410" rx="8"
+        fill="none" stroke="#D4A017" strokeWidth="2" opacity="0.25" />
+      <rect x="9" y="9" width="282" height="402" rx="6"
+        fill="none" stroke="#D4A574" strokeWidth="0.5" opacity="0.15" />
+    </>
+  )
+}
+
+/* ── Celestial overlays — star twinkle, constellation lines, shooting star ── */
+function CelestialOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      <defs>
+        <filter id="cel-glow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+      {/* Star twinkle — independent opacity */}
+      {[[40, 60], [120, 30], [250, 50], [60, 200], [230, 180], [170, 350], [50, 380]].map(([cx, cy], i) => (
+        <circle key={i} cx={cx} cy={cy} r="1.2" fill="#FFD700" opacity="0.4"
+          filter="url(#cel-glow)" className="cel-star-twinkle"
+          style={{ animationDelay: `${i * 0.4}s` }} />
+      ))}
+      {rank === 'K' && (
+        /* Galaxy rotation in King's body */
+        <circle cx="150" cy="220" r="30" fill="none" stroke="#CE93D8" strokeWidth="0.5"
+          opacity="0.1" className="cel-galaxy-rotate" />
+      )}
+      {rank === 'Q' && (
+        /* Star cape trail */
+        <g className="cel-star-twinkle" style={{ animationDelay: '0.5s' }}>
+          <circle cx="90" cy="200" r="1.5" fill="#FFD700" opacity="0.3" />
+          <circle cx="70" cy="240" r="1" fill="#FFD700" opacity="0.25" />
+          <circle cx="60" cy="280" r="1.5" fill="#FFD700" opacity="0.2" />
+        </g>
+      )}
+    </svg>
+  )
+}
+
+function CelestialFrame() {
+  return (
+    <rect x="6" y="6" width="288" height="408" rx="8"
+      fill="none" stroke="#FFD700" strokeWidth="1" opacity="0.15"
+      strokeDasharray="4 8" className="cel-constellation-connect" />
+  )
+}
+
+/* ── Dragon's Hoard overlays — smoke, treasure sparkle, egg glow ── */
+function DragonsHoardOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      {/* Smoke wisps */}
+      <path d="M140,380 Q135,360 140,340 Q145,320 138,300" fill="none"
+        stroke="rgba(200,200,200,0.12)" strokeWidth="1.5" className="dh-smoke-drift" />
+      <path d="M160,390 Q155,370 162,350 Q168,330 158,310" fill="none"
+        stroke="rgba(200,200,200,0.08)" strokeWidth="1" className="dh-smoke-drift"
+        style={{ animationDelay: '1.5s' }} />
+      {/* Treasure sparkles */}
+      {[[60, 370], [240, 380], [100, 390], [200, 400]].map(([cx, cy], i) => (
+        <circle key={i} cx={cx} cy={cy} r="1" fill="#FFD700" opacity="0.3"
+          className="dh-treasure-sparkle" style={{ animationDelay: `${i * 0.6}s` }} />
+      ))}
+      {rank === 'Q' && (
+        /* Egg heartbeat glow */
+        <circle cx="185" cy="260" r="10" fill="#FF6D00" opacity="0.15"
+          className="dh-egg-heartbeat" />
+      )}
+      {rank === 'K' && (
+        /* Nostril smoke + treasure sparkle */
+        <path d="M145,130 Q138,120 140,108" fill="none" stroke="rgba(200,200,200,0.15)"
+          strokeWidth="1" className="dh-smoke-drift" />
+      )}
+    </svg>
+  )
+}
+
+function DragonsHoardFrame() {
+  return (
+    <rect x="5" y="5" width="290" height="410" rx="8"
+      fill="none" stroke="#FFD700" strokeWidth="2" opacity="0.2"
+      className="dh-scale-border" />
+  )
+}
+
+/* ── Diamond Dynasty overlays — prismatic sweep, facet highlights ── */
+function DiamondDynastyOverlay({ rank }: { rank: FaceRank }) {
+  return (
+    <svg className="card__overlay" viewBox="0 0 300 420">
+      {/* Facet catch-light polygons */}
+      {[[100, 150, 20], [200, 250, 15], [80, 300, 18]].map(([cx, cy, s], i) => (
+        <polygon key={i}
+          points={`${cx},${cy - s} ${cx + s * 0.6},${cy} ${cx},${cy + s * 0.3} ${cx - s * 0.6},${cy}`}
+          fill="#FFFFFF" opacity="0.08"
+          className="dd-facet-catch" style={{ animationDelay: `${i * 0.7}s` }} />
+      ))}
+      {rank === 'K' && (
+        /* Inclusion crossfade in King */
+        <circle cx="145" cy="200" r="20" fill="#F57F17" opacity="0.05"
+          className="dd-inclusion-shift" />
+      )}
+      {rank === 'J' && (
+        /* Prismatic light through body */
+        <rect x="100" y="100" width="100" height="250" fill="none"
+          className="dd-prismatic-sweep" opacity="0.05" />
+      )}
+    </svg>
+  )
+}
+
+function DiamondDynastyFrame() {
+  return (
+    <rect x="5" y="5" width="290" height="410" rx="8"
+      fill="none" stroke="#FFFFFF" strokeWidth="1.5" opacity="0.2"
+      className="dd-rainbow-border" />
   )
 }
 
