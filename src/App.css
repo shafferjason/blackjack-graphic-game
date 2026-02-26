@@ -1272,9 +1272,16 @@
 .shop-collection-fill {
   height: 100%;
   border-radius: 3px;
-  background: linear-gradient(90deg, var(--gold) 0%, #e0c470 100%);
+  background: linear-gradient(90deg, var(--gold) 0%, #e0c470 50%, var(--gold) 100%);
+  background-size: 200% 100%;
+  animation: collectionBarShine 2s ease-in-out infinite;
   transition: width 0.5s ease-out;
   min-width: 2px;
+}
+
+@keyframes collectionBarShine {
+  0%, 100% { background-position: 0% 0%; }
+  50% { background-position: 100% 0%; }
 }
 
 .shop-collection-tiers {
@@ -1295,20 +1302,31 @@
 
 /* ── Tier Section Headers ── */
 .shop-tier-section {
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .shop-tier-header {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 4px 6px;
+  padding: 10px 8px 8px;
+  margin-bottom: 10px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  margin-bottom: 8px;
+  position: relative;
+}
+
+.shop-tier-section.tier-rare .shop-tier-header {
+  border-image: linear-gradient(90deg, rgba(96, 165, 250, 0.4), transparent) 1;
+}
+.shop-tier-section.tier-epic .shop-tier-header {
+  border-image: linear-gradient(90deg, rgba(192, 132, 252, 0.5), transparent) 1;
+}
+.shop-tier-section.tier-legendary .shop-tier-header {
+  border-image: linear-gradient(90deg, rgba(251, 191, 36, 0.6), transparent) 1;
 }
 
 .shop-tier-icon {
-  font-size: 0.85rem;
+  font-size: 0.9rem;
 }
 
 .shop-tier-icon.tier-common { color: #94a3b8; }
@@ -1323,6 +1341,10 @@
   letter-spacing: 1px;
   color: var(--text-secondary);
 }
+
+.shop-tier-section.tier-rare .shop-tier-title { color: #60a5fa; }
+.shop-tier-section.tier-epic .shop-tier-title { color: #c084fc; }
+.shop-tier-section.tier-legendary .shop-tier-title { color: #fbbf24; }
 
 .shop-tier-count {
   font-size: 0.7rem;
@@ -1346,11 +1368,12 @@
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
-  transition: border-color 0.2s, background 0.2s, box-shadow 0.3s;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.3s, transform 0.2s;
 }
 
 .shop-skin-item:hover {
   background: rgba(255, 255, 255, 0.06);
+  transform: translateX(2px);
 }
 
 .shop-skin-active {
@@ -1379,20 +1402,27 @@
 
 /* ── Skin Preview Card ── */
 .skin-preview-card {
-  width: 56px;
-  height: 72px;
-  border-radius: 8px;
+  width: 60px;
+  height: 78px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.shop-skin-item:hover .skin-preview-card {
+  transform: scale(1.06) rotate(-1deg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
 }
 
 .skin-preview-mini-card {
-  width: 36px;
-  height: 50px;
+  width: 38px;
+  height: 52px;
   border-radius: 5px;
   background: linear-gradient(155deg, #fffef8, #f0ece2);
   border: 1.5px solid;
@@ -1401,7 +1431,11 @@
   align-items: center;
   justify-content: center;
   gap: 1px;
-  transition: filter 0.2s;
+  transition: filter 0.2s, transform 0.25s ease;
+}
+
+.shop-skin-item:hover .skin-preview-mini-card {
+  transform: translateY(-1px);
 }
 
 .skin-preview-mini-card.skin-preview-locked {
@@ -1564,14 +1598,36 @@
   background: rgba(168, 85, 247, 0.04);
 }
 
-/* Legendary skin item glow */
+/* Legendary skin item glow + shimmer */
 .shop-skin-item.tier-legendary {
   border-color: rgba(245, 158, 11, 0.3);
   background: rgba(245, 158, 11, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+.shop-skin-item.tier-legendary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(251, 191, 36, 0.08) 45%,
+    rgba(251, 191, 36, 0.14) 50%,
+    rgba(251, 191, 36, 0.08) 55%,
+    transparent 60%
+  );
+  animation: legendaryShimmer 3s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes legendaryShimmer {
+  0% { transform: translateX(-200%); }
+  50%, 100% { transform: translateX(200%); }
 }
 .shop-skin-item.tier-legendary:hover {
   border-color: rgba(245, 158, 11, 0.5);
   background: rgba(245, 158, 11, 0.08);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
 }
 
 /* ── Price Progress Bar ── */
@@ -1607,9 +1663,15 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 6px;
-  border-radius: 0 0 8px 8px;
-  opacity: 0.7;
+  height: 8px;
+  border-radius: 0 0 10px 10px;
+  opacity: 0.8;
+  transition: height 0.2s ease, opacity 0.2s ease;
+}
+
+.shop-skin-item:hover .skin-env-swatch {
+  height: 10px;
+  opacity: 1;
 }
 
 /* ── Shop note (long description for legendary skins) ── */

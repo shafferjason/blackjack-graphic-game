@@ -30,13 +30,20 @@ const TIER_CONFIG: Record<SkinTier, { label: string; className: string; icon: st
 }
 
 function SkinPreview({ skin, isActive, isOwned }: { skin: CardSkin; isActive: boolean; isOwned: boolean }) {
+  const tierGlowMap: Record<SkinTier, string | undefined> = {
+    common: undefined,
+    rare: `0 0 12px ${skin.glowColor !== 'transparent' ? skin.glowColor : 'rgba(96,165,250,0.2)'}`,
+    epic: `0 0 14px ${skin.glowColor !== 'transparent' ? skin.glowColor : 'rgba(192,132,252,0.3)'}`,
+    legendary: `0 0 18px ${skin.glowColor !== 'transparent' ? skin.glowColor : 'rgba(251,191,36,0.4)'}`,
+  }
+
   return (
     <div className="skin-preview-card" style={{ background: skin.previewGradient }}>
       <div
         className={`skin-preview-mini-card ${!isOwned ? 'skin-preview-locked' : ''}`}
         style={{
           borderColor: skin.borderColor !== 'transparent' ? skin.borderColor : 'rgba(170,160,140,0.5)',
-          boxShadow: skin.glowColor !== 'transparent' ? `0 0 12px ${skin.glowColor}` : 'none',
+          boxShadow: isOwned ? tierGlowMap[skin.tier] : undefined,
           filter: skin.faceFilter !== 'none' ? skin.faceFilter : undefined,
         }}
       >
