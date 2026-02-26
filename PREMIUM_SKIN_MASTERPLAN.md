@@ -388,3 +388,29 @@ _Goal: Everything works together. No rough edges._
 - Cross-skin consistency: all 15 skins verified for materials, celebrations, card backs
 - Face card gallery: J/Q/K mini-preview strip with clothing/gold swatches in shop
 - Full test suite: 310 tests passing, clean production build
+
+### 2026-02-26 — Per-Skin Unique Face Card Characters
+
+**Milestone: Every skin now has uniquely different J/Q/K character art direction**
+
+- New `faceCardCharacters.tsx` — 16 character themes with distinct silhouettes, body shapes, and motifs
+- Each skin's J/Q/K has a fundamentally different character identity (not just color/accessory):
+  - **Classic (european):** Traditional court (base art, no override)
+  - **Neon Nights (cyberpunk):** Angular helmet, tech armor, plasma pistol
+  - **Royal Gold (baroque):** Powdered wig, rapier, Marie Antoinette styling
+  - **Sakura Bloom (samurai):** Topknot, layered armor (do), kanzashi updo, kabuto helmet
+  - **Solar Pharaoh (pharaonic):** Nemes headdress, Hathor crown, Pschent double crown
+  - **Arctic Frost (glacial):** Ice crystal crown, frost patterns, icicle hair
+  - **Crimson Flame (infernal):** Horned demon helm, flame hair, ember crown
+  - **Shadow Dynasty (wraith):** Deep cowl/hood, tattered robes, spectral veil
+  - **Gilded Serpent (ophidian):** Cobra hood, snake hair (Medusa), expanded king hood
+  - **Celestial (astral):** Cosmic halo, star rays, constellation crown
+  - **Blood Moon (vampiric):** Widow's peak, bat-wing motifs, high-collar cape
+  - **Midnight Purple (arcane):** Wizard hat, sorceress hood, archmage great hat
+  - **Emerald Fortune (sylvan):** Leaf crown, vine tendrils, antler crown (king)
+  - **Velvet Noir (noir):** Fedora, trench coat, finger waves, slicked hair
+  - **Diamond Dynasty (crystalline):** Faceted crystal crown, geometric sparkles
+  - **Dragon's Hoard (draconic):** Massive sweeping horns, dragon scale band
+- Character system uses reusable structural layers for performance
+- Screenshot verification for 10 representative skins at gameplay size (iPhone 14 Pro)
+- All 310 tests passing, Playwright mobile sanity checks passing

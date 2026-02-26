@@ -5,6 +5,7 @@ import { FACE_CARD_TEXTURES } from './faceCardTextures'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette, type CardBackDesign } from '../utils/cardSkinShop'
 import { MATERIALS, type CardMaterial } from '../config/designTokens'
 import { getFaceCardVariantOverlays } from './faceCardVariants'
+import { getCharacterOverlays } from './faceCardCharacters'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -340,6 +341,8 @@ function JackSVG({ suit }: { suit: Suit }) {
       <path d="M64.5,27.5 L63,31.5" fill="none" stroke="#c0c8c8" strokeWidth="0.25" opacity="0.3" />
       {/* Skin-specific variant overlays */}
       {getFaceCardVariantOverlays('jack', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: palette.clothing, clothingHi: palette.clothingHi, accent: getActiveSkin().previewAccent })}
+      {/* Per-skin unique character overlays — distinct silhouettes per theme */}
+      {getCharacterOverlays('jack', getActiveSkin().id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: palette.clothing, clothingMid: palette.clothingMid, clothingHi: palette.clothingHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: getActiveSkin().previewAccent })}
     </>
   )
 
@@ -501,6 +504,8 @@ function QueenSVG({ suit }: { suit: Suit }) {
       </g>
       {/* Skin-specific variant overlays */}
       {getFaceCardVariantOverlays('queen', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: dress, clothingHi: dressHi, accent: getActiveSkin().previewAccent })}
+      {/* Per-skin unique character overlays — distinct silhouettes per theme */}
+      {getCharacterOverlays('queen', getActiveSkin().id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: dress, clothingMid: dressMid, clothingHi: dressHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: getActiveSkin().previewAccent })}
     </>
   )
 
@@ -661,6 +666,8 @@ function KingSVG({ suit }: { suit: Suit }) {
       <circle cx="15" cy="23.2" r="0.4" fill={gold} />
       {/* Skin-specific variant overlays */}
       {getFaceCardVariantOverlays('king', getActiveSkin().id, { suit, isRed, gold, goldDk, goldLt, ink, clothing: robe, clothingHi: robeHi, accent: getActiveSkin().previewAccent })}
+      {/* Per-skin unique character overlays — distinct silhouettes per theme */}
+      {getCharacterOverlays('king', getActiveSkin().id, { suit, isRed, pid, gold, goldDk, goldLt, ink, clothing: robe, clothingMid: palette.clothingMid, clothingHi: robeHi, skin, skinShade: palette.skinShade, skinHi: palette.skinHi, hair: palette.hair, hairHi: palette.hairHi, accent: getActiveSkin().previewAccent })}
     </>
   )
 

@@ -35,6 +35,13 @@ Skin-specific accessories on J/Q/K via new `faceCardVariants.tsx`:
 - **Flame:** Fire crown wisps
 - **Dragon (NEW):** Dragon horn crown, dragonfire tiara, dragon claw dagger, dragon egg, dragonfire staff
 
+### Per-Skin Unique Face Card Characters (NEW)
+Every skin now has uniquely different J/Q/K character silhouettes via `faceCardCharacters.tsx`:
+- 16 character themes: european, cyberpunk, baroque, samurai, pharaonic, glacial, infernal, wraith, ophidian, astral, vampiric, arcane, sylvan, noir, crystalline, draconic
+- Each theme provides distinct head/crown silhouettes, body shapes, and held props for all 3 face card roles
+- Previously color-only skins (Royal Gold, Shadow Dynasty, Celestial, Blood Moon, Midnight Purple, Emerald Fortune, Velvet Noir, Diamond Dynasty, Gilded Serpent) now have fully unique characters
+- Screenshot verification at gameplay size for 10 representative skins
+
 ### Animation Upgrades (Steps 7, 9)
 - **Deal arc:** Multi-stage spring wobble with rotation on landing (0.62s)
 - **Hit:** Rotation bounce with spring settle (0.48s)
@@ -76,16 +83,34 @@ Skin-specific accessories on J/Q/K via new `faceCardVariants.tsx`:
 | `f53a02c` | Shop Visual Redesign |
 | `b41344c` | Legendary Skin Tier |
 | `5714353` | Face Card Gallery |
+| _pending_ | Per-Skin Unique Face Card Characters |
 
 ---
 
 ## Technical Details
 
-- **Build:** 499KB JS (177KB gzipped), 76KB CSS (14KB gzipped)
+- **Build:** 548KB JS (184KB gzipped), 76KB CSS (14KB gzipped)
 - **Tests:** 310 unit tests across 17 files — all passing
-- **Skins:** 15 skins × full card back + face card palette + environment + material + celebration style
+- **Skins:** 15 skins × full card back + face card palette + environment + material + celebration style + unique character silhouettes
 - **Animations:** All GPU-accelerated (transform, opacity), `prefers-reduced-motion` respected
 - **Mobile:** 5 responsive breakpoints (small phone < 380px through desktop 768px+)
+
+---
+
+## Face Card Character Screenshots (Gameplay Size Verification)
+
+| Skin | Screenshot Path |
+|------|----------------|
+| Classic | `qa-playwright/face-card-characters/classic_gameplay.png` |
+| Neon Nights | `qa-playwright/face-card-characters/neon-nights_gameplay.png` |
+| Sakura Bloom | `qa-playwright/face-card-characters/sakura-bloom_gameplay.png` |
+| Solar Pharaoh | `qa-playwright/face-card-characters/solar-pharaoh_gameplay.png` |
+| Arctic Frost | `qa-playwright/face-card-characters/arctic-frost_gameplay.png` |
+| Shadow Dynasty | `qa-playwright/face-card-characters/shadow-dynasty_gameplay.png` |
+| Celestial | `qa-playwright/face-card-characters/celestial_gameplay.png` |
+| Blood Moon | `qa-playwright/face-card-characters/blood-moon_gameplay.png` |
+| Velvet Noir | `qa-playwright/face-card-characters/velvet-noir_gameplay.png` |
+| Dragon's Hoard | `qa-playwright/face-card-characters/dragons-hoard_gameplay.png` |
 
 ---
 
