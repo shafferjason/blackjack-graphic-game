@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
+import { useModalStack } from '../hooks/useModalStack'
 
 const STORAGE_KEY = 'blackjack-tutorial-dismissed'
 
@@ -24,34 +26,32 @@ export default function TutorialOverlay() {
   const [open, setOpen] = useState(() => shouldShowOnFirstVisit())
   const [dontShowAgain, setDontShowAgain] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const dontShowRef = useRef(dontShowAgain)
+  dontShowRef.current = dontShowAgain
+
+  const handleClose = useCallback(() => {
+    persistDismiss(dontShowRef.current)
+    setOpen(false)
+  }, [])
+
+  const focusTrapRef = useFocusTrap(open)
+  useModalStack(open, handleClose)
 
   useEffect(() => {
     if (!open) return
     closeButtonRef.current?.focus()
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        handleClose()
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
-
-  const handleClose = useCallback(() => {
-    persistDismiss(dontShowAgain)
-    setOpen(false)
-  }, [dontShowAgain])
 
   const handleToggle = useCallback(() => {
     setOpen(prev => {
       if (prev) {
-        persistDismiss(dontShowAgain)
+        persistDismiss(dontShowRef.current)
         return false
       }
       setDontShowAgain(false)
       return true
     })
-  }, [dontShowAgain])
+  }, [])
 
   return (
     <>
@@ -67,6 +67,7 @@ export default function TutorialOverlay() {
 
       {open && (
         <div
+          ref={focusTrapRef}
           className="tutorial-overlay"
           onClick={handleClose}
           role="dialog"

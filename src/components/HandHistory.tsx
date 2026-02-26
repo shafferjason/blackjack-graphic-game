@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
+import { useModalStack } from '../hooks/useModalStack'
 import type { HandHistoryEntry, HandHistoryStep, Card } from '../types'
 import { calculateScore } from '../utils/scoring'
 
@@ -176,6 +178,9 @@ export default function HandHistory({ history }: HandHistoryProps) {
   const listRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const handleClose = useCallback(() => { setOpen(false); setReplayEntry(null) }, [])
+  const focusTrapRef = useFocusTrap(open)
+  useModalStack(open, handleClose)
 
   // Auto-scroll to bottom when new entries arrive
   useEffect(() => {
@@ -184,18 +189,10 @@ export default function HandHistory({ history }: HandHistoryProps) {
     }
   }, [open, history.length])
 
-  // Focus close button when dialog opens and handle Escape key
+  // Focus close button when dialog opens
   useEffect(() => {
     if (!open) return
     closeButtonRef.current?.focus()
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        setReplayEntry(null)
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
   const reversed = [...history].reverse()
@@ -213,7 +210,7 @@ export default function HandHistory({ history }: HandHistoryProps) {
       </button>
 
       {open && (
-        <div className="stats-overlay" onClick={() => { setOpen(false); setReplayEntry(null) }} role="dialog" aria-modal="true" aria-label="Hand History">
+        <div ref={focusTrapRef} className="stats-overlay" onClick={() => { setOpen(false); setReplayEntry(null) }} role="dialog" aria-modal="true" aria-label="Hand History">
           <div className="hh-panel" onClick={e => e.stopPropagation()} ref={panelRef}>
             <div className="stats-header">
               <h2>Hand History</h2>

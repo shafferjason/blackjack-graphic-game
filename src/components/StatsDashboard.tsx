@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
+import { useModalStack } from '../hooks/useModalStack'
 import type { GameStats, DetailedStats, GameResult, Achievement } from '../types'
 
 interface StatsDashboardProps {
@@ -149,16 +151,14 @@ function AchievementsGrid({ achievements }: { achievements: Achievement[] }) {
 export default function StatsDashboard({ stats, detailedStats, chips, achievements }: StatsDashboardProps) {
   const [open, setOpen] = useState(false)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const handleClose = useCallback(() => setOpen(false), [])
+  const focusTrapRef = useFocusTrap(open)
+  useModalStack(open, handleClose)
 
-  // Focus close button when dialog opens and handle Escape key
+  // Focus close button when dialog opens
   useEffect(() => {
     if (!open) return
     closeButtonRef.current?.focus()
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
   const totalHands = detailedStats.totalHandsPlayed
@@ -181,7 +181,7 @@ export default function StatsDashboard({ stats, detailedStats, chips, achievemen
       </button>
 
       {open && (
-        <div className="stats-overlay" onClick={() => setOpen(false)} role="dialog" aria-modal="true" aria-label="Statistics">
+        <div ref={focusTrapRef} className="stats-overlay" onClick={() => setOpen(false)} role="dialog" aria-modal="true" aria-label="Statistics">
           <div className="stats-panel" onClick={e => e.stopPropagation()}>
             <div className="stats-header">
               <h2>Statistics</h2>

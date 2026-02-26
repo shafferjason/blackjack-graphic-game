@@ -212,10 +212,17 @@ export function useGameEngine() {
     if (wasInActiveHand) {
       // Restore bankroll/stats but start a fresh betting round
       // The bet was already deducted from chips during the hand, so return it
+      // If split hands exist, use the sum of all split hand bets (which includes the original);
+      // otherwise fall back to saved.bet for non-split hands.
+      const splitHands = saved.splitHands || []
+      const totalBet = splitHands.length > 0
+        ? splitHands.reduce((s: number, h: { bet: number }) => s + h.bet, 0)
+        : saved.bet
+      const totalRefund = totalBet + saved.insuranceBet
       dispatch({
         type: ACTIONS.RESTORE_STATE,
         payload: {
-          chips: saved.chips + saved.bet + saved.insuranceBet,
+          chips: saved.chips + totalRefund,
           stats: saved.stats,
           ...(saved.detailedStats ? { detailedStats: saved.detailedStats } : {}),
           deck: saved.deck,
@@ -266,10 +273,14 @@ export function useGameEngine() {
   }, [state])
 
   const drawCard = useCallback((currentDeck: Deck): { card: Card; newDeck: Deck } => {
-    const newDeck = [...currentDeck]
+    let newDeck = [...currentDeck]
+    if (newDeck.length === 0) {
+      // Emergency reshuffle — deck exhausted mid-hand
+      newDeck = createShoe(NUM_DECKS)
+    }
     const card = newDeck.pop()!
     return { card, newDeck }
-  }, [])
+  }, [NUM_DECKS])
 
   const placeBet = useCallback((amount: number) => {
     dispatch({ type: ACTIONS.PLACE_BET, payload: { amount } })
@@ -862,7 +873,7 @@ export function useGameEngine() {
         stats: { ...state.stats, losses: state.stats.losses + 1 },
       },
     })
-    const surrenderChips = state.chips + halfBet - state.bet
+    const surrenderChips = state.chips + halfBet
     const surrenderStats = updateDetailedStatsForResult(state.detailedStats, 'lose', state.bet, halfBet, surrenderChips, { isSurrender: true })
     dispatch({
       type: ACTIONS.RESTORE_STATE,
@@ -877,6 +888,35 @@ export function useGameEngine() {
   // ── Insurance ──
   const maxInsuranceBet = Math.floor(state.bet / 2)
 
+  const peekDealerBlackjackAfterInsurance = useCallback((insuranceAmount: number) => {
+    if (!isBlackjack(state.dealerHand)) return // No dealer BJ, continue to player turn
+    // Dealer has blackjack — resolve immediately
+    const chipsNow = state.chips - state.bet - insuranceAmount
+    const insurancePayout = insuranceAmount > 0 ? insuranceAmount * 3 : 0
+    const chipsAfter = chipsNow + insurancePayout
+    const message = insurancePayout > 0
+      ? 'Dealer has Blackjack! Insurance pays 2:1.'
+      : 'Dealer has Blackjack! You lose.'
+    dispatch({
+      type: ACTIONS.RESOLVE,
+      payload: {
+        message,
+        result: 'lose',
+        chips: chipsAfter,
+        dealerRevealed: true,
+        stats: { ...state.stats, losses: state.stats.losses + 1 },
+      },
+    })
+    const ds = updateDetailedStatsForResult(state.detailedStats, 'lose', state.bet, 0, chipsAfter, {
+      insuranceTaken: insuranceAmount > 0,
+      insuranceWon: insurancePayout > 0,
+    })
+    dispatch({ type: ACTIONS.RESTORE_STATE, payload: { detailedStats: ds } as Partial<GameState> })
+    processAchievements(ds, chipsAfter, 'lose', { insuranceTaken: insuranceAmount > 0 })
+    recordStep('result', state.playerHand, state.dealerHand, true)
+    recordHandResult(state.playerHand, state.dealerHand, state.bet, insuranceAmount, 'lose', 0, false)
+  }, [state.dealerHand, state.playerHand, state.chips, state.bet, state.stats, state.detailedStats, processAchievements, recordStep, recordHandResult])
+
   const acceptInsurance = useCallback((amount: number) => {
     if (state.phase !== GAME_STATES.INSURANCE_OFFER) return
     const clamped = Math.min(amount, maxInsuranceBet, state.chips)
@@ -884,12 +924,14 @@ export function useGameEngine() {
     currentActionsRef.current.push('insurance')
     recordStep('insurance', state.playerHand, state.dealerHand, false)
     dispatch({ type: ACTIONS.INSURE, payload: { amount: clamped } })
-  }, [state.phase, state.chips, state.playerHand, state.dealerHand, maxInsuranceBet, GAME_STATES, recordStep])
+    peekDealerBlackjackAfterInsurance(clamped)
+  }, [state.phase, state.chips, state.playerHand, state.dealerHand, maxInsuranceBet, GAME_STATES, recordStep, peekDealerBlackjackAfterInsurance])
 
   const declineInsurance = useCallback(() => {
     if (state.phase !== GAME_STATES.INSURANCE_OFFER) return
     dispatch({ type: ACTIONS.INSURE, payload: { amount: 0 } })
-  }, [state.phase, GAME_STATES])
+    peekDealerBlackjackAfterInsurance(0)
+  }, [state.phase, GAME_STATES, peekDealerBlackjackAfterInsurance])
 
   const newRound = useCallback(() => {
     dispatch({ type: ACTIONS.NEW_ROUND })

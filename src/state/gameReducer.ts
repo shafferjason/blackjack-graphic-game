@@ -118,7 +118,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (type) {
     case ACTIONS.PLACE_BET: {
       const { amount } = action.payload
-      if (state.chips < amount) return state
+      if ((state.chips - state.bet) < amount) return state
       return {
         ...state,
         bet: state.bet + amount,

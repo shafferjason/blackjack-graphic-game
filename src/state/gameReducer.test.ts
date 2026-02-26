@@ -50,6 +50,17 @@ describe('gameReducer — state transitions', () => {
       const next = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 50 } })
       expect(next.bet).toBe(0)
     })
+
+    it('prevents overbetting beyond remaining chips (P0 #1)', () => {
+      let state = createInitialState(100)
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 50 } })
+      state = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 50 } })
+      expect(state.bet).toBe(100)
+      // Now try to bet another 50 — should be blocked since chips - bet = 0
+      const next = gameReducer(state, { type: ACTIONS.PLACE_BET, payload: { amount: 50 } })
+      expect(next.bet).toBe(100)
+      expect(next.chips).toBe(100) // chips not yet deducted (deducted at DEAL)
+    })
   })
 
   describe('CLEAR_BET', () => {

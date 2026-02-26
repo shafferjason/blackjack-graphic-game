@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
+import { useModalStack } from '../hooks/useModalStack'
 import { useGameSettings } from '../config/GameSettingsContext'
 import type { CardBackTheme, TableFeltTheme } from '../types'
 
@@ -12,19 +14,14 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const settings = useGameSettings()
   const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const handleClose = useCallback(() => { setOpen(false); setShowResetConfirm(false) }, [])
+  const focusTrapRef = useFocusTrap(open)
+  useModalStack(open, handleClose)
 
-  // Focus close button when dialog opens and handle Escape key
+  // Focus close button when dialog opens
   useEffect(() => {
     if (!open) return
     closeButtonRef.current?.focus()
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setOpen(false)
-        setShowResetConfirm(false)
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
   }, [open])
 
   const {
@@ -75,7 +72,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
       </button>
 
       {open && (
-        <div className="settings-overlay" onClick={() => { setOpen(false); setShowResetConfirm(false) }} role="dialog" aria-modal="true" aria-label="House Rules Settings">
+        <div ref={focusTrapRef} className="settings-overlay" onClick={() => { setOpen(false); setShowResetConfirm(false) }} role="dialog" aria-modal="true" aria-label="House Rules Settings">
           <div className="settings-panel" onClick={e => e.stopPropagation()}>
             <div className="settings-header">
               <h2>House Rules</h2>

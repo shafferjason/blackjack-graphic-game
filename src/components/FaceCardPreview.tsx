@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { useFocusTrap } from '../hooks/useFocusTrap'
+import { useModalStack } from '../hooks/useModalStack'
 import Card from './Card'
 import type { Suit, Rank } from '../types'
 import './FaceCardPreview.css'
@@ -25,9 +27,12 @@ type ViewMode = 'current' | 'verify'
 export default function FaceCardPreview({ onClose }: { onClose: () => void }) {
   const [activeSuit, setActiveSuit] = useState<Suit>('spades')
   const [viewMode, setViewMode] = useState<ViewMode>('current')
+  const focusTrapRef = useFocusTrap(true)
+  useModalStack(true, onClose)
 
   return (
-    <div className="fc-preview-overlay" role="dialog" aria-label="Face Card Preview Mode">
+    <div ref={focusTrapRef} className="fc-preview-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-label="Face Card Preview Mode">
+      <div onClick={e => e.stopPropagation()}>
       <div className="fc-preview-banner">
         PREVIEW MODE — French Portrait Face Cards — Review Build
       </div>
@@ -159,6 +164,7 @@ export default function FaceCardPreview({ onClose }: { onClose: () => void }) {
             <li>GPU-cached pattern decode — no per-frame re-rasterization</li>
           </ul>
         </div>
+      </div>
       </div>
     </div>
   )

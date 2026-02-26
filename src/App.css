@@ -247,12 +247,10 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(0deg, rgba(10, 15, 26, 0.95) 0%, rgba(10, 15, 26, 0.85) 80%, transparent 100%);
+  background: linear-gradient(0deg, rgba(10, 15, 26, 0.98) 0%, rgba(10, 15, 26, 0.92) 80%, transparent 100%);
   padding: 12px 8px;
   padding-top: 20px;
   padding-bottom: max(12px, env(safe-area-inset-bottom));
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   margin-top: auto;
 }
 
@@ -494,6 +492,7 @@
   gap: 0;
   padding: 0 4px;
   scrollbar-width: none;
+  overscroll-behavior: contain;
 }
 
 .split-hands-swipe::-webkit-scrollbar {
@@ -801,8 +800,8 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   color: rgba(240, 236, 228, 0.7);
   font-size: 1rem;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -2181,7 +2180,7 @@
 /* ── Achievement Toast ── */
 .achievement-toast-container {
   position: fixed;
-  top: 16px;
+  top: max(16px, env(safe-area-inset-top));
   left: 50%;
   transform: translateX(-50%);
   z-index: 2000;
@@ -2791,8 +2790,8 @@
 }
 
 .side-bets-info-btn {
-  width: 20px;
-  height: 20px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: 1px solid rgba(212, 166, 68, 0.4);
   background: rgba(212, 166, 68, 0.1);
@@ -3053,8 +3052,8 @@
 }
 
 .mp-player-remove {
-  width: 26px;
-  height: 26px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -3355,12 +3354,53 @@
   .settings-toggle,
   .help-toggle,
   .sound-toggle {
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     font-size: 1rem;
   }
 
   .settings-toggle {
     font-size: 1.15rem;
+  }
+}
+
+/* ── P1 #8: Enforce 44px minimum touch targets on all breakpoints ── */
+@media (max-width: 374px) {
+  .stats-toggle,
+  .settings-toggle,
+  .help-toggle,
+  .sound-toggle {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* ── P1 #9: Reduce motion for accessibility ── */
+@media (prefers-reduced-motion: reduce) {
+  .pulse,
+  .toast-slide-in,
+  .toast-fade-out,
+  .audio-panel-in,
+  .audio-profile-in,
+  .mp-banner-in,
+  .strategy-flash {
+    animation: none !important;
+  }
+
+  .achievement-toast {
+    animation: none !important;
+  }
+}
+
+/* ── P1 #17: Prevent card overflow on narrow screens ── */
+@media (max-width: 413px) {
+  .cards-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .cards-row::-webkit-scrollbar {
+    display: none;
   }
 }
