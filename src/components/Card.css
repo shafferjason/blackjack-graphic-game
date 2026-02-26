@@ -294,6 +294,12 @@
   background: radial-gradient(ellipse at 45% 40%, rgba(255, 252, 240, 0.35) 0%, transparent 55%);
 }
 
+/* Size-aware face card rendering — boost contrast at small gameplay sizes */
+.face-svg {
+  /* Slightly warmer color profile for painted look */
+  filter: contrast(1.04) saturate(1.06);
+}
+
 /* Face card text rendering — ensure serif consistency */
 .face-svg text {
   font-family: 'Playfair Display', 'Georgia', serif;
@@ -390,6 +396,21 @@
   height: 100%;
   display: block;
   border-radius: 12px;
+}
+
+/* ── Face card size-aware contrast tuning ── */
+/* At smallest sizes, boost contrast so painterly detail reads clearly */
+@media (max-width: 413px) {
+  .face-svg {
+    filter: contrast(1.08) saturate(1.1);
+  }
+}
+
+/* At tablet/desktop sizes, softer filter — detail is naturally visible */
+@media (min-width: 768px) {
+  .face-svg {
+    filter: contrast(1.02) saturate(1.04);
+  }
 }
 
 /* ── iPhone SE / extra-small phones (< 375px) ── */

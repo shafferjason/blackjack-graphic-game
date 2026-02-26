@@ -70,6 +70,35 @@
   background: #4a1a1a;
 }
 
+/* ─── View mode selector ─── */
+.fc-preview-mode-selector {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.fc-mode-btn {
+  background: #1a1a2a;
+  color: #8888a0;
+  border: 1px solid #2a2a4a;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.fc-mode-btn:hover {
+  background: #2a2a3a;
+}
+
+.fc-mode-btn.active {
+  background: #1a2a3a;
+  border-color: #4a8abe;
+  color: #88bbee;
+}
+
 /* ─── Suit selector ─── */
 .fc-preview-suit-selector {
   display: flex;
@@ -140,6 +169,70 @@
   width: 100% !important;
   height: 100% !important;
   margin-left: 0 !important;
+}
+
+/* ─── Verification grid ─── */
+.fc-verify-grid {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #1a3a2a;
+  border-radius: 8px;
+}
+
+.fc-verify-desc {
+  color: #6a8a6a;
+  font-size: 12px;
+  margin: 0 0 16px;
+}
+
+.fc-verify-suit-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+}
+
+.fc-verify-suit-label {
+  color: #a0c0a0;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 90px;
+}
+
+.fc-verify-slot {
+  transform: none;
+}
+
+.fc-verify-checks {
+  margin-top: 16px;
+  padding: 12px;
+  background: rgba(218, 165, 32, 0.05);
+  border: 1px solid rgba(218, 165, 32, 0.2);
+  border-radius: 6px;
+}
+
+.fc-verify-checks h4 {
+  color: #daa520;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 8px;
+}
+
+.fc-verify-checks ul {
+  color: #8cab8c;
+  font-size: 12px;
+  line-height: 1.8;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.fc-verify-checks li {
+  margin-bottom: 2px;
 }
 
 /* ─── Implementation notes ─── */
