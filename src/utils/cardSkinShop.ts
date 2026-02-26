@@ -54,6 +54,25 @@ export interface EnvironmentTheme {
 
 export type SkinTier = 'common' | 'rare' | 'epic' | 'legendary'
 
+/** Card back color palette — defines the unique visual identity of each skin's card back */
+export interface CardBackDesign {
+  bg1: string
+  bg2: string
+  border: string
+  borderInner: string
+  pattern: string
+  patternAlt: string
+  accent: string
+  accentLight: string
+  diamond: string
+  logoFill: string
+  logoStroke: string
+  /** SVG pattern style: 'scroll' | 'circuit' | 'blossom' | 'damask' | 'scales' | 'stars' | 'crosshatch' */
+  patternStyle: 'scroll' | 'circuit' | 'blossom' | 'damask' | 'scales' | 'stars' | 'crosshatch'
+  /** Center logo symbol: 'spade' | 'flame' | 'sakura' | 'eye' | 'serpent' | 'diamond' | 'moon' | 'sun' | 'star' */
+  centerLogo: 'spade' | 'flame' | 'sakura' | 'eye' | 'serpent' | 'diamond' | 'moon' | 'sun' | 'star'
+}
+
 export interface CardSkin {
   id: string
   name: string
@@ -80,6 +99,8 @@ export interface CardSkin {
   }
   /** Environment theme applied to table when this skin is active */
   environment: EnvironmentTheme
+  /** Per-skin card back design — unique SVG patterns and colors */
+  cardBackDesign: CardBackDesign
   /** Whether this skin is unlocked via achievement (not purchasable until unlocked) */
   achievementUnlock?: string
   /** Long description for endgame/legendary skins */
@@ -90,6 +111,10 @@ export interface CardSkin {
   unlockHint?: string
   /** Sort order within tier group */
   sortOrder: number
+  /** Card stock material type */
+  cardMaterial?: 'linen' | 'vellum' | 'metallic' | 'silk' | 'washi'
+  /** Celebration effect style */
+  celebrationStyle?: 'gold' | 'electric' | 'petals' | 'jewels' | 'fire' | 'cosmic' | 'shadow' | 'emerald'
 }
 
 // ── Classic: Traditional European court card palette ──
@@ -131,6 +156,9 @@ export const CARD_SKINS: CardSkin[] = [
     previewAccent: '#18182e',
     faceCardPalette: { red: CLASSIC_RED_PALETTE, black: CLASSIC_BLACK_PALETTE },
     environment: { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b', accent: '#4ade80' },
+    cardBackDesign: { bg1: '#1a3a5c', bg2: '#0f2444', border: '#2a5a8c', borderInner: '#3a6a9c', pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)', accent: '#4a8abe', accentLight: '#6aacde', diamond: '#3a7ab8', logoFill: '#d4a644', logoStroke: '#a07828', patternStyle: 'scroll', centerLogo: 'spade' },
+    cardMaterial: 'linen',
+    celebrationStyle: 'gold',
   },
   // ── RARE ──
   {
@@ -168,6 +196,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#0a1e2e', feltDark: '#050e18', feltLight: '#0e3040', accent: '#00ffcc' },
+    cardBackDesign: { bg1: '#0a2e2a', bg2: '#041a18', border: '#00aa88', borderInner: '#00ccaa', pattern: 'rgba(0,255,204,0.08)', patternAlt: 'rgba(0,255,204,0.04)', accent: '#00ffcc', accentLight: '#80ffe6', diamond: '#00ddaa', logoFill: '#00ffcc', logoStroke: '#00aa88', patternStyle: 'circuit', centerLogo: 'diamond' },
+    cardMaterial: 'metallic',
+    celebrationStyle: 'electric',
   },
   {
     id: 'royal-gold',
@@ -204,6 +235,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#2a1f0a', feltDark: '#1a1204', feltLight: '#3a2e14', accent: '#e8c040' },
+    cardBackDesign: { bg1: '#2a1f0a', bg2: '#1a1204', border: '#c9963a', borderInner: '#d4a644', pattern: 'rgba(212,166,68,0.1)', patternAlt: 'rgba(212,166,68,0.05)', accent: '#d4a644', accentLight: '#f0d68a', diamond: '#c9963a', logoFill: '#e8c040', logoStroke: '#8b6914', patternStyle: 'damask', centerLogo: 'spade' },
+    cardMaterial: 'metallic',
+    celebrationStyle: 'jewels',
   },
   {
     id: 'midnight-purple',
@@ -240,6 +274,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#1a0a3a', feltDark: '#0e0420', feltLight: '#281450', accent: '#c084fc' },
+    cardBackDesign: { bg1: '#1a0a2e', bg2: '#0e0420', border: '#6a2898', borderInner: '#8040b8', pattern: 'rgba(168,85,247,0.08)', patternAlt: 'rgba(168,85,247,0.04)', accent: '#a855f7', accentLight: '#c084fc', diamond: '#8040b8', logoFill: '#c084fc', logoStroke: '#6a2898', patternStyle: 'stars', centerLogo: 'eye' },
+    cardMaterial: 'silk',
+    celebrationStyle: 'cosmic',
   },
   {
     id: 'arctic-frost',
@@ -276,6 +313,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#0a2038', feltDark: '#041020', feltLight: '#103050', accent: '#38bdf8' },
+    cardBackDesign: { bg1: '#0a1a2e', bg2: '#041020', border: '#2080c0', borderInner: '#38a0e0', pattern: 'rgba(56,189,248,0.08)', patternAlt: 'rgba(56,189,248,0.04)', accent: '#38bdf8', accentLight: '#7dd3fc', diamond: '#2098d8', logoFill: '#38bdf8', logoStroke: '#1870a8', patternStyle: 'crosshatch', centerLogo: 'diamond' },
+    cardMaterial: 'silk',
+    celebrationStyle: 'cosmic',
   },
   {
     id: 'emerald-fortune',
@@ -312,6 +352,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#0a2e10', feltDark: '#041a08', feltLight: '#0e4018', accent: '#22c55e' },
+    cardBackDesign: { bg1: '#0a2e14', bg2: '#041a08', border: '#18803a', borderInner: '#22a04a', pattern: 'rgba(34,197,94,0.08)', patternAlt: 'rgba(34,197,94,0.04)', accent: '#22c55e', accentLight: '#4ade80', diamond: '#18a040', logoFill: '#22c55e', logoStroke: '#0e6828', patternStyle: 'scroll', centerLogo: 'diamond' },
+    cardMaterial: 'vellum',
+    celebrationStyle: 'emerald',
   },
   {
     id: 'velvet-noir',
@@ -348,6 +391,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#141414', feltDark: '#0a0a0a', feltLight: '#1e1e1e', accent: '#dc2626' },
+    cardBackDesign: { bg1: '#1a1a1a', bg2: '#0e0e0e', border: '#3a3a3a', borderInner: '#4a4a4a', pattern: 'rgba(220,38,38,0.06)', patternAlt: 'rgba(220,38,38,0.03)', accent: '#dc2626', accentLight: '#ef4444', diamond: '#b91c1c', logoFill: '#dc2626', logoStroke: '#7f1d1d', patternStyle: 'crosshatch', centerLogo: 'spade' },
+    cardMaterial: 'vellum',
+    celebrationStyle: 'shadow',
   },
   // ── EPIC ──
   {
@@ -387,6 +433,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#2e0808', feltDark: '#1a0404', feltLight: '#441010', accent: '#ef4444' },
+    cardBackDesign: { bg1: '#2e0a0a', bg2: '#1a0404', border: '#a01010', borderInner: '#c02020', pattern: 'rgba(239,68,68,0.1)', patternAlt: 'rgba(239,68,68,0.05)', accent: '#ef4444', accentLight: '#f87171', diamond: '#dc2626', logoFill: '#f0a020', logoStroke: '#b07010', patternStyle: 'scales', centerLogo: 'flame' },
+    cardMaterial: 'vellum',
+    celebrationStyle: 'fire',
   },
   {
     id: 'sakura-bloom',
@@ -423,6 +472,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#2a0818', feltDark: '#18040c', feltLight: '#3a1028', accent: '#f472b6' },
+    cardBackDesign: { bg1: '#2e0a1a', bg2: '#18040c', border: '#c04070', borderInner: '#d85888', pattern: 'rgba(244,114,182,0.08)', patternAlt: 'rgba(244,114,182,0.04)', accent: '#f472b6', accentLight: '#f9a8d4', diamond: '#e05898', logoFill: '#f472b6', logoStroke: '#a83868', patternStyle: 'blossom', centerLogo: 'sakura' },
+    cardMaterial: 'washi',
+    celebrationStyle: 'petals',
   },
   {
     id: 'shadow-dynasty',
@@ -461,6 +513,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#0a0a10', feltDark: '#040408', feltLight: '#141418', accent: '#9ca3af' },
+    cardBackDesign: { bg1: '#0a0a0e', bg2: '#040408', border: '#2a2a3e', borderInner: '#3a3a4e', pattern: 'rgba(107,114,128,0.08)', patternAlt: 'rgba(107,114,128,0.04)', accent: '#6b7280', accentLight: '#9ca3af', diamond: '#4b5563', logoFill: '#9ca3af', logoStroke: '#4b5563', patternStyle: 'scales', centerLogo: 'eye' },
+    cardMaterial: 'metallic',
+    celebrationStyle: 'shadow',
   },
   {
     id: 'solar-pharaoh',
@@ -499,6 +554,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#1a1408', feltDark: '#0e0a04', feltLight: '#2a2010', accent: '#f59e0b' },
+    cardBackDesign: { bg1: '#1a1408', bg2: '#0e0a04', border: '#b88818', borderInner: '#d4a020', pattern: 'rgba(245,158,11,0.1)', patternAlt: 'rgba(245,158,11,0.05)', accent: '#f59e0b', accentLight: '#fbbf24', diamond: '#d4a020', logoFill: '#f59e0b', logoStroke: '#92600a', patternStyle: 'damask', centerLogo: 'sun' },
+    cardMaterial: 'metallic',
+    celebrationStyle: 'gold',
   },
   {
     id: 'celestial',
@@ -535,6 +593,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#0c0a2e', feltDark: '#060420', feltLight: '#18143e', accent: '#818cf8' },
+    cardBackDesign: { bg1: '#0c0a2e', bg2: '#060420', border: '#4848a0', borderInner: '#6060b8', pattern: 'rgba(129,140,248,0.08)', patternAlt: 'rgba(129,140,248,0.04)', accent: '#818cf8', accentLight: '#a5b4fc', diamond: '#6060c0', logoFill: '#f0c060', logoStroke: '#b08838', patternStyle: 'stars', centerLogo: 'star' },
+    cardMaterial: 'silk',
+    celebrationStyle: 'cosmic',
   },
   {
     id: 'blood-moon',
@@ -571,6 +632,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#1a0808', feltDark: '#0e0404', feltLight: '#2e0c0c', accent: '#f87171' },
+    cardBackDesign: { bg1: '#1a0808', bg2: '#0e0404', border: '#6a0a0a', borderInner: '#8a1818', pattern: 'rgba(185,28,28,0.1)', patternAlt: 'rgba(185,28,28,0.05)', accent: '#b91c1c', accentLight: '#f87171', diamond: '#981818', logoFill: '#b91c1c', logoStroke: '#5a0808', patternStyle: 'scales', centerLogo: 'moon' },
+    cardMaterial: 'vellum',
+    celebrationStyle: 'fire',
   },
   // ── LEGENDARY ──
   {
@@ -611,6 +675,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#0a1a08', feltDark: '#040e04', feltLight: '#142a10', accent: '#84cc16' },
+    cardBackDesign: { bg1: '#0a1a08', bg2: '#040e04', border: '#488010', borderInner: '#60a018', pattern: 'rgba(132,204,22,0.1)', patternAlt: 'rgba(132,204,22,0.05)', accent: '#84cc16', accentLight: '#a3e635', diamond: '#68a018', logoFill: '#84cc16', logoStroke: '#3a5808', patternStyle: 'scales', centerLogo: 'serpent' },
+    cardMaterial: 'metallic',
+    celebrationStyle: 'emerald',
   },
   {
     id: 'diamond-dynasty',
@@ -649,6 +716,9 @@ export const CARD_SKINS: CardSkin[] = [
       },
     },
     environment: { felt: '#0a0a1e', feltDark: '#040410', feltLight: '#141430', accent: '#e0e7ff' },
+    cardBackDesign: { bg1: '#0a0a1e', bg2: '#040410', border: '#6068a0', borderInner: '#8088c0', pattern: 'rgba(224,231,255,0.08)', patternAlt: 'rgba(224,231,255,0.04)', accent: '#e0e7ff', accentLight: '#f0f4ff', diamond: '#a0a8e0', logoFill: '#e0e7ff', logoStroke: '#8088b0', patternStyle: 'damask', centerLogo: 'diamond' },
+    cardMaterial: 'metallic',
+    celebrationStyle: 'jewels',
   },
 ]
 

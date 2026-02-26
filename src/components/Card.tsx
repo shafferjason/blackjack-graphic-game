@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import './Card.css'
-import type { Card as CardType, CardBackTheme, Suit } from '../types'
-import { useGameSettings } from '../config/GameSettingsContext'
+import type { Card as CardType, Suit } from '../types'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
-import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette } from '../utils/cardSkinShop'
+import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette, type CardBackDesign } from '../utils/cardSkinShop'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -754,74 +753,189 @@ function CardFace({ card }: { card: CardType }) {
   )
 }
 
-interface CardBackColors {
-  bg1: string
-  bg2: string
-  border: string
-  borderInner: string
-  pattern: string
-  patternAlt: string
-  accent: string
-  accentLight: string
-  diamond: string
-  logoFill: string
-  logoStroke: string
+/* ── Skin-aware card back pattern renderers ── */
+function PatternFill({ pid, c }: { pid: string; c: CardBackDesign }) {
+  switch (c.patternStyle) {
+    case 'circuit':
+      return (
+        <pattern id={`${pid}-main`} width="16" height="16" patternUnits="userSpaceOnUse">
+          <rect width="16" height="16" fill="transparent" />
+          <path d="M0,8 L6,8 L8,4 L10,12 L12,8 L16,8" fill="none" stroke={c.pattern} strokeWidth="0.6" />
+          <path d="M8,0 L8,4 M8,12 L8,16" fill="none" stroke={c.patternAlt} strokeWidth="0.4" />
+          <circle cx="8" cy="4" r="1" fill={c.accent} opacity="0.25" />
+          <circle cx="8" cy="12" r="0.8" fill={c.accent} opacity="0.18" />
+        </pattern>
+      )
+    case 'blossom':
+      return (
+        <pattern id={`${pid}-main`} width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect width="20" height="20" fill="transparent" />
+          <circle cx="10" cy="10" r="3" fill={c.pattern} />
+          <path d="M10,7 Q8,5 10,3 Q12,5 10,7" fill={c.accent} opacity="0.2" />
+          <path d="M13,10 Q15,8 17,10 Q15,12 13,10" fill={c.accent} opacity="0.15" />
+          <path d="M10,13 Q12,15 10,17 Q8,15 10,13" fill={c.accent} opacity="0.2" />
+          <path d="M7,10 Q5,12 3,10 Q5,8 7,10" fill={c.accent} opacity="0.15" />
+          <circle cx="10" cy="10" r="1" fill={c.accentLight} opacity="0.3" />
+        </pattern>
+      )
+    case 'damask':
+      return (
+        <pattern id={`${pid}-main`} width="18" height="18" patternUnits="userSpaceOnUse">
+          <rect width="18" height="18" fill="transparent" />
+          <path d="M9,0 Q13,4.5 9,9 Q5,4.5 9,0" fill="none" stroke={c.pattern} strokeWidth="0.6" />
+          <path d="M9,9 Q13,13.5 9,18 Q5,13.5 9,9" fill="none" stroke={c.patternAlt} strokeWidth="0.6" />
+          <path d="M0,9 Q4.5,5 9,9 Q4.5,13 0,9" fill="none" stroke={c.pattern} strokeWidth="0.5" />
+          <path d="M9,9 Q13.5,5 18,9 Q13.5,13 9,9" fill="none" stroke={c.patternAlt} strokeWidth="0.5" />
+          <circle cx="9" cy="9" r="1.2" fill={c.accent} opacity="0.15" />
+        </pattern>
+      )
+    case 'scales':
+      return (
+        <pattern id={`${pid}-main`} width="14" height="10" patternUnits="userSpaceOnUse">
+          <rect width="14" height="10" fill="transparent" />
+          <path d="M0,10 Q7,3 14,10" fill="none" stroke={c.pattern} strokeWidth="0.6" />
+          <path d="M-7,5 Q0,-2 7,5" fill="none" stroke={c.patternAlt} strokeWidth="0.5" />
+          <path d="M7,5 Q14,-2 21,5" fill="none" stroke={c.patternAlt} strokeWidth="0.5" />
+        </pattern>
+      )
+    case 'stars':
+      return (
+        <pattern id={`${pid}-main`} width="16" height="16" patternUnits="userSpaceOnUse">
+          <rect width="16" height="16" fill="transparent" />
+          <path d="M8,2 L9.2,6 L13,6.5 L10,9 L11,13 L8,11 L5,13 L6,9 L3,6.5 L6.8,6 Z" fill="none" stroke={c.pattern} strokeWidth="0.5" />
+          <circle cx="8" cy="8" r="1" fill={c.accent} opacity="0.2" />
+          <circle cx="2" cy="2" r="0.5" fill={c.accent} opacity="0.12" />
+          <circle cx="14" cy="14" r="0.5" fill={c.accent} opacity="0.12" />
+        </pattern>
+      )
+    case 'crosshatch':
+      return (
+        <pattern id={`${pid}-main`} width="8" height="8" patternUnits="userSpaceOnUse">
+          <rect width="8" height="8" fill="transparent" />
+          <line x1="0" y1="0" x2="8" y2="8" stroke={c.pattern} strokeWidth="0.7" />
+          <line x1="8" y1="0" x2="0" y2="8" stroke={c.patternAlt} strokeWidth="0.7" />
+        </pattern>
+      )
+    default: // 'scroll'
+      return (
+        <pattern id={`${pid}-main`} width="12" height="12" patternUnits="userSpaceOnUse">
+          <rect width="12" height="12" fill="transparent" />
+          <path d="M2,6 Q6,2 10,6 Q6,10 2,6" fill="none" stroke={c.pattern} strokeWidth="0.5" />
+          <path d="M6,2 Q10,6 6,10 Q2,6 6,2" fill="none" stroke={c.patternAlt} strokeWidth="0.4" />
+          <circle cx="6" cy="6" r="0.8" fill={c.accent} opacity="0.15" />
+        </pattern>
+      )
+  }
 }
 
-const CARD_BACK_THEMES: Record<CardBackTheme, CardBackColors> = {
-  'classic-blue': {
-    bg1: '#1a3a5c', bg2: '#0f2444',
-    border: '#2a5a8c', borderInner: '#3a6a9c',
-    pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)',
-    accent: '#4a8abe', accentLight: '#6aacde',
-    diamond: '#3a7ab8', logoFill: '#d4a644', logoStroke: '#a07828',
-  },
-  'casino-red': {
-    bg1: '#5c1a1a', bg2: '#44100f',
-    border: '#8c2a2a', borderInner: '#9c3a3a',
-    pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)',
-    accent: '#be4a4a', accentLight: '#de6a6a',
-    diamond: '#b83a3a', logoFill: '#d4a644', logoStroke: '#a07828',
-  },
-  'royal-green': {
-    bg1: '#1a4a2a', bg2: '#0f3018',
-    border: '#2a7a3c', borderInner: '#3a8a4c',
-    pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)',
-    accent: '#4abe6a', accentLight: '#6ade8a',
-    diamond: '#3ab858', logoFill: '#d4a644', logoStroke: '#a07828',
-  },
-  'midnight-gold': {
-    bg1: '#1a1a2e', bg2: '#0f0f1e',
-    border: '#3a3a5e', borderInner: '#4a4a6e',
-    pattern: 'rgba(212,166,68,0.08)', patternAlt: 'rgba(212,166,68,0.04)',
-    accent: '#d4a644', accentLight: '#f0d68a',
-    diamond: '#c9963a', logoFill: '#d4a644', logoStroke: '#8b6914',
-  },
+function CenterLogo({ c, pid }: { c: CardBackDesign; pid: string }) {
+  switch (c.centerLogo) {
+    case 'flame':
+      return (
+        <g transform="translate(45,58)">
+          <path d="M0,-14 Q-3,-8 -6,-2 Q-8,3 -5,8 Q-3,12 0,14 Q3,12 5,8 Q8,3 6,-2 Q3,-8 0,-14 Z" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <path d="M0,-10 Q-2,-5 -3,0 Q-4,4 -2,7 Q0,10 2,7 Q4,4 3,0 Q2,-5 0,-10 Z" fill={c.accentLight} opacity="0.3" />
+          <path d="M0,-5 Q-1,0 0,5 Q1,0 0,-5 Z" fill={c.accentLight} opacity="0.2" />
+        </g>
+      )
+    case 'sakura':
+      return (
+        <g transform="translate(45,58)">
+          {[0, 72, 144, 216, 288].map((angle, i) => (
+            <path key={i} d={`M0,0 Q-4,-10 0,-14 Q4,-10 0,0`} fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.5" transform={`rotate(${angle})`} opacity="0.85" />
+          ))}
+          <circle r="3" fill={c.accentLight} opacity="0.5" />
+          <circle r="1.5" fill={c.logoFill} />
+        </g>
+      )
+    case 'eye':
+      return (
+        <g transform="translate(45,58)">
+          <path d="M-14,0 Q-7,-10 0,-10 Q7,-10 14,0 Q7,10 0,10 Q-7,10 -14,0 Z" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <circle r="6" fill={c.bg2} stroke={c.logoStroke} strokeWidth="0.5" />
+          <circle r="3.5" fill={c.accent} />
+          <circle r="1.5" fill={c.bg2} />
+          <circle cx="-1" cy="-1" r="1" fill={c.accentLight} opacity="0.5" />
+        </g>
+      )
+    case 'serpent':
+      return (
+        <g transform="translate(45,58)">
+          <path d="M0,-14 Q-8,-10 -10,-4 Q-12,2 -8,6 Q-4,10 0,8 Q4,10 8,6 Q12,2 10,-4 Q8,-10 0,-14 Z" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <path d="M-4,-6 Q0,-10 4,-6" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
+          <circle cx="-3" cy="-3" r="1.5" fill={c.bg2} />
+          <circle cx="3" cy="-3" r="1.5" fill={c.bg2} />
+          <circle cx="-3" cy="-3" r="0.7" fill={c.accent} />
+          <circle cx="3" cy="-3" r="0.7" fill={c.accent} />
+          <path d="M-1,4 L0,7 L1,4" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
+        </g>
+      )
+    case 'diamond':
+      return (
+        <g transform="translate(45,58)">
+          <path d="M0,-15 L12,0 L0,15 L-12,0 Z" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <path d="M0,-12 L9,0 L0,12 L-9,0 Z" fill={c.accentLight} opacity="0.15" />
+          <path d="M0,-8 L6,0 L0,8 L-6,0 Z" fill={c.accentLight} opacity="0.1" />
+          <path d="M-12,0 L0,-6 L12,0" fill="none" stroke={c.accentLight} strokeWidth="0.4" opacity="0.3" />
+        </g>
+      )
+    case 'moon':
+      return (
+        <g transform="translate(45,58)">
+          <circle r="11" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <circle cx="4" r="9" fill={c.bg2} />
+          <circle cx="-4" cy="-3" r="1" fill={c.accentLight} opacity="0.3" />
+          <circle cx="-6" cy="2" r="0.6" fill={c.accentLight} opacity="0.2" />
+          <circle cx="-3" cy="5" r="0.8" fill={c.accentLight} opacity="0.25" />
+        </g>
+      )
+    case 'sun':
+      return (
+        <g transform="translate(45,58)">
+          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => (
+            <line key={i} x1="0" y1="-8" x2="0" y2={i % 2 === 0 ? '-14' : '-12'} stroke={c.logoFill} strokeWidth={i % 2 === 0 ? '1.2' : '0.6'} transform={`rotate(${angle})`} />
+          ))}
+          <circle r="7" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <circle r="5" fill={c.accentLight} opacity="0.2" />
+          <circle cx="-1" cy="-1" r="1.5" fill={c.accentLight} opacity="0.15" />
+        </g>
+      )
+    case 'star':
+      return (
+        <g transform="translate(45,58)">
+          <path d="M0,-14 L3.5,-5 L13,-5 L5.5,1.5 L8,11 L0,5.5 L-8,11 L-5.5,1.5 L-13,-5 L-3.5,-5 Z" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <path d="M0,-9 L2,-4 L7,-4 L3,0 L4.5,5.5 L0,2.5 L-4.5,5.5 L-3,0 L-7,-4 L-2,-4 Z" fill={c.accentLight} opacity="0.2" />
+        </g>
+      )
+    default: // 'spade'
+      return (
+        <g transform="translate(45,58)">
+          <path d="M0,-14 C-2,-12 -10,-4 -10,2 C-10,7 -6,10 -2,10 C-0.5,10 0.5,9.5 0,8 C-0.5,9.5 0.5,10 2,10 C6,10 10,7 10,2 C10,-4 2,-12 0,-14 Z" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8" />
+          <path d="M0,-12 C-1.5,-10 -7,-4 -7,1 C-7,3 -6,4 -5,4" fill="none" stroke={c.accentLight} strokeWidth="0.5" opacity="0.3" />
+          <rect x="-1.5" y="8" width="3" height="8" rx="1" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.5" />
+          <path d="M-6,16 Q-3,12 0,16 Q3,12 6,16" fill="none" stroke={c.logoFill} strokeWidth="0.8" />
+          <path d="M-4,17 Q-2,14 0,17 Q2,14 4,17" fill="none" stroke={c.logoFill} strokeWidth="0.4" opacity="0.5" />
+        </g>
+      )
+  }
 }
 
-function CardBackSVG({ theme }: { theme: CardBackTheme }) {
-  const c = CARD_BACK_THEMES[theme]
-  const pid = `cb-${theme}`
+function CardBackSVG({ design }: { design: CardBackDesign }) {
+  const c = design
+  const pid = `cb-${c.patternStyle}-${c.centerLogo}`
   return (
     <svg viewBox="0 0 90 130" className="card-back-svg" preserveAspectRatio="xMidYMid slice">
       <defs>
-        {/* Fine linen texture */}
         <pattern id={`${pid}-linen`} width="4" height="4" patternUnits="userSpaceOnUse">
           <rect width="4" height="4" fill="transparent" />
           <line x1="0" y1="2" x2="4" y2="2" stroke={c.pattern} strokeWidth="0.3" />
           <line x1="2" y1="0" x2="2" y2="4" stroke={c.patternAlt} strokeWidth="0.3" />
         </pattern>
-        {/* Crosshatch pattern */}
-        <pattern id={`${pid}-cross`} width="8" height="8" patternUnits="userSpaceOnUse">
-          <line x1="0" y1="0" x2="8" y2="8" stroke={c.pattern} strokeWidth="0.7" />
-          <line x1="8" y1="0" x2="0" y2="8" stroke={c.patternAlt} strokeWidth="0.7" />
-        </pattern>
-        {/* Diamond repeating pattern for border */}
+        <PatternFill pid={pid} c={c} />
         <pattern id={`${pid}-diamonds`} width="12" height="12" patternUnits="userSpaceOnUse">
           <path d="M6,0 L12,6 L6,12 L0,6 Z" fill="none" stroke={c.accent} strokeWidth="0.5" opacity="0.35" />
           <circle cx="6" cy="6" r="0.6" fill={c.accent} opacity="0.2" />
         </pattern>
-        {/* Radial glow for center */}
         <radialGradient id={`${pid}-glow`} cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor={c.accent} stopOpacity="0.08" />
           <stop offset="70%" stopColor={c.accent} stopOpacity="0.02" />
@@ -829,97 +943,55 @@ function CardBackSVG({ theme }: { theme: CardBackTheme }) {
         </radialGradient>
       </defs>
 
-      {/* Background gradient with depth */}
+      {/* Background */}
       <rect width="90" height="130" rx="12" fill={c.bg1} />
       <rect width="90" height="130" rx="12" fill={c.bg2} opacity="0.4" />
       <rect width="90" height="130" rx="12" fill={`url(#${pid}-linen)`} />
-      <rect width="90" height="130" rx="12" fill={`url(#${pid}-cross)`} />
+      <rect width="90" height="130" rx="12" fill={`url(#${pid}-main)`} />
 
-      {/* Outer decorative border */}
+      {/* Outer border */}
       <rect x="3" y="3" width="84" height="124" rx="10" fill="none" stroke={c.border} strokeWidth="1.5" />
       <rect x="4.5" y="4.5" width="81" height="121" rx="9" fill="none" stroke={c.border} strokeWidth="0.3" opacity="0.5" />
 
-      {/* Diamond border band */}
+      {/* Diamond band */}
       <rect x="6" y="6" width="78" height="118" rx="8" fill={`url(#${pid}-diamonds)`} stroke={c.borderInner} strokeWidth="0.5" />
 
-      {/* Inner frame - double line */}
+      {/* Inner frame */}
       <rect x="10" y="10" width="70" height="110" rx="6" fill="none" stroke={c.accent} strokeWidth="0.8" opacity="0.45" />
       <rect x="12" y="12" width="66" height="106" rx="5" fill="none" stroke={c.accent} strokeWidth="0.3" opacity="0.25" />
 
-      {/* Corner ornaments - top-left */}
-      <g opacity="0.55">
-        <path d="M15,15 Q15,24 24,24" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M15,15 Q15,20 20,20" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <path d="M15,15 Q15,17 17,17" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
-        <circle cx="15" cy="15" r="1.8" fill={c.accent} />
-        <circle cx="15" cy="15" r="0.8" fill={c.accentLight} />
-      </g>
-      {/* Corner ornament - top-right */}
-      <g opacity="0.55">
-        <path d="M75,15 Q75,24 66,24" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M75,15 Q75,20 70,20" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <path d="M75,15 Q75,17 73,17" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
-        <circle cx="75" cy="15" r="1.8" fill={c.accent} />
-        <circle cx="75" cy="15" r="0.8" fill={c.accentLight} />
-      </g>
-      {/* Corner ornament - bottom-left */}
-      <g opacity="0.55">
-        <path d="M15,115 Q15,106 24,106" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M15,115 Q15,110 20,110" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <path d="M15,115 Q15,113 17,113" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
-        <circle cx="15" cy="115" r="1.8" fill={c.accent} />
-        <circle cx="15" cy="115" r="0.8" fill={c.accentLight} />
-      </g>
-      {/* Corner ornament - bottom-right */}
-      <g opacity="0.55">
-        <path d="M75,115 Q75,106 66,106" fill="none" stroke={c.accentLight} strokeWidth="1" />
-        <path d="M75,115 Q75,110 70,110" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
-        <path d="M75,115 Q75,113 73,113" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
-        <circle cx="75" cy="115" r="1.8" fill={c.accent} />
-        <circle cx="75" cy="115" r="0.8" fill={c.accentLight} />
-      </g>
+      {/* Corner ornaments */}
+      {[[15, 15, ''], [75, 15, 'scale(-1,1) translate(-90,0)'], [15, 115, 'scale(1,-1) translate(0,-130)'], [75, 115, 'scale(-1,-1) translate(-90,-130)']].map(([x, y, t], i) => (
+        <g key={i} opacity="0.55" transform={t as string}>
+          <path d="M15,15 Q15,24 24,24" fill="none" stroke={c.accentLight} strokeWidth="1" />
+          <path d="M15,15 Q15,20 20,20" fill="none" stroke={c.accentLight} strokeWidth="0.6" />
+          <path d="M15,15 Q15,17 17,17" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
+          <circle cx="15" cy="15" r="1.8" fill={c.accent} />
+          <circle cx="15" cy="15" r="0.8" fill={c.accentLight} />
+        </g>
+      ))}
 
-      {/* Center medallion glow */}
+      {/* Center glow + medallion */}
       <ellipse cx="45" cy="65" rx="26" ry="32" fill={`url(#${pid}-glow)`} />
-
-      {/* Center medallion background */}
       <ellipse cx="45" cy="65" rx="22" ry="28" fill={c.bg2} stroke={c.accent} strokeWidth="0.8" opacity="0.55" />
       <ellipse cx="45" cy="65" rx="19" ry="25" fill="none" stroke={c.accentLight} strokeWidth="0.4" opacity="0.35" />
 
-      {/* Casino spade logo in center */}
-      <g transform="translate(45,58)">
-        {/* Spade shape */}
-        <path
-          d="M0,-14 C-2,-12 -10,-4 -10,2 C-10,7 -6,10 -2,10 C-0.5,10 0.5,9.5 0,8
-             C-0.5,9.5 0.5,10 2,10 C6,10 10,7 10,2 C10,-4 2,-12 0,-14 Z"
-          fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.8"
-        />
-        {/* Spade highlight */}
-        <path
-          d="M0,-12 C-1.5,-10 -7,-4 -7,1 C-7,3 -6,4 -5,4"
-          fill="none" stroke={c.accentLight} strokeWidth="0.5" opacity="0.3"
-        />
-        {/* Spade stem */}
-        <rect x="-1.5" y="8" width="3" height="8" rx="1" fill={c.logoFill} stroke={c.logoStroke} strokeWidth="0.5" />
-        {/* Stem base flourish */}
-        <path d="M-6,16 Q-3,12 0,16 Q3,12 6,16" fill="none" stroke={c.logoFill} strokeWidth="0.8" />
-        <path d="M-4,17 Q-2,14 0,17 Q2,14 4,17" fill="none" stroke={c.logoFill} strokeWidth="0.4" opacity="0.5" />
-      </g>
+      {/* Center logo */}
+      <CenterLogo c={c} pid={pid} />
 
-      {/* Decorative scrollwork - top */}
+      {/* Scrollwork */}
       <g opacity="0.45">
         <path d="M28,27 Q36,22 45,27 Q54,22 62,27" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
         <path d="M32,30 Q38,27 45,30 Q52,27 58,30" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
         <path d="M36,32 Q40,30 45,32 Q50,30 54,32" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
       </g>
-      {/* Decorative scrollwork - bottom */}
       <g opacity="0.45">
         <path d="M28,103 Q36,108 45,103 Q54,108 62,103" fill="none" stroke={c.accentLight} strokeWidth="0.8" />
         <path d="M32,100 Q38,103 45,100 Q52,103 58,100" fill="none" stroke={c.accentLight} strokeWidth="0.5" />
         <path d="M36,98 Q40,100 45,98 Q50,100 54,98" fill="none" stroke={c.accentLight} strokeWidth="0.3" />
       </g>
 
-      {/* Small suit symbols in corners of inner area */}
+      {/* Corner suit symbols */}
       <text x="18" y="34" fontSize="7" fill={c.accent} opacity="0.4" textAnchor="middle" fontFamily="serif">{'\u2660'}</text>
       <text x="72" y="34" fontSize="7" fill={c.accent} opacity="0.4" textAnchor="middle" fontFamily="serif">{'\u2665'}</text>
       <text x="18" y="104" fontSize="7" fill={c.accent} opacity="0.4" textAnchor="middle" fontFamily="serif">{'\u2666'}</text>
@@ -929,16 +1001,14 @@ function CardBackSVG({ theme }: { theme: CardBackTheme }) {
 }
 
 function CardBack() {
-  const { CARD_BACK_THEME } = useGameSettings()
   const skin = getActiveSkin()
   const skinStyle: React.CSSProperties = {}
   if (skin.id !== 'classic') {
-    if (skin.backFilter !== 'none') skinStyle.filter = skin.backFilter
     if (skin.glowColor !== 'transparent') skinStyle.boxShadow = `0 0 14px ${skin.glowColor}, 0 2px 4px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.16)`
   }
   return (
-    <div className={`card card-back card-back-${CARD_BACK_THEME}`} style={skinStyle}>
-      <CardBackSVG theme={CARD_BACK_THEME} />
+    <div className="card card-back" style={skinStyle}>
+      <CardBackSVG design={skin.cardBackDesign} />
     </div>
   )
 }
