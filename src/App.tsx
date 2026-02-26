@@ -30,6 +30,7 @@ import StrategyOverlay from './components/StrategyOverlay'
 import CountingOverlay from './components/CountingOverlay'
 import SideBets from './components/SideBets'
 import AudioPanel from './components/AudioPanel'
+import CardSkinShop from './components/CardSkinShop'
 import MultiplayerSetup from './components/MultiplayerSetup'
 import type { PlayerConfig } from './components/MultiplayerSetup'
 import MultiplayerBar from './components/MultiplayerBar'
@@ -503,6 +504,7 @@ function App() {
           <HandHistory history={state.handHistory} />
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
           <TutorialOverlay />
+          <CardSkinShop chips={state.chips} onDeductChips={(amount: number) => actions.adjustChips(-amount)} />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
           <AudioPanel muted={muted} volume={volume} soundProfile={soundProfile} onToggleMute={toggleMute} onSetVolume={setVolume} onSetSoundProfile={setSoundProfile} />
         </nav>

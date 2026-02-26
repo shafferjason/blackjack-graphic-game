@@ -3,6 +3,7 @@ import './Card.css'
 import type { Card as CardType, CardBackTheme, Suit } from '../types'
 import { useGameSettings } from '../config/GameSettingsContext'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
+import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin } from '../utils/cardSkinShop'
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -702,15 +703,27 @@ function PipLayout({ rank, suit }: { rank: string; suit: Suit }) {
   )
 }
 
+function getActiveSkin(): CardSkin {
+  const state = loadCardSkinState()
+  return getSkinById(state.activeSkinId) ?? CARD_SKINS[0]
+}
+
 function CardFace({ card }: { card: CardType }) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const color = SUIT_COLORS[card.suit]
   const isFace = ['J', 'Q', 'K'].includes(card.rank)
   const FaceComponent = FACE_COMPONENTS[card.rank]
   const isNumber = !isFace && card.rank !== 'A'
+  const skin = getActiveSkin()
+  const skinStyle: React.CSSProperties = {}
+  if (skin.id !== 'classic') {
+    if (skin.faceFilter !== 'none') skinStyle.filter = skin.faceFilter
+    if (skin.borderColor !== 'transparent') skinStyle.borderColor = skin.borderColor
+    if (skin.glowColor !== 'transparent') skinStyle.boxShadow = `0 0 14px ${skin.glowColor}, 0 2px 4px rgba(0,0,0,0.08), 0 4px 10px rgba(0,0,0,0.1)`
+  }
 
   return (
-    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''} ${card.rank === 'A' ? 'ace-card-type' : ''}`}>
+    <div className={`card card-face ${color} ${isFace ? 'face-card-type' : ''} ${card.rank === 'A' ? 'ace-card-type' : ''}`} style={skinStyle}>
       <div className="card-corner top-left">
         <span className="card-rank">{card.rank}</span>
         <span className="card-suit">{symbol}</span>
@@ -914,8 +927,14 @@ function CardBackSVG({ theme }: { theme: CardBackTheme }) {
 
 function CardBack() {
   const { CARD_BACK_THEME } = useGameSettings()
+  const skin = getActiveSkin()
+  const skinStyle: React.CSSProperties = {}
+  if (skin.id !== 'classic') {
+    if (skin.backFilter !== 'none') skinStyle.filter = skin.backFilter
+    if (skin.glowColor !== 'transparent') skinStyle.boxShadow = `0 0 14px ${skin.glowColor}, 0 2px 4px rgba(0,0,0,0.12), 0 4px 10px rgba(0,0,0,0.16)`
+  }
   return (
-    <div className={`card card-back card-back-${CARD_BACK_THEME}`}>
+    <div className={`card card-back card-back-${CARD_BACK_THEME}`} style={skinStyle}>
       <CardBackSVG theme={CARD_BACK_THEME} />
     </div>
   )
