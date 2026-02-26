@@ -127,6 +127,23 @@
   }
 }
 
+/* ── Skin-themed particle shapes ── */
+.particle-petal {
+  border-radius: 50% 0 50% 0;
+}
+
+.particle-diamond {
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.particle-spark {
+  border-radius: 50%;
+  width: 3px !important;
+  height: 3px !important;
+  box-shadow: 0 0 8px currentColor, 0 0 16px currentColor !important;
+}
+
 /* ── Reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
   .gold-particle,
