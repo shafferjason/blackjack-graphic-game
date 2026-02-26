@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
 import type { HandHistoryEntry, HandHistoryStep, Card } from '../types'
 import { calculateScore } from '../utils/scoring'
 
@@ -181,6 +182,7 @@ export default function HandHistory({ history }: HandHistoryProps) {
   const handleClose = useCallback(() => { setOpen(false); setReplayEntry(null) }, [])
   const focusTrapRef = useFocusTrap(open)
   useModalStack(open, handleClose)
+  useBodyScrollLock(open)
 
   // Auto-scroll to bottom when new entries arrive
   useEffect(() => {

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
 import { useGameSettings } from '../config/GameSettingsContext'
 import type { CardBackTheme, TableFeltTheme } from '../types'
 
@@ -17,6 +18,7 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
   const handleClose = useCallback(() => { setOpen(false); setShowResetConfirm(false) }, [])
   const focusTrapRef = useFocusTrap(open)
   useModalStack(open, handleClose)
+  useBodyScrollLock(open)
 
   // Focus close button when dialog opens
   useEffect(() => {

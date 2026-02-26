@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
 import type { GameStats, DetailedStats, GameResult, Achievement } from '../types'
 
 interface StatsDashboardProps {
@@ -154,6 +155,7 @@ export default function StatsDashboard({ stats, detailedStats, chips, achievemen
   const handleClose = useCallback(() => setOpen(false), [])
   const focusTrapRef = useFocusTrap(open)
   useModalStack(open, handleClose)
+  useBodyScrollLock(open)
 
   // Focus close button when dialog opens
   useEffect(() => {

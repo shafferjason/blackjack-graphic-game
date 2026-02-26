@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
+import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
 
 const STORAGE_KEY = 'blackjack-tutorial-dismissed'
 
@@ -36,6 +37,7 @@ export default function TutorialOverlay() {
 
   const focusTrapRef = useFocusTrap(open)
   useModalStack(open, handleClose)
+  useBodyScrollLock(open)
 
   useEffect(() => {
     if (!open) return
