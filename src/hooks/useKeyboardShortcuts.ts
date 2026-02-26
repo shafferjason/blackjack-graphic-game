@@ -45,6 +45,11 @@ export function useKeyboardShortcuts(
       return
     }
 
+    // Suppress game shortcuts while any modal overlay is open (stats, settings, tutorial, etc.)
+    if (document.querySelector('[aria-modal="true"]')) {
+      return
+    }
+
     const key = e.key.toLowerCase()
 
     // ── Betting phase shortcuts ──
