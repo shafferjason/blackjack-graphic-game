@@ -44,6 +44,7 @@ export type CharacterTheme =
   | 'noir'         // Velvet Noir — detective
   | 'crystalline'  // Diamond Dynasty — gem construct
   | 'draconic'     // Dragon's Hoard — dragon hybrid
+  | 'bestial'      // Animal Kingdom — majestic beasts
 
 const SKIN_TO_CHARACTER: Record<string, CharacterTheme> = {
   'classic': 'european',
@@ -62,6 +63,7 @@ const SKIN_TO_CHARACTER: Record<string, CharacterTheme> = {
   'velvet-noir': 'noir',
   'diamond-dynasty': 'crystalline',
   'dragons-hoard': 'draconic',
+  'animal-kingdom': 'bestial',
 }
 
 export function getCharacterTheme(skinId: string): CharacterTheme {
@@ -298,23 +300,23 @@ export function JackCharacterHead({ theme, p }: { theme: CharacterTheme; p: Char
     case 'crystalline':
       return (
         <g>
-          {/* Faceted crystal crown — geometric sharp silhouette */}
-          <path d="M28,22 L30,14 L34,6 L38,10 L40,0 L42,10 L46,6 L50,14 L52,22" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
-          <path d="M30,20 L32,14 L36,8 L40,2 L44,8 L48,14 L50,20" fill={p.goldLt} opacity="0.2" />
-          {/* Facet lines — geometric */}
-          <line x1="34" y1="6" x2="40" y2="22" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
-          <line x1="46" y1="6" x2="40" y2="22" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
-          <line x1="40" y1="0" x2="40" y2="22" stroke={p.goldDk} strokeWidth="0.15" opacity="0.12" />
-          {/* Diamond sparkles */}
-          {[[34, 8], [46, 8], [40, 4]].map(([x, y], i) => (
-            <g key={i}>
-              <line x1={x! - 1} y1={y} x2={x! + 1} y2={y} stroke={p.goldLt} strokeWidth="0.3" opacity="0.5" />
-              <line x1={x} y1={y! - 1} x2={x} y2={y! + 1} stroke={p.goldLt} strokeWidth="0.3" opacity="0.5" />
-            </g>
-          ))}
-          {/* Platinum hair visible at sides */}
-          <path d="M26,22 Q24,18 26,14" fill="none" stroke={p.hair} strokeWidth="1.5" opacity="0.3" />
-          <path d="M54,22 Q56,18 54,14" fill="none" stroke={p.hair} strokeWidth="1.5" opacity="0.3" />
+          {/* Knight's great helm — flat top with visor slit */}
+          <path d="M26,24 L26,6 Q28,0 40,-2 Q52,0 54,6 L54,24" fill={p.clothing} stroke={p.ink} strokeWidth="0.5" />
+          <path d="M28,22 L28,8 Q30,2 40,0 Q50,2 52,8 L52,22" fill={p.clothingMid} opacity="0.3" />
+          {/* Visor slit */}
+          <rect x="29" y="16" width="22" height="3" rx="1" fill={p.ink} opacity="0.6" />
+          {/* Cross-shaped ventilation holes */}
+          <circle cx="33" cy="22" r="0.5" fill={p.ink} opacity="0.3" />
+          <circle cx="36" cy="22" r="0.5" fill={p.ink} opacity="0.3" />
+          <circle cx="44" cy="22" r="0.5" fill={p.ink} opacity="0.3" />
+          <circle cx="47" cy="22" r="0.5" fill={p.ink} opacity="0.3" />
+          {/* Crest ridge */}
+          <path d="M40,-2 L40,-6" fill="none" stroke={p.gold} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Gold trim on helm */}
+          <path d="M26,10 L54,10" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.4" />
+          {/* Ornamental wings on sides */}
+          <path d="M26,12 Q22,8 20,10 Q22,6 26,8" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.5" />
+          <path d="M54,12 Q58,8 60,10 Q58,6 54,8" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.5" />
         </g>
       )
     case 'draconic':
@@ -336,6 +338,30 @@ export function JackCharacterHead({ theme, p }: { theme: CharacterTheme; p: Char
           ))}
           {/* Ruby center eye */}
           <circle cx="40" cy="19.5" r="1.5" fill="#ef4444" opacity="0.7" />
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Monkey head — round ears, playful */}
+          <ellipse cx="40" cy="16" rx="14" ry="12" fill={p.hair} stroke={p.ink} strokeWidth="0.4" />
+          {/* Round ears — distinctive monkey silhouette */}
+          <circle cx="24" cy="10" r="6" fill={p.hair} stroke={p.ink} strokeWidth="0.4" />
+          <circle cx="24" cy="10" r="3.5" fill={p.skinShade} opacity="0.5" />
+          <circle cx="56" cy="10" r="6" fill={p.hair} stroke={p.ink} strokeWidth="0.4" />
+          <circle cx="56" cy="10" r="3.5" fill={p.skinShade} opacity="0.5" />
+          {/* Lighter face patch */}
+          <ellipse cx="40" cy="18" rx="10" ry="9" fill={p.skin} opacity="0.7" />
+          {/* Mischievous eyes */}
+          <ellipse cx="35" cy="15" rx="2.5" ry="2" fill="#fff" />
+          <circle cx="36" cy="15" r="1.2" fill={p.ink} />
+          <ellipse cx="45" cy="15" rx="2.5" ry="2" fill="#fff" />
+          <circle cx="44" cy="15" r="1.2" fill={p.ink} />
+          {/* Wide grin */}
+          <path d="M34,21 Q40,26 46,21" fill="none" stroke={p.ink} strokeWidth="0.6" />
+          {/* Nostrils */}
+          <circle cx="38" cy="18" r="0.8" fill={p.ink} opacity="0.3" />
+          <circle cx="42" cy="18" r="0.8" fill={p.ink} opacity="0.3" />
         </g>
       )
     default: // european — no custom head, uses base
@@ -542,14 +568,16 @@ export function JackCharacterBody({ theme, p }: { theme: CharacterTheme; p: Char
     case 'crystalline':
       return (
         <g>
-          {/* Gem-encrusted breastplate */}
+          {/* Knight plate armor — breastplate with heraldic cross */}
           <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
-          {/* Faceted plate lines */}
-          <path d="M30,49 L35,54 L40,49 L45,54 L50,49" fill="none" stroke={p.goldDk} strokeWidth="0.3" opacity="0.2" />
-          <path d="M35,54 L40,60 L45,54" fill="none" stroke={p.goldDk} strokeWidth="0.25" opacity="0.15" />
-          {/* Diamond center gem */}
-          <path d="M38,51 L40,49 L42,51 L40,53 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" opacity="0.5" />
-          <circle cx="40" cy="51" r="0.6" fill={p.goldLt} opacity="0.4" />
+          {/* Plate seams */}
+          <line x1="40" y1="49" x2="40" y2="60" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
+          <line x1="26" y1="54" x2="54" y2="54" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
+          {/* Heraldic cross on chest */}
+          <rect x="38" y="49" width="4" height="10" rx="0.5" fill={p.gold} opacity="0.3" />
+          <rect x="33" y="52" width="14" height="3" rx="0.5" fill={p.gold} opacity="0.3" />
+          {/* Gorget (neck armor) */}
+          <path d="M32,48 Q40,46 48,48" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.4" />
         </g>
       )
     case 'draconic':
@@ -568,6 +596,20 @@ export function JackCharacterBody({ theme, p }: { theme: CharacterTheme; p: Char
           {/* Dragon eye buckle */}
           <ellipse cx="40" cy="50" rx="2" ry="1.2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
           <ellipse cx="40" cy="50" rx="0.5" ry="1" fill="#ef4444" opacity="0.5" />
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Monkey vest — simple, playful */}
+          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Fur texture on chest */}
+          <path d="M34,50 Q36,52 38,50" fill="none" stroke={p.hair} strokeWidth="0.3" opacity="0.2" />
+          <path d="M42,50 Q44,52 46,50" fill="none" stroke={p.hair} strokeWidth="0.3" opacity="0.2" />
+          {/* Belly patch lighter */}
+          <ellipse cx="40" cy="55" rx="8" ry="5" fill={p.skin} opacity="0.15" />
+          {/* Belt with banana buckle */}
+          <rect x="28" y="48" width="24" height="2" rx="0.5" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.2" />
         </g>
       )
     default:
@@ -716,13 +758,18 @@ export function JackCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
     case 'crystalline':
       return (
         <g>
-          {/* Diamond scepter */}
-          <line x1="60" y1="26" x2="62" y2="54" stroke={p.goldDk} strokeWidth="1" strokeLinecap="round" />
-          {/* Diamond tip */}
-          <path d="M57,26 L60,18 L63,26 L60,24 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
-          <path d="M58.5,24 L60,20 L61.5,24" fill={p.goldLt} opacity="0.3" />
-          {/* Sparkle */}
-          <circle cx="60" cy="20" r="0.5" fill="#fff" opacity="0.4" />
+          {/* Knight's longsword — held upright */}
+          <line x1="60" y1="16" x2="62" y2="56" stroke={p.goldDk} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Blade */}
+          <path d="M58,16 L60,8 L62,16" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          <line x1="60" y1="10" x2="60" y2="16" stroke={p.goldLt} strokeWidth="0.3" opacity="0.4" />
+          {/* Crossguard */}
+          <rect x="56" y="24" width="8" height="2" rx="0.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {/* Pommel */}
+          <circle cx="62" cy="56" r="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" />
+          {/* Shield on back — visible edge */}
+          <path d="M18,30 L16,46 L22,50 L28,46 L26,30 Z" fill={p.clothing} stroke={p.gold} strokeWidth="0.4" opacity="0.4" />
+          <path d="M20,34 L22,44 L24,34" fill="none" stroke={p.gold} strokeWidth="0.3" opacity="0.3" />
         </g>
       )
     case 'draconic':
@@ -737,6 +784,16 @@ export function JackCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
           <path d="M56,26 Q58,22 60,26 Q62,22 64,26" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
           {/* Dragon eye pommel */}
           <circle cx="63" cy="56" r="1.2" fill="#ef4444" opacity="0.5" />
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Banana held in hand */}
+          <path d="M58,30 Q62,24 64,20 Q65,18 64,17" fill="#f0c030" stroke="#c89820" strokeWidth="0.5" />
+          <path d="M64,17 Q63,16 64,15" fill="#6a4a18" stroke="#4a3210" strokeWidth="0.3" />
+          {/* Curling tail visible at side */}
+          <path d="M18,44 Q14,38 16,32 Q18,28 20,30 Q18,34 16,38" fill="none" stroke={p.hair} strokeWidth="1.2" opacity="0.5" strokeLinecap="round" />
         </g>
       )
     default:
@@ -964,19 +1021,27 @@ export function QueenCharacterHead({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'crystalline':
       return (
         <g>
-          {/* Crystal tiara — geometric sparkle */}
-          <path d="M28,20 L30,12 L34,16 L37,6 L40,14 L43,6 L46,16 L50,12 L52,20" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
-          <path d="M30,18 L32,14 L37,8 L40,16 L43,8 L48,14 L50,18" fill={p.goldLt} opacity="0.2" />
-          {/* Facet lines */}
-          <line x1="37" y1="6" x2="40" y2="20" stroke={p.goldDk} strokeWidth="0.15" opacity="0.15" />
-          <line x1="43" y1="6" x2="40" y2="20" stroke={p.goldDk} strokeWidth="0.15" opacity="0.15" />
-          {/* Diamond sparkles at crown points */}
-          {[[37, 6], [40, 14], [43, 6]].map(([x, y], i) => (
-            <circle key={i} cx={x} cy={y} r="1.2" fill={p.goldLt} opacity={0.3 + i * 0.05} />
-          ))}
-          {/* Platinum hair */}
-          <path d="M24,22 Q20,30 22,40 Q21,44 20,48" fill="none" stroke={p.hair} strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
-          <path d="M56,22 Q60,30 58,40 Q59,44 60,48" fill="none" stroke={p.hair} strokeWidth="2.5" opacity="0.3" strokeLinecap="round" />
+          {/* Unicorn head — elegant equine with spiral horn */}
+          <ellipse cx="40" cy="18" rx="12" ry="14" fill="#F0E8F8" stroke={p.ink} strokeWidth="0.4" />
+          {/* Spiral horn — main feature */}
+          <path d="M40,4 L39,-10" fill="none" stroke={p.gold} strokeWidth="1.5" strokeLinecap="round" />
+          <path d="M39.5,-2 L40.5,0 M39,-4 L41,-2 M39.5,-6 L40.5,-4 M39,-8 L41,-6" fill="none" stroke={p.goldLt} strokeWidth="0.4" opacity="0.5" />
+          {/* Horn glow */}
+          <circle cx="40" cy="-8" r="2" fill={p.goldLt} opacity="0.3" />
+          {/* Elegant eyes */}
+          <ellipse cx="34" cy="16" rx="3" ry="2.5" fill="#fff" />
+          <circle cx="35" cy="16" r="1.5" fill="#7B1FA2" />
+          <circle cx="35.5" cy="15.5" r="0.5" fill="#fff" opacity="0.5" />
+          <ellipse cx="46" cy="16" rx="3" ry="2.5" fill="#fff" />
+          <circle cx="45" cy="16" r="1.5" fill="#7B1FA2" />
+          <circle cx="45.5" cy="15.5" r="0.5" fill="#fff" opacity="0.5" />
+          {/* Flowing mane — magical */}
+          <path d="M26,14 Q20,20 18,30 Q16,38 18,46" fill="none" stroke="#CE93D8" strokeWidth="3" opacity="0.4" strokeLinecap="round" />
+          <path d="M28,12 Q22,18 20,28 Q18,36 20,44" fill="none" stroke="#E1BEE7" strokeWidth="2" opacity="0.3" strokeLinecap="round" />
+          <path d="M54,14 Q60,20 62,30 Q64,38 62,46" fill="none" stroke="#CE93D8" strokeWidth="3" opacity="0.4" strokeLinecap="round" />
+          {/* Nostrils */}
+          <circle cx="37" cy="24" r="0.8" fill={p.ink} opacity="0.2" />
+          <circle cx="43" cy="24" r="0.8" fill={p.ink} opacity="0.2" />
         </g>
       )
     case 'draconic':
@@ -993,6 +1058,42 @@ export function QueenCharacterHead({ theme, p }: { theme: CharacterTheme; p: Cha
           {/* Flame wisps from crown */}
           <path d="M37,10 Q35,6 37,4" fill="none" stroke="#f59e0b" strokeWidth="0.35" opacity="0.3" />
           <path d="M43,10 Q45,6 43,4" fill="none" stroke="#f59e0b" strokeWidth="0.35" opacity="0.3" />
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Tiger head — striped, powerful, regal */}
+          <ellipse cx="40" cy="16" rx="16" ry="14" fill="#E8A040" stroke={p.ink} strokeWidth="0.5" />
+          {/* White cheek ruff */}
+          <ellipse cx="32" cy="22" rx="6" ry="5" fill="#F8E8D0" opacity="0.6" />
+          <ellipse cx="48" cy="22" rx="6" ry="5" fill="#F8E8D0" opacity="0.6" />
+          {/* Tiger stripes */}
+          <path d="M30,6 Q32,10 30,14" fill="none" stroke="#3a1808" strokeWidth="1.2" opacity="0.5" />
+          <path d="M35,4 Q37,8 35,12" fill="none" stroke="#3a1808" strokeWidth="1" opacity="0.5" />
+          <path d="M50,6 Q48,10 50,14" fill="none" stroke="#3a1808" strokeWidth="1.2" opacity="0.5" />
+          <path d="M45,4 Q43,8 45,12" fill="none" stroke="#3a1808" strokeWidth="1" opacity="0.5" />
+          {/* Rounded ears */}
+          <ellipse cx="26" cy="6" rx="5" ry="5" fill="#E8A040" stroke={p.ink} strokeWidth="0.4" />
+          <ellipse cx="26" cy="6" rx="3" ry="3" fill="#D09030" opacity="0.5" />
+          <ellipse cx="54" cy="6" rx="5" ry="5" fill="#E8A040" stroke={p.ink} strokeWidth="0.4" />
+          <ellipse cx="54" cy="6" rx="3" ry="3" fill="#D09030" opacity="0.5" />
+          {/* Fierce eyes */}
+          <ellipse cx="33" cy="14" rx="3.5" ry="2.5" fill="#fff" />
+          <ellipse cx="34" cy="14" rx="2" ry="2" fill="#D4A017" />
+          <ellipse cx="34.2" cy="14" rx="0.8" ry="1.8" fill={p.ink} />
+          <ellipse cx="47" cy="14" rx="3.5" ry="2.5" fill="#fff" />
+          <ellipse cx="46" cy="14" rx="2" ry="2" fill="#D4A017" />
+          <ellipse cx="45.8" cy="14" rx="0.8" ry="1.8" fill={p.ink} />
+          {/* Nose */}
+          <path d="M38,18 L40,20 L42,18" fill="#D08080" stroke={p.ink} strokeWidth="0.3" />
+          {/* Whiskers */}
+          <line x1="24" y1="20" x2="14" y2="18" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
+          <line x1="24" y1="22" x2="14" y2="23" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
+          <line x1="56" y1="20" x2="66" y2="18" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
+          <line x1="56" y1="22" x2="66" y2="23" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
+          {/* Small tiara — she's the queen */}
+          <path d="M32,4 L35,0 L38,3 L40,-2 L42,3 L45,0 L48,4" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.6" />
         </g>
       )
     default:
@@ -1179,15 +1280,16 @@ export function QueenCharacterBody({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'crystalline':
       return (
         <g>
-          {/* Faceted crystal gown */}
-          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
-          {/* Geometric facet lines */}
-          <path d="M30,48 L35,54 L30,60" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
-          <path d="M50,48 L45,54 L50,60" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
-          <path d="M35,54 L40,48 L45,54" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.15" />
-          {/* Diamond necklace */}
-          <path d="M34,48 Q37,46 40,47 Q43,46 46,48" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.3" />
-          <circle cx="40" cy="47.5" r="0.8" fill={p.goldLt} opacity="0.4" />
+          {/* Unicorn body — elegant, flowing */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill="#F0E8F8" stroke={p.ink} strokeWidth="0.4" />
+          {/* Iridescent shimmer on body */}
+          <path d="M30,48 L35,54 L30,60" fill="none" stroke="#CE93D8" strokeWidth="0.3" opacity="0.2" />
+          <path d="M50,48 L45,54 L50,60" fill="none" stroke="#7B1FA2" strokeWidth="0.3" opacity="0.2" />
+          {/* Starlight necklace */}
+          <path d="M34,48 Q37,46 40,47 Q43,46 46,48" fill="none" stroke={p.gold} strokeWidth="0.4" opacity="0.4" />
+          {[[37, 47], [40, 46.5], [43, 47]].map(([x, y], i) => (
+            <circle key={i} cx={x} cy={y} r="0.6" fill={p.goldLt} opacity={0.4 + i * 0.1} />
+          ))}
         </g>
       )
     case 'draconic':
@@ -1205,6 +1307,22 @@ export function QueenCharacterBody({ theme, p }: { theme: CharacterTheme; p: Cha
           ))}
           {/* Flame gem pendant */}
           <circle cx="40" cy="49" r="1.5" fill="#ef4444" opacity="0.4" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Tiger body — powerful, striped */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill="#E8A040" stroke={p.ink} strokeWidth="0.4" />
+          {/* Body stripes */}
+          <path d="M28,50 Q30,54 28,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
+          <path d="M34,49 Q36,54 34,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
+          <path d="M46,49 Q44,54 46,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
+          <path d="M52,50 Q50,54 52,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
+          {/* White chest patch */}
+          <ellipse cx="40" cy="54" rx="8" ry="5" fill="#F8E8D0" opacity="0.3" />
+          {/* Royal collar */}
+          <path d="M30,48 Q40,46 50,48" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.4" />
         </g>
       )
     default:
@@ -1377,11 +1495,11 @@ export function QueenCharacterProp({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'crystalline':
       return (
         <g>
-          {/* Diamond scepter */}
+          {/* Magical sparkle trail from horn */}
           <g transform="translate(62,36)">
-            <line x1="0" y1="0" x2="0" y2="10" stroke={p.goldDk} strokeWidth="0.8" strokeLinecap="round" />
-            <path d="M-2,0 L0,-5 L2,0 L0,-1 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.2" />
-            <circle cx="0" cy="-3" r="0.5" fill="#fff" opacity="0.3" />
+            {[[0, 0], [2, -3], [-1, -5], [3, -7]].map(([x, y], i) => (
+              <circle key={i} cx={x} cy={y} r={0.6 - i * 0.1} fill={p.goldLt} opacity={0.5 - i * 0.1} />
+            ))}
           </g>
         </g>
       )
@@ -1395,6 +1513,17 @@ export function QueenCharacterProp({ theme, p }: { theme: CharacterTheme; p: Cha
               <path key={i} d={`M-2,${y} Q0,${y - 1.5} 2,${y}`} fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.3" />
             ))}
             <ellipse cx="0" cy="-0.5" rx="1.2" ry="1.8" fill="#ef4444" opacity="0.2" />
+          </g>
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Tiger claw marks — scarred environment */}
+          <g transform="translate(62,34)">
+            <path d="M-2,0 L0,10" fill="none" stroke="#c04020" strokeWidth="0.5" opacity="0.3" />
+            <path d="M0,0 L2,10" fill="none" stroke="#c04020" strokeWidth="0.5" opacity="0.3" />
+            <path d="M2,0 L4,10" fill="none" stroke="#c04020" strokeWidth="0.5" opacity="0.3" />
           </g>
         </g>
       )
@@ -1635,23 +1764,30 @@ export function KingCharacterHead({ theme, p }: { theme: CharacterTheme; p: Char
     case 'crystalline':
       return (
         <g>
-          {/* Grand crystal crown — the most elaborate geometric piece */}
-          <path d="M24,24 L26,14 L30,18 L33,4 L36,14 L38,6 L40,-4 L42,6 L44,14 L47,4 L50,18 L54,14 L56,24" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" />
-          <path d="M26,22 L28,16 L33,6 L40,-2 L47,6 L52,16 L54,22" fill={p.goldLt} opacity="0.15" />
-          {/* Central great diamond */}
-          <path d="M37,-2 L40,-8 L43,-2 L40,0 Z" fill={p.goldLt} stroke={p.goldDk} strokeWidth="0.3" />
-          <circle cx="40" cy="-4" r="1" fill="#fff" opacity="0.3" />
-          {/* Facet lines */}
-          {[[33, 4], [47, 4], [38, 6], [42, 6]].map(([x, y], i) => (
-            <line key={i} x1={x} y1={y} x2="40" y2="24" stroke={p.goldDk} strokeWidth="0.15" opacity="0.1" />
+          {/* Dragon king head — massive, imposing */}
+          <path d="M22,24 Q20,14 26,6 Q34,-2 40,-4 Q46,-2 54,6 Q60,14 58,24" fill="#2a4040" stroke={p.ink} strokeWidth="0.6" />
+          {/* Massive swept horns */}
+          <path d="M26,10 Q18,0 12,-8 Q10,-12 8,-10" fill="none" stroke={p.gold} strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M54,10 Q62,0 68,-8 Q70,-12 72,-10" fill="none" stroke={p.gold} strokeWidth="1.8" strokeLinecap="round" />
+          {/* Horn ridges */}
+          <path d="M22,6 Q16,-2 12,-8" fill="none" stroke={p.goldDk} strokeWidth="0.4" opacity="0.3" />
+          <path d="M58,6 Q64,-2 68,-8" fill="none" stroke={p.goldDk} strokeWidth="0.4" opacity="0.3" />
+          {/* Dragon eyes — glowing, piercing */}
+          <ellipse cx="32" cy="14" rx="4" ry="3" fill="#FFD700" opacity="0.7" />
+          <ellipse cx="32" cy="14" rx="1.2" ry="2.5" fill={p.ink} opacity="0.6" />
+          <ellipse cx="48" cy="14" rx="4" ry="3" fill="#FFD700" opacity="0.7" />
+          <ellipse cx="48" cy="14" rx="1.2" ry="2.5" fill={p.ink} opacity="0.6" />
+          {/* Scales on forehead */}
+          {[30, 35, 40, 45, 50].map((x, i) => (
+            <path key={i} d={`M${x},6 Q${x + 2.5},4 ${x + 5},6`} fill="none" stroke={p.gold} strokeWidth="0.3" opacity="0.25" />
           ))}
-          {/* Sparkle points */}
-          {[[33, 6], [47, 6], [40, -6]].map(([x, y], i) => (
-            <g key={i}>
-              <line x1={x! - 1.5} y1={y} x2={x! + 1.5} y2={y} stroke="#fff" strokeWidth="0.3" opacity="0.4" />
-              <line x1={x} y1={y! - 1.5} x2={x} y2={y! + 1.5} stroke="#fff" strokeWidth="0.3" opacity="0.4" />
-            </g>
-          ))}
+          {/* Nostrils with smoke wisps */}
+          <circle cx="37" cy="20" r="1" fill={p.ink} opacity="0.3" />
+          <circle cx="43" cy="20" r="1" fill={p.ink} opacity="0.3" />
+          <path d="M36,18 Q34,14 36,12" fill="none" stroke="#888" strokeWidth="0.3" opacity="0.15" />
+          <path d="M44,18 Q46,14 44,12" fill="none" stroke="#888" strokeWidth="0.3" opacity="0.15" />
+          {/* Crown of molten gold */}
+          <path d="M26,4 L30,0 L34,3 L37,-2 L40,-6 L43,-2 L46,3 L50,0 L54,4" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" opacity="0.6" />
         </g>
       )
     case 'draconic':
@@ -1674,6 +1810,38 @@ export function KingCharacterHead({ theme, p }: { theme: CharacterTheme; p: Char
           {[30, 34, 38, 42, 46, 50].map((x, i) => (
             <path key={i} d={`M${x},20 L${x + 2},18 L${x + 4},20`} fill={p.goldLt} stroke={p.goldDk} strokeWidth="0.15" opacity="0.35" />
           ))}
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Lion head — massive mane, regal */}
+          {/* Full mane — radiating outward */}
+          <ellipse cx="40" cy="16" rx="24" ry="22" fill="#C08020" stroke={p.ink} strokeWidth="0.3" />
+          <ellipse cx="40" cy="16" rx="22" ry="20" fill="#D09030" opacity="0.5" />
+          {/* Mane tufts */}
+          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
+            const rad = (angle * Math.PI) / 180
+            const x = 40 + Math.cos(rad) * 22
+            const y = 16 + Math.sin(rad) * 20
+            return <circle key={i} cx={x} cy={y} r={3} fill="#B07020" opacity={0.4 + (i % 2) * 0.15} />
+          })}
+          {/* Face */}
+          <ellipse cx="40" cy="18" rx="14" ry="12" fill="#E8C070" stroke={p.ink} strokeWidth="0.3" />
+          {/* Regal eyes */}
+          <ellipse cx="34" cy="14" rx="3" ry="2.5" fill="#fff" />
+          <circle cx="35" cy="14" r="1.5" fill="#D4A017" />
+          <circle cx="35.3" cy="13.5" r="0.5" fill={p.ink} />
+          <ellipse cx="46" cy="14" rx="3" ry="2.5" fill="#fff" />
+          <circle cx="45" cy="14" r="1.5" fill="#D4A017" />
+          <circle cx="44.7" cy="13.5" r="0.5" fill={p.ink} />
+          {/* Broad nose */}
+          <path d="M37,19 L40,22 L43,19" fill="#B08060" stroke={p.ink} strokeWidth="0.3" />
+          {/* Stern mouth */}
+          <path d="M35,24 Q40,26 45,24" fill="none" stroke={p.ink} strokeWidth="0.5" />
+          {/* Crown atop mane */}
+          <path d="M30,-4 L33,-8 L36,-5 L40,-12 L44,-5 L47,-8 L50,-4" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" />
+          <circle cx="40" cy="-10" r="1.5" fill="#ef4444" opacity="0.6" />
         </g>
       )
     default:
@@ -1882,15 +2050,22 @@ export function KingCharacterBody({ theme, p }: { theme: CharacterTheme; p: Char
     case 'crystalline':
       return (
         <g>
-          {/* Grand crystal armor */}
-          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
-          {/* Grand faceted plates */}
-          <path d="M26,48 L32,54 L26,60" fill="none" stroke={p.goldDk} strokeWidth="0.25" opacity="0.15" />
-          <path d="M54,48 L48,54 L54,60" fill="none" stroke={p.goldDk} strokeWidth="0.25" opacity="0.15" />
-          <path d="M32,54 L40,48 L48,54 L40,60 Z" fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.12" />
-          {/* Central great diamond */}
-          <path d="M38,50 L40,48 L42,50 L40,52 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.25" opacity="0.5" />
-          <circle cx="40" cy="50" r="0.6" fill="#fff" opacity="0.3" />
+          {/* Dragon body — scaled, massive */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill="#2a4040" stroke={p.ink} strokeWidth="0.5" />
+          {/* Dragon scales */}
+          {[50, 53, 56].map((y, i) => (
+            <g key={i}>
+              {[22, 27, 32, 37, 42, 47, 52].map((x, j) => (
+                <path key={j} d={`M${x},${y} Q${x + 2.5},${y - 2} ${x + 5},${y}`} fill="none" stroke={p.gold} strokeWidth="0.3" opacity={0.3 - i * 0.06} />
+              ))}
+            </g>
+          ))}
+          {/* Chest plate with gem */}
+          <path d="M34,48 L40,46 L46,48 L44,56 L36,56 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.35" />
+          <circle cx="40" cy="51" r="1.5" fill="#ef4444" opacity="0.4" />
+          {/* Wing hints at shoulders */}
+          <path d="M18,46 Q12,38 16,34" fill="none" stroke="#2a4040" strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
+          <path d="M62,46 Q68,38 64,34" fill="none" stroke="#2a4040" strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
         </g>
       )
     case 'draconic':
@@ -1909,6 +2084,21 @@ export function KingCharacterBody({ theme, p }: { theme: CharacterTheme; p: Char
           {/* Grand dragon eye buckle */}
           <ellipse cx="40" cy="50" rx="2.5" ry="1.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
           <ellipse cx="40" cy="50" rx="0.6" ry="1.3" fill="#ef4444" opacity="0.5" />
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Lion's royal robe */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill="#8B0000" stroke={p.ink} strokeWidth="0.4" />
+          {/* Fur trim at edges */}
+          <path d="M16,60 Q20,58 24,60 Q28,58 32,60 Q36,58 40,60 Q44,58 48,60 Q52,58 56,60 Q60,58 64,60" fill="none" stroke="#E8C070" strokeWidth="1" opacity="0.3" />
+          {/* Gold chain of office */}
+          <path d="M28,48 Q34,52 40,50 Q46,52 52,48" fill="none" stroke={p.gold} strokeWidth="0.8" opacity="0.4" />
+          <circle cx="40" cy="51" r="2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.5" />
+          {/* Mane fur continuing onto body */}
+          <path d="M22,48 Q24,46 26,48" fill="#C08020" opacity="0.3" />
+          <path d="M58,48 Q56,46 54,48" fill="#C08020" opacity="0.3" />
         </g>
       )
     default:
@@ -2088,16 +2278,12 @@ export function KingCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
     case 'crystalline':
       return (
         <g>
-          {/* Grand diamond scepter */}
-          <line x1="15" y1="28" x2="14" y2="56" stroke={p.goldDk} strokeWidth="1.2" strokeLinecap="round" />
-          {/* Grand diamond head */}
-          <path d="M11,28 L15,16 L19,28 L15,24 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
-          <path d="M13,26 L15,18 L17,26" fill={p.goldLt} opacity="0.25" />
-          {/* Sparkle at apex */}
-          <g>
-            <line x1="14" y1="18" x2="16" y2="18" stroke="#fff" strokeWidth="0.4" opacity="0.5" />
-            <line x1="15" y1="17" x2="15" y2="19" stroke="#fff" strokeWidth="0.4" opacity="0.5" />
-          </g>
+          {/* Dragon's fire breath — emanating from mouth area */}
+          <path d="M15,28 Q8,20 10,10 Q12,18 15,12 Q18,18 20,10 Q22,20 15,28" fill="#ef4444" opacity="0.3" />
+          <path d="M13,24 Q10,16 12,8" fill="none" stroke="#fbbf24" strokeWidth="0.5" opacity="0.3" />
+          <path d="M17,24 Q20,16 18,8" fill="none" stroke="#f59e0b" strokeWidth="0.4" opacity="0.25" />
+          {/* Tail tip visible */}
+          <path d="M60,46 Q64,44 66,48 Q64,50 62,48" fill="#2a4040" stroke={p.ink} strokeWidth="0.3" opacity="0.4" />
         </g>
       )
     case 'draconic':
@@ -2111,6 +2297,18 @@ export function KingCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
           {/* Dragon coil on shaft */}
           <path d="M13,36 Q11,34 13,32 Q15,34 13,36" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
           <path d="M15,42 Q17,40 15,38 Q13,40 15,42" fill={p.gold} opacity="0.25" stroke={p.goldDk} strokeWidth="0.2" />
+        </g>
+      )
+    case 'bestial':
+      return (
+        <g>
+          {/* Royal scepter with lion paw pommel */}
+          <line x1="15" y1="26" x2="14" y2="56" stroke={p.goldDk} strokeWidth="1.4" strokeLinecap="round" />
+          {/* Lion paw at top */}
+          <circle cx="15" cy="22" r="3.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          <path d="M12.5,20 L12,18 M14,19.5 L13.5,17.5 M16,19.5 L16.5,17.5 M17.5,20 L18,18" fill="none" stroke={p.goldDk} strokeWidth="0.4" opacity="0.4" />
+          {/* Ruby gem in scepter */}
+          <circle cx="15" cy="22" r="1.5" fill="#ef4444" opacity="0.5" />
         </g>
       )
     default:

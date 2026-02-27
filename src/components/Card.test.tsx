@@ -116,13 +116,13 @@ describe('Custom skin rendering on face cards', () => {
     expect(canvasCard || faceSvg, 'Neon King should render').toBeInTheDocument()
   })
 
-  it('renders face card SVG with diamond-dynasty skin active', () => {
+  it('renders face card with diamond-dynasty skin active', () => {
     saveCardSkinState({ unlockedSkins: ['classic', 'diamond-dynasty'], activeSkinId: 'diamond-dynasty' })
     const { container } = render(<Card card={{ suit: 'spades', rank: 'Q', id: 1 }} index={0} />)
-    const svg = container.querySelector('.face-svg')
-    expect(svg).toBeInTheDocument()
-    const cardFace = container.querySelector('.card-face') as HTMLElement
-    expect(cardFace.style.filter).toContain('saturate')
+    // Diamond dynasty now uses canvas art — check for either canvas-art-card or face-svg
+    const canvasCard = container.querySelector('.canvas-art-card')
+    const faceSvg = container.querySelector('.face-svg')
+    expect(canvasCard || faceSvg, 'Diamond Dynasty Queen should render').toBeInTheDocument()
   })
 
   it('renders card face element for neon-nights with glowColor', () => {
