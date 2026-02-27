@@ -4,16 +4,20 @@ import { useFocusTrap } from '../hooks/useFocusTrap'
 import { useModalStack } from '../hooks/useModalStack'
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock'
 import { useGameSettings } from '../config/GameSettingsContext'
+import { isCodeRedeemed, markCodeRedeemed } from '../utils/storage'
 import type { CardBackTheme, TableFeltTheme } from '../types'
 
 interface SettingsPanelProps {
   isPlaying: boolean
   onResetEverything: () => void
+  onAdjustChips: (amount: number) => void
 }
 
-export default function SettingsPanel({ isPlaying, onResetEverything }: SettingsPanelProps) {
+export default function SettingsPanel({ isPlaying, onResetEverything, onAdjustChips }: SettingsPanelProps) {
   const [open, setOpen] = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [rewardCode, setRewardCode] = useState('')
+  const [rewardMessage, setRewardMessage] = useState<{ text: string; success: boolean } | null>(null)
   const settings = useGameSettings()
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const handleClose = useCallback(() => { setOpen(false); setShowResetConfirm(false) }, [])
@@ -55,6 +59,23 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
     { value: 'royal-green', label: 'Green', color: '#1a4a2a' },
     { value: 'midnight-gold', label: 'Gold', color: '#1a1a2e' },
   ]
+
+  const handleRedeemCode = useCallback(() => {
+    const code = rewardCode.trim()
+    if (!code) return
+    if (code === 'Freemoney123') {
+      if (isCodeRedeemed(code)) {
+        setRewardMessage({ text: 'This code has already been redeemed.', success: false })
+      } else {
+        markCodeRedeemed(code)
+        onAdjustChips(1000000)
+        setRewardMessage({ text: 'Success! $1,000,000 added to your bankroll!', success: true })
+      }
+    } else {
+      setRewardMessage({ text: 'Invalid code.', success: false })
+    }
+    setRewardCode('')
+  }, [rewardCode, onAdjustChips])
 
   const handleResetEverything = () => {
     onResetEverything()
@@ -310,6 +331,47 @@ export default function SettingsPanel({ isPlaying, onResetEverything }: Settings
                       {t.label}
                     </button>
                   ))}
+                </div>
+              </div>
+
+              {/* Reward Code */}
+              <div className="setting-row" role="group" aria-label="Reward Code">
+                <label className="setting-label" htmlFor="reward-code-input">Reward Code</label>
+                <div className="setting-options" style={{ flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <input
+                      id="reward-code-input"
+                      type="text"
+                      className="setting-chip"
+                      placeholder="Enter code"
+                      value={rewardCode}
+                      onChange={e => { setRewardCode(e.target.value); setRewardMessage(null) }}
+                      onKeyDown={e => { if (e.key === 'Enter') handleRedeemCode() }}
+                      style={{ flex: 1, textAlign: 'left', padding: '6px 10px', fontSize: '0.85rem' }}
+                      aria-describedby={rewardMessage ? 'reward-msg' : undefined}
+                    />
+                    <button
+                      className="setting-chip setting-chip-active"
+                      onClick={handleRedeemCode}
+                      disabled={!rewardCode.trim()}
+                      style={{ whiteSpace: 'nowrap' }}
+                    >
+                      Redeem
+                    </button>
+                  </div>
+                  {rewardMessage && (
+                    <div
+                      id="reward-msg"
+                      role="status"
+                      style={{
+                        fontSize: '0.8rem',
+                        color: rewardMessage.success ? '#22c55e' : '#ef4444',
+                        fontWeight: 500,
+                      }}
+                    >
+                      {rewardMessage.text}
+                    </div>
+                  )}
                 </div>
               </div>
 

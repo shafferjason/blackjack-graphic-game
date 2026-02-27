@@ -44,7 +44,7 @@ export type CharacterTheme =
   | 'noir'         // Velvet Noir — detective
   | 'crystalline'  // Diamond Dynasty — gem construct
   | 'draconic'     // Dragon's Hoard — dragon hybrid
-  | 'bestial'      // Animal Kingdom — majestic beasts
+  | 'bestial'      // Animal Kingdom — serpent court (cobra, boa, viper)
 
 const SKIN_TO_CHARACTER: Record<string, CharacterTheme> = {
   'classic': 'european',
@@ -343,25 +343,21 @@ export function JackCharacterHead({ theme, p }: { theme: CharacterTheme; p: Char
     case 'bestial':
       return (
         <g>
-          {/* Monkey head — round ears, playful */}
-          <ellipse cx="40" cy="16" rx="14" ry="12" fill={p.hair} stroke={p.ink} strokeWidth="0.4" />
-          {/* Round ears — distinctive monkey silhouette */}
-          <circle cx="24" cy="10" r="6" fill={p.hair} stroke={p.ink} strokeWidth="0.4" />
-          <circle cx="24" cy="10" r="3.5" fill={p.skinShade} opacity="0.5" />
-          <circle cx="56" cy="10" r="6" fill={p.hair} stroke={p.ink} strokeWidth="0.4" />
-          <circle cx="56" cy="10" r="3.5" fill={p.skinShade} opacity="0.5" />
-          {/* Lighter face patch */}
-          <ellipse cx="40" cy="18" rx="10" ry="9" fill={p.skin} opacity="0.7" />
-          {/* Mischievous eyes */}
-          <ellipse cx="35" cy="15" rx="2.5" ry="2" fill="#fff" />
-          <circle cx="36" cy="15" r="1.2" fill={p.ink} />
-          <ellipse cx="45" cy="15" rx="2.5" ry="2" fill="#fff" />
-          <circle cx="44" cy="15" r="1.2" fill={p.ink} />
-          {/* Wide grin */}
-          <path d="M34,21 Q40,26 46,21" fill="none" stroke={p.ink} strokeWidth="0.6" />
-          {/* Nostrils */}
-          <circle cx="38" cy="18" r="0.8" fill={p.ink} opacity="0.3" />
-          <circle cx="42" cy="18" r="0.8" fill={p.ink} opacity="0.3" />
+          {/* Viper head — triangular, venomous */}
+          <path d="M27,22 L40,6 L53,22 Q40,28 27,22 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.5" />
+          {/* Scale pattern on head */}
+          <path d="M34,14 L37,11 L40,14" fill="none" stroke={p.clothingHi} strokeWidth="0.3" opacity="0.4" />
+          <path d="M40,14 L43,11 L46,14" fill="none" stroke={p.clothingHi} strokeWidth="0.3" opacity="0.4" />
+          {/* Slit eyes — menacing */}
+          <ellipse cx="34" cy="16" rx="3" ry="2" fill="#AACC00" />
+          <ellipse cx="34" cy="16" rx="0.8" ry="1.8" fill={p.ink} />
+          <ellipse cx="46" cy="16" rx="3" ry="2" fill="#AACC00" />
+          <ellipse cx="46" cy="16" rx="0.8" ry="1.8" fill={p.ink} />
+          {/* Nostril pits — heat-sensing */}
+          <circle cx="36" cy="20" r="0.7" fill={p.ink} opacity="0.5" />
+          <circle cx="44" cy="20" r="0.7" fill={p.ink} opacity="0.5" />
+          {/* Forked tongue */}
+          <path d="M40,23 L40,28 L38,31 M40,28 L42,31" fill="none" stroke="#cc3030" strokeWidth="0.4" />
         </g>
       )
     default: // european — no custom head, uses base
@@ -601,15 +597,13 @@ export function JackCharacterBody({ theme, p }: { theme: CharacterTheme; p: Char
     case 'bestial':
       return (
         <g>
-          {/* Monkey vest — simple, playful */}
-          <path d="M25,49 L21,60 L59,60 L55,49 Q40,55 25,49 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
-          {/* Fur texture on chest */}
-          <path d="M34,50 Q36,52 38,50" fill="none" stroke={p.hair} strokeWidth="0.3" opacity="0.2" />
-          <path d="M42,50 Q44,52 46,50" fill="none" stroke={p.hair} strokeWidth="0.3" opacity="0.2" />
-          {/* Belly patch lighter */}
-          <ellipse cx="40" cy="55" rx="8" ry="5" fill={p.skin} opacity="0.15" />
-          {/* Belt with banana buckle */}
-          <rect x="28" y="48" width="24" height="2" rx="0.5" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.2" />
+          {/* Viper coiled body — sinuous scales */}
+          <path d="M25,48 Q32,44 40,48 Q48,52 55,48 L56,60 L24,60 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Scale pattern rows */}
+          <path d="M28,51 Q31,49 34,51 Q37,53 40,51 Q43,49 46,51 Q49,53 52,51" fill="none" stroke={p.clothingHi} strokeWidth="0.3" opacity="0.3" />
+          <path d="M28,55 Q31,53 34,55 Q37,57 40,55 Q43,53 46,55 Q49,57 52,55" fill="none" stroke={p.clothingHi} strokeWidth="0.3" opacity="0.3" />
+          {/* Belly lighter — ventral scales */}
+          <ellipse cx="40" cy="55" rx="6" ry="4" fill={p.skinHi} opacity="0.15" />
         </g>
       )
     default:
@@ -789,11 +783,12 @@ export function JackCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
     case 'bestial':
       return (
         <g>
-          {/* Banana held in hand */}
-          <path d="M58,30 Q62,24 64,20 Q65,18 64,17" fill="#f0c030" stroke="#c89820" strokeWidth="0.5" />
-          <path d="M64,17 Q63,16 64,15" fill="#6a4a18" stroke="#4a3210" strokeWidth="0.3" />
-          {/* Curling tail visible at side */}
-          <path d="M18,44 Q14,38 16,32 Q18,28 20,30 Q18,34 16,38" fill="none" stroke={p.hair} strokeWidth="1.2" opacity="0.5" strokeLinecap="round" />
+          {/* Venom fang drip */}
+          <path d="M36,23 L35,28" stroke="#AACC00" strokeWidth="0.4" opacity="0.6" />
+          <circle cx="35" cy="29" r="0.6" fill="#AACC00" opacity="0.5" />
+          {/* Coiled tail segment visible at side */}
+          <path d="M18,44 Q14,40 16,34 Q18,30 20,34 Q18,38 17,42" fill="none" stroke={p.clothing} strokeWidth="1.5" opacity="0.5" strokeLinecap="round" />
+          <path d="M17,42 Q16,44 17,46" fill="none" stroke={p.clothing} strokeWidth="1" opacity="0.35" strokeLinecap="round" />
         </g>
       )
     default:
@@ -1063,35 +1058,24 @@ export function QueenCharacterHead({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'bestial':
       return (
         <g>
-          {/* Tiger head — striped, powerful, regal */}
-          <ellipse cx="40" cy="16" rx="16" ry="14" fill="#E8A040" stroke={p.ink} strokeWidth="0.5" />
-          {/* White cheek ruff */}
-          <ellipse cx="32" cy="22" rx="6" ry="5" fill="#F8E8D0" opacity="0.6" />
-          <ellipse cx="48" cy="22" rx="6" ry="5" fill="#F8E8D0" opacity="0.6" />
-          {/* Tiger stripes */}
-          <path d="M30,6 Q32,10 30,14" fill="none" stroke="#3a1808" strokeWidth="1.2" opacity="0.5" />
-          <path d="M35,4 Q37,8 35,12" fill="none" stroke="#3a1808" strokeWidth="1" opacity="0.5" />
-          <path d="M50,6 Q48,10 50,14" fill="none" stroke="#3a1808" strokeWidth="1.2" opacity="0.5" />
-          <path d="M45,4 Q43,8 45,12" fill="none" stroke="#3a1808" strokeWidth="1" opacity="0.5" />
-          {/* Rounded ears */}
-          <ellipse cx="26" cy="6" rx="5" ry="5" fill="#E8A040" stroke={p.ink} strokeWidth="0.4" />
-          <ellipse cx="26" cy="6" rx="3" ry="3" fill="#D09030" opacity="0.5" />
-          <ellipse cx="54" cy="6" rx="5" ry="5" fill="#E8A040" stroke={p.ink} strokeWidth="0.4" />
-          <ellipse cx="54" cy="6" rx="3" ry="3" fill="#D09030" opacity="0.5" />
-          {/* Fierce eyes */}
-          <ellipse cx="33" cy="14" rx="3.5" ry="2.5" fill="#fff" />
-          <ellipse cx="34" cy="14" rx="2" ry="2" fill="#D4A017" />
-          <ellipse cx="34.2" cy="14" rx="0.8" ry="1.8" fill={p.ink} />
-          <ellipse cx="47" cy="14" rx="3.5" ry="2.5" fill="#fff" />
-          <ellipse cx="46" cy="14" rx="2" ry="2" fill="#D4A017" />
-          <ellipse cx="45.8" cy="14" rx="0.8" ry="1.8" fill={p.ink} />
-          {/* Nose */}
-          <path d="M38,18 L40,20 L42,18" fill="#D08080" stroke={p.ink} strokeWidth="0.3" />
-          {/* Whiskers */}
-          <line x1="24" y1="20" x2="14" y2="18" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
-          <line x1="24" y1="22" x2="14" y2="23" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
-          <line x1="56" y1="20" x2="66" y2="18" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
-          <line x1="56" y1="22" x2="66" y2="23" stroke={p.ink} strokeWidth="0.3" opacity="0.3" />
+          {/* Boa constrictor head — broad, powerful jaw */}
+          <ellipse cx="40" cy="16" rx="15" ry="12" fill={p.clothing} stroke={p.ink} strokeWidth="0.5" />
+          {/* Distinctive boa pattern — saddle markings */}
+          <ellipse cx="34" cy="10" rx="4" ry="3" fill={p.clothingMid} opacity="0.4" />
+          <ellipse cx="46" cy="10" rx="4" ry="3" fill={p.clothingMid} opacity="0.4" />
+          <ellipse cx="40" cy="6" rx="5" ry="3" fill={p.clothingMid} opacity="0.35" />
+          {/* Lighter jaw/chin area */}
+          <ellipse cx="40" cy="22" rx="10" ry="6" fill={p.skinShade} opacity="0.3" />
+          {/* Eyes — amber, hypnotic */}
+          <ellipse cx="33" cy="14" rx="3.5" ry="2.5" fill="#E8C840" />
+          <ellipse cx="33" cy="14" rx="1" ry="2.2" fill={p.ink} />
+          <ellipse cx="47" cy="14" rx="3.5" ry="2.5" fill="#E8C840" />
+          <ellipse cx="47" cy="14" rx="1" ry="2.2" fill={p.ink} />
+          {/* Nostrils */}
+          <circle cx="37" cy="19" r="0.7" fill={p.ink} opacity="0.4" />
+          <circle cx="43" cy="19" r="0.7" fill={p.ink} opacity="0.4" />
+          {/* Jaw line — powerful constrictor jaw */}
+          <path d="M26,20 Q40,28 54,20" fill="none" stroke={p.ink} strokeWidth="0.4" opacity="0.3" />
           {/* Small tiara — she's the queen */}
           <path d="M32,4 L35,0 L38,3 L40,-2 L42,3 L45,0 L48,4" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.6" />
         </g>
@@ -1312,15 +1296,14 @@ export function QueenCharacterBody({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'bestial':
       return (
         <g>
-          {/* Tiger body — powerful, striped */}
-          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill="#E8A040" stroke={p.ink} strokeWidth="0.4" />
-          {/* Body stripes */}
-          <path d="M28,50 Q30,54 28,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
-          <path d="M34,49 Q36,54 34,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
-          <path d="M46,49 Q44,54 46,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
-          <path d="M52,50 Q50,54 52,58" fill="none" stroke="#3a1808" strokeWidth="0.8" opacity="0.3" />
-          {/* White chest patch */}
-          <ellipse cx="40" cy="54" rx="8" ry="5" fill="#F8E8D0" opacity="0.3" />
+          {/* Boa constrictor thick coiled body */}
+          <path d="M22,48 L18,60 L62,60 L58,48 Q40,54 22,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Boa saddle pattern — distinctive large blotches */}
+          <ellipse cx="30" cy="53" rx="5" ry="4" fill={p.clothingMid} opacity="0.35" />
+          <ellipse cx="40" cy="50" rx="6" ry="4" fill={p.clothingMid} opacity="0.3" />
+          <ellipse cx="50" cy="53" rx="5" ry="4" fill={p.clothingMid} opacity="0.35" />
+          {/* Lighter belly — ventral scales */}
+          <ellipse cx="40" cy="57" rx="10" ry="3" fill={p.skinHi} opacity="0.15" />
           {/* Royal collar */}
           <path d="M30,48 Q40,46 50,48" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.4" />
         </g>
@@ -1519,12 +1502,10 @@ export function QueenCharacterProp({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'bestial':
       return (
         <g>
-          {/* Tiger claw marks — scarred environment */}
-          <g transform="translate(62,34)">
-            <path d="M-2,0 L0,10" fill="none" stroke="#c04020" strokeWidth="0.5" opacity="0.3" />
-            <path d="M0,0 L2,10" fill="none" stroke="#c04020" strokeWidth="0.5" opacity="0.3" />
-            <path d="M2,0 L4,10" fill="none" stroke="#c04020" strokeWidth="0.5" opacity="0.3" />
-          </g>
+          {/* Boa constrictor coils wrapping around frame */}
+          <path d="M62,30 Q66,36 62,42 Q58,48 62,54" fill="none" stroke={p.clothing} strokeWidth="2" opacity="0.35" strokeLinecap="round" />
+          {/* Body coil segments visible at edge */}
+          <path d="M18,52 Q14,48 18,44" fill="none" stroke={p.clothing} strokeWidth="1.5" opacity="0.3" strokeLinecap="round" />
         </g>
       )
     default:
@@ -1815,31 +1796,26 @@ export function KingCharacterHead({ theme, p }: { theme: CharacterTheme; p: Char
     case 'bestial':
       return (
         <g>
-          {/* Lion head — massive mane, regal */}
-          {/* Full mane — radiating outward */}
-          <ellipse cx="40" cy="16" rx="24" ry="22" fill="#C08020" stroke={p.ink} strokeWidth="0.3" />
-          <ellipse cx="40" cy="16" rx="22" ry="20" fill="#D09030" opacity="0.5" />
-          {/* Mane tufts */}
-          {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle, i) => {
-            const rad = (angle * Math.PI) / 180
-            const x = 40 + Math.cos(rad) * 22
-            const y = 16 + Math.sin(rad) * 20
-            return <circle key={i} cx={x} cy={y} r={3} fill="#B07020" opacity={0.4 + (i % 2) * 0.15} />
-          })}
-          {/* Face */}
-          <ellipse cx="40" cy="18" rx="14" ry="12" fill="#E8C070" stroke={p.ink} strokeWidth="0.3" />
-          {/* Regal eyes */}
-          <ellipse cx="34" cy="14" rx="3" ry="2.5" fill="#fff" />
-          <circle cx="35" cy="14" r="1.5" fill="#D4A017" />
-          <circle cx="35.3" cy="13.5" r="0.5" fill={p.ink} />
-          <ellipse cx="46" cy="14" rx="3" ry="2.5" fill="#fff" />
-          <circle cx="45" cy="14" r="1.5" fill="#D4A017" />
-          <circle cx="44.7" cy="13.5" r="0.5" fill={p.ink} />
-          {/* Broad nose */}
-          <path d="M37,19 L40,22 L43,19" fill="#B08060" stroke={p.ink} strokeWidth="0.3" />
+          {/* Cobra head with spread hood — massive, imposing */}
+          {/* Hood — wide, flared */}
+          <path d="M10,20 Q15,0 40,-6 Q65,0 70,20 Q65,30 40,34 Q15,30 10,20 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Hood pattern — spectacle marking */}
+          <ellipse cx="30" cy="12" rx="5" ry="4" fill={p.clothingMid} opacity="0.4" />
+          <ellipse cx="50" cy="12" rx="5" ry="4" fill={p.clothingMid} opacity="0.4" />
+          <path d="M34,14 Q40,18 46,14" fill="none" stroke={p.clothingMid} strokeWidth="0.5" opacity="0.4" />
+          {/* Inner face */}
+          <ellipse cx="40" cy="18" rx="12" ry="10" fill={p.clothingHi} opacity="0.3" />
+          {/* Piercing eyes — golden, regal */}
+          <ellipse cx="34" cy="16" rx="3" ry="2.5" fill="#FFD700" />
+          <ellipse cx="34" cy="16" rx="0.8" ry="2.2" fill={p.ink} />
+          <ellipse cx="46" cy="16" rx="3" ry="2.5" fill="#FFD700" />
+          <ellipse cx="46" cy="16" rx="0.8" ry="2.2" fill={p.ink} />
+          {/* Nostrils */}
+          <circle cx="38" cy="21" r="0.6" fill={p.ink} opacity="0.4" />
+          <circle cx="42" cy="21" r="0.6" fill={p.ink} opacity="0.4" />
           {/* Stern mouth */}
-          <path d="M35,24 Q40,26 45,24" fill="none" stroke={p.ink} strokeWidth="0.5" />
-          {/* Crown atop mane */}
+          <path d="M34,24 Q40,26 46,24" fill="none" stroke={p.ink} strokeWidth="0.4" />
+          {/* Crown atop hood */}
           <path d="M30,-4 L33,-8 L36,-5 L40,-12 L44,-5 L47,-8 L50,-4" fill={p.gold} stroke={p.goldDk} strokeWidth="0.4" />
           <circle cx="40" cy="-10" r="1.5" fill="#ef4444" opacity="0.6" />
         </g>
@@ -2089,16 +2065,17 @@ export function KingCharacterBody({ theme, p }: { theme: CharacterTheme; p: Char
     case 'bestial':
       return (
         <g>
-          {/* Lion's royal robe */}
-          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill="#8B0000" stroke={p.ink} strokeWidth="0.4" />
-          {/* Fur trim at edges */}
-          <path d="M16,60 Q20,58 24,60 Q28,58 32,60 Q36,58 40,60 Q44,58 48,60 Q52,58 56,60 Q60,58 64,60" fill="none" stroke="#E8C070" strokeWidth="1" opacity="0.3" />
+          {/* Cobra body — thick, powerful, scaled */}
+          <path d="M20,48 L16,60 L64,60 L60,48 Q40,54 20,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Scale pattern — diamond/chevron */}
+          <path d="M28,50 L32,48 L36,50 L32,52 Z" fill={p.clothingMid} opacity="0.3" />
+          <path d="M36,50 L40,48 L44,50 L40,52 Z" fill={p.clothingMid} opacity="0.3" />
+          <path d="M44,50 L48,48 L52,50 L48,52 Z" fill={p.clothingMid} opacity="0.3" />
+          <path d="M32,54 L36,52 L40,54 L36,56 Z" fill={p.clothingMid} opacity="0.25" />
+          <path d="M40,54 L44,52 L48,54 L44,56 Z" fill={p.clothingMid} opacity="0.25" />
           {/* Gold chain of office */}
           <path d="M28,48 Q34,52 40,50 Q46,52 52,48" fill="none" stroke={p.gold} strokeWidth="0.8" opacity="0.4" />
           <circle cx="40" cy="51" r="2" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" opacity="0.5" />
-          {/* Mane fur continuing onto body */}
-          <path d="M22,48 Q24,46 26,48" fill="#C08020" opacity="0.3" />
-          <path d="M58,48 Q56,46 54,48" fill="#C08020" opacity="0.3" />
         </g>
       )
     default:
@@ -2302,13 +2279,13 @@ export function KingCharacterProp({ theme, p }: { theme: CharacterTheme; p: Char
     case 'bestial':
       return (
         <g>
-          {/* Royal scepter with lion paw pommel */}
+          {/* Royal scepter with cobra head pommel */}
           <line x1="15" y1="26" x2="14" y2="56" stroke={p.goldDk} strokeWidth="1.4" strokeLinecap="round" />
-          {/* Lion paw at top */}
-          <circle cx="15" cy="22" r="3.5" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
-          <path d="M12.5,20 L12,18 M14,19.5 L13.5,17.5 M16,19.5 L16.5,17.5 M17.5,20 L18,18" fill="none" stroke={p.goldDk} strokeWidth="0.4" opacity="0.4" />
-          {/* Ruby gem in scepter */}
-          <circle cx="15" cy="22" r="1.5" fill="#ef4444" opacity="0.5" />
+          {/* Cobra head at top — small hood flare */}
+          <path d="M10,22 Q12,16 15,14 Q18,16 20,22 Q18,24 15,25 Q12,24 10,22 Z" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
+          {/* Cobra eyes on scepter */}
+          <circle cx="13" cy="20" r="0.6" fill="#ef4444" opacity="0.5" />
+          <circle cx="17" cy="20" r="0.6" fill="#ef4444" opacity="0.5" />
         </g>
       )
     default:

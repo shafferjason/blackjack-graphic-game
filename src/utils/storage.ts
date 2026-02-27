@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   HOUSE_RULES: 'blackjack-house-rules',
   HAND_HISTORY: 'blackjack-hand-history',
   ACHIEVEMENTS: 'blackjack-achievements',
+  REDEEMED_CODES: 'blackjack-redeemed-codes',
 } as const
 
 const MAX_HAND_HISTORY = 200
@@ -133,6 +134,34 @@ export function loadAchievements(): Achievement[] | null {
     // ignore parse errors
   }
   return null
+}
+
+export function isCodeRedeemed(code: string): boolean {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.REDEEMED_CODES)
+    if (stored) {
+      const codes = JSON.parse(stored)
+      if (Array.isArray(codes)) {
+        return codes.includes(code)
+      }
+    }
+  } catch {
+    // ignore parse errors
+  }
+  return false
+}
+
+export function markCodeRedeemed(code: string): void {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEYS.REDEEMED_CODES)
+    const codes: string[] = stored ? JSON.parse(stored) : []
+    if (!codes.includes(code)) {
+      codes.push(code)
+      localStorage.setItem(STORAGE_KEYS.REDEEMED_CODES, JSON.stringify(codes))
+    }
+  } catch {
+    // ignore storage errors
+  }
 }
 
 export function clearAllStorage(): void {

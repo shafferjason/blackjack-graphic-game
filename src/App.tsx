@@ -548,7 +548,7 @@ function App() {
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
           <TutorialOverlay />
           <CardSkinShop chips={state.chips} onDeductChips={(amount: number) => actions.adjustChips(-amount)} />
-          <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} />
+          <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} onAdjustChips={actions.adjustChips} />
           <AudioPanel muted={muted} volume={volume} soundProfile={soundProfile} onToggleMute={toggleMute} onSetVolume={setVolume} onSetSoundProfile={setSoundProfile} />
         </nav>
       </header>

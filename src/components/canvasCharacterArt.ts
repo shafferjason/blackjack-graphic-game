@@ -11083,7 +11083,7 @@ function drawCrimsonAce(ctx: CanvasRenderingContext2D) {
 
 
 // ═══════════════════════════════════════════════════════════════
-// ANIMAL KINGDOM — Wild Court of Majestic Beasts
+// ANIMAL KINGDOM — Serpent Court (Cobra, Boa, Viper, Snake)
 // ═══════════════════════════════════════════════════════════════
 
 function drawAnimalKingdom(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit: string) {
@@ -11096,23 +11096,23 @@ function drawAnimalKingdom(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit:
 }
 
 function drawAnimalKingdomBg(ctx: CanvasRenderingContext2D) {
-  // Warm savanna sunset gradient
+  // Dark jungle gradient — dense, humid, mysterious
   const bg = ctx.createLinearGradient(0, 0, 0, 840)
-  bg.addColorStop(0, '#1A0F0A')
-  bg.addColorStop(0.2, '#2D1810')
-  bg.addColorStop(0.4, '#5C3420')
-  bg.addColorStop(0.6, '#8B5E3C')
-  bg.addColorStop(0.8, '#C4803E')
-  bg.addColorStop(1, '#1A0F0A')
+  bg.addColorStop(0, '#0A0E06')
+  bg.addColorStop(0.2, '#141C0C')
+  bg.addColorStop(0.4, '#1E2A10')
+  bg.addColorStop(0.6, '#2A3818')
+  bg.addColorStop(0.8, '#1A2810')
+  bg.addColorStop(1, '#0A0E06')
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, 600, 840)
 
-  // Distant treeline silhouette
-  ctx.fillStyle = 'rgba(20, 12, 8, 0.6)'
+  // Dense foliage silhouettes
+  ctx.fillStyle = 'rgba(20, 40, 15, 0.5)'
   ctx.beginPath()
   ctx.moveTo(0, 720)
-  for (let x = 0; x <= 600; x += 30) {
-    const h = 690 + Math.sin(x * 0.02) * 20 + Math.cos(x * 0.05) * 10
+  for (let x = 0; x <= 600; x += 20) {
+    const h = 690 + Math.sin(x * 0.03) * 25 + Math.cos(x * 0.07) * 15
     ctx.lineTo(x, h)
   }
   ctx.lineTo(600, 840)
@@ -11120,39 +11120,38 @@ function drawAnimalKingdomBg(ctx: CanvasRenderingContext2D) {
   ctx.closePath()
   ctx.fill()
 
-  // Acacia tree silhouettes
-  for (const [tx, tw, th] of [[80, 40, 60], [480, 50, 70], [550, 30, 45]] as [number, number, number][]) {
-    ctx.fillStyle = 'rgba(20, 12, 8, 0.4)'
-    // Trunk
-    ctx.fillRect(tx - 3, 680 - th, 6, th + 10)
-    // Canopy — flat-topped acacia shape
+  // Jungle vine silhouettes
+  ctx.strokeStyle = 'rgba(30, 60, 20, 0.3)'
+  ctx.lineWidth = 3
+  for (const [sx, ex] of [[60, 40], [520, 550], [150, 130]] as [number, number][]) {
     ctx.beginPath()
-    ctx.ellipse(tx, 680 - th - 10, tw, 15, 0, 0, Math.PI * 2)
-    ctx.fill()
+    ctx.moveTo(sx, 0)
+    ctx.quadraticCurveTo((sx + ex) / 2 + 20, 300, ex, 600)
+    ctx.stroke()
   }
 
-  // Warm atmospheric glow
-  const sunGlow = ctx.createRadialGradient(300, 300, 20, 300, 300, 350)
-  sunGlow.addColorStop(0, 'rgba(255, 160, 50, 0.08)')
-  sunGlow.addColorStop(0.5, 'rgba(200, 100, 30, 0.04)')
-  sunGlow.addColorStop(1, 'transparent')
-  ctx.fillStyle = sunGlow
+  // Warm dappled light through canopy
+  const dappled = ctx.createRadialGradient(300, 280, 20, 300, 280, 300)
+  dappled.addColorStop(0, 'rgba(180, 160, 50, 0.06)')
+  dappled.addColorStop(0.5, 'rgba(100, 120, 30, 0.03)')
+  dappled.addColorStop(1, 'transparent')
+  ctx.fillStyle = dappled
   ctx.fillRect(0, 0, 600, 840)
 
-  // Dust particles
-  ctx.globalAlpha = 0.12
+  // Spore/dust particles
+  ctx.globalAlpha = 0.1
   for (let i = 0; i < 20; i++) {
-    ctx.fillStyle = '#C4803E'
+    ctx.fillStyle = i % 3 === 0 ? '#C4A030' : '#6A8A30'
     const dx = (i * 83.7 + 40) % 580 + 10
     const dy = (i * 61.3 + 25) % 800 + 20
     ctx.beginPath()
-    ctx.arc(dx, dy, 0.8 + (i % 3) * 0.5, 0, Math.PI * 2)
+    ctx.arc(dx, dy, 0.6 + (i % 3) * 0.4, 0, Math.PI * 2)
     ctx.fill()
   }
   ctx.globalAlpha = 1
 }
 
-// ── JACK — The Monkey (Mischievous Jester) ──
+// ── JACK — The Viper (Swift Striker) ──
 
 function drawAnimalKingdomJack(ctx: CanvasRenderingContext2D) {
   drawAnimalKingdomBg(ctx)
@@ -11181,303 +11180,192 @@ function drawAnimalKingdomJack(ctx: CanvasRenderingContext2D) {
     ctx.restore()
   }
 
-  // === MONKEY BODY ===
-  // Tail — long curling prehensile tail wrapped around vine
-  ctx.strokeStyle = '#8B6914'
-  ctx.lineWidth = 10
-  ctx.lineCap = 'round'
-  ctx.beginPath()
-  ctx.moveTo(400, 450)
-  ctx.quadraticCurveTo(480, 380, 500, 280)
-  ctx.quadraticCurveTo(510, 200, 480, 150)
-  ctx.quadraticCurveTo(460, 120, 440, 140)
-  ctx.stroke()
-  // Tail tip curl
-  ctx.lineWidth = 7
-  ctx.beginPath()
-  ctx.moveTo(440, 140)
-  ctx.quadraticCurveTo(430, 130, 435, 145)
-  ctx.stroke()
+  // === VIPER BODY — sinuous, coiled, ready to strike ===
+  // Tail section — coiled on ground
+  const bodyGrad = ctx.createLinearGradient(200, 400, 400, 700)
+  bodyGrad.addColorStop(0, '#6B8A28')
+  bodyGrad.addColorStop(0.4, '#4A6A18')
+  bodyGrad.addColorStop(0.8, '#3A5A10')
+  bodyGrad.addColorStop(1, '#2A4A08')
+  ctx.fillStyle = bodyGrad
 
-  // Legs — dynamic swinging pose
-  ctx.fillStyle = '#8B6914'
-  // Left leg — swinging forward
-  ctx.beginPath()
-  ctx.moveTo(240, 540)
-  ctx.quadraticCurveTo(220, 600, 200, 660)
-  ctx.quadraticCurveTo(195, 680, 210, 685)
-  ctx.quadraticCurveTo(230, 680, 240, 660)
-  ctx.quadraticCurveTo(265, 590, 280, 540)
-  ctx.closePath()
-  ctx.fill()
-
-  // Right leg — bent back
-  ctx.beginPath()
-  ctx.moveTo(320, 530)
-  ctx.quadraticCurveTo(360, 560, 380, 620)
-  ctx.quadraticCurveTo(385, 640, 370, 645)
-  ctx.quadraticCurveTo(350, 640, 345, 620)
-  ctx.quadraticCurveTo(330, 570, 310, 540)
-  ctx.closePath()
-  ctx.fill()
-
-  // Feet
-  ctx.fillStyle = '#6B5010'
-  ctx.beginPath()
-  ctx.ellipse(205, 685, 18, 10, -0.2, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.ellipse(375, 640, 18, 10, 0.3, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Torso — jester vest
-  const vest = ctx.createLinearGradient(220, 350, 380, 550)
-  vest.addColorStop(0, '#9B111E')
-  vest.addColorStop(0.5, '#7A0D18')
-  vest.addColorStop(1, '#5C0A12')
-  ctx.fillStyle = vest
-  ctx.beginPath()
-  ctx.moveTo(220, 370)
-  ctx.quadraticCurveTo(300, 340, 380, 370)
-  ctx.lineTo(360, 550)
-  ctx.quadraticCurveTo(300, 570, 240, 550)
-  ctx.closePath()
-  ctx.fill()
-
-  // Vest details — gold diamond pattern
-  ctx.fillStyle = '#D4A017'
-  for (const [dx, dy] of [[260, 420], [300, 390], [340, 420], [300, 450], [260, 480], [340, 480]] as [number, number][]) {
-    ctx.save()
-    ctx.translate(dx, dy)
-    ctx.rotate(Math.PI / 4)
-    ctx.fillRect(-5, -5, 10, 10)
-    ctx.restore()
-  }
-
-  // Vest collar — ruffled jester collar
-  ctx.fillStyle = '#D4A017'
-  for (let i = 0; i < 7; i++) {
-    const a = Math.PI + (i / 6) * Math.PI
-    const cx = 300 + Math.cos(a) * 85
-    const cy = 365 + Math.sin(a) * 20
-    ctx.beginPath()
-    ctx.ellipse(cx, cy, 18, 10, a, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // Belt with banana buckle
-  ctx.fillStyle = '#4A3008'
-  ctx.fillRect(220, 520, 160, 12)
-  ctx.fillStyle = '#FFD700'
-  ctx.beginPath()
-  ctx.ellipse(300, 526, 14, 8, 0, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.fillStyle = '#FFEB3B'
-  ctx.beginPath()
-  ctx.moveTo(294, 522)
-  ctx.quadraticCurveTo(300, 518, 306, 522)
-  ctx.quadraticCurveTo(304, 528, 296, 528)
-  ctx.closePath()
-  ctx.fill()
-
-  // Arms
-  ctx.fillStyle = '#8B6914'
+  // Main coiled body — S-curve
   ctx.lineWidth = 1
-  // Left arm — reaching up
   ctx.beginPath()
-  ctx.moveTo(225, 380)
-  ctx.quadraticCurveTo(170, 350, 140, 290)
-  ctx.quadraticCurveTo(135, 275, 148, 272)
-  ctx.quadraticCurveTo(165, 280, 170, 300)
-  ctx.quadraticCurveTo(195, 350, 240, 380)
+  ctx.moveTo(300, 360)
+  ctx.quadraticCurveTo(180, 420, 160, 520)
+  ctx.quadraticCurveTo(150, 600, 220, 660)
+  ctx.quadraticCurveTo(300, 710, 400, 660)
+  ctx.quadraticCurveTo(470, 610, 450, 540)
+  ctx.quadraticCurveTo(430, 470, 350, 440)
+  ctx.quadraticCurveTo(310, 430, 300, 400)
+  ctx.quadraticCurveTo(295, 380, 300, 360)
   ctx.closePath()
   ctx.fill()
-
-  // Right arm — holding banana
-  ctx.beginPath()
-  ctx.moveTo(375, 380)
-  ctx.quadraticCurveTo(420, 350, 440, 310)
-  ctx.quadraticCurveTo(445, 295, 432, 292)
-  ctx.quadraticCurveTo(415, 300, 410, 320)
-  ctx.quadraticCurveTo(395, 355, 365, 385)
-  ctx.closePath()
-  ctx.fill()
-
-  // Hands
-  ctx.fillStyle = '#A07818'
-  ctx.beginPath()
-  ctx.arc(144, 278, 14, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(437, 298, 14, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Banana in right hand
-  ctx.fillStyle = '#FFD700'
-  ctx.beginPath()
-  ctx.moveTo(430, 280)
-  ctx.quadraticCurveTo(450, 260, 460, 240)
-  ctx.quadraticCurveTo(465, 230, 458, 228)
-  ctx.quadraticCurveTo(445, 240, 425, 265)
-  ctx.closePath()
-  ctx.fill()
-  // Banana peel
-  ctx.fillStyle = '#FFEB3B'
-  ctx.beginPath()
-  ctx.moveTo(458, 228)
-  ctx.quadraticCurveTo(470, 225, 468, 235)
+  ctx.strokeStyle = '#2A3A08'
+  ctx.lineWidth = 2
   ctx.stroke()
 
-  // === HEAD ===
-  // Fur ruff around face
-  ctx.fillStyle = '#A07818'
-  ctx.beginPath()
-  ctx.ellipse(300, 280, 72, 68, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Face — lighter tan
-  const face = ctx.createRadialGradient(300, 285, 10, 300, 285, 50)
-  face.addColorStop(0, '#DEBB8C')
-  face.addColorStop(0.7, '#C4A060')
-  face.addColorStop(1, '#A07818')
-  ctx.fillStyle = face
-  ctx.beginPath()
-  ctx.ellipse(300, 290, 45, 40, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Ears — large, round
-  for (const [ex, dir] of [[245, -1], [355, 1]] as [number, number][]) {
-    ctx.fillStyle = '#8B6914'
+  // Scale pattern on body
+  ctx.globalAlpha = 0.15
+  for (let i = 0; i < 30; i++) {
+    const t = i / 30
+    const bx = 200 + Math.sin(t * Math.PI * 3) * 80 + t * 150
+    const by = 450 + t * 200 + Math.cos(t * Math.PI * 2) * 40
+    ctx.fillStyle = '#AACC00'
     ctx.beginPath()
-    ctx.arc(ex, 250, 22, 0, Math.PI * 2)
-    ctx.fill()
-    // Inner ear
-    ctx.fillStyle = '#DEBB8C'
-    ctx.beginPath()
-    ctx.arc(ex + dir * 2, 250, 14, 0, Math.PI * 2)
+    ctx.ellipse(bx, by, 8, 5, t * 2, 0, Math.PI * 2)
     ctx.fill()
   }
+  ctx.globalAlpha = 1
 
-  // Eyes — large, mischievous
-  for (const [eyeX, brow] of [[275, -0.15], [325, 0.15]] as [number, number][]) {
-    // Eye white
-    ctx.fillStyle = '#FFFFF0'
+  // Ventral (belly) stripe
+  ctx.strokeStyle = 'rgba(200, 210, 140, 0.2)'
+  ctx.lineWidth = 12
+  ctx.beginPath()
+  ctx.moveTo(300, 380)
+  ctx.quadraticCurveTo(200, 440, 180, 530)
+  ctx.quadraticCurveTo(170, 600, 240, 660)
+  ctx.stroke()
+
+  // Tail tip — tapered
+  ctx.fillStyle = '#3A5A10'
+  ctx.beginPath()
+  ctx.moveTo(450, 540)
+  ctx.quadraticCurveTo(490, 520, 510, 510)
+  ctx.quadraticCurveTo(520, 508, 510, 515)
+  ctx.quadraticCurveTo(485, 530, 445, 545)
+  ctx.closePath()
+  ctx.fill()
+
+  // === HEAD — triangular viper head, striking pose ===
+  // Neck — rising up from coils
+  const neckGrad = ctx.createLinearGradient(280, 350, 320, 250)
+  neckGrad.addColorStop(0, '#4A6A18')
+  neckGrad.addColorStop(1, '#6B8A28')
+  ctx.fillStyle = neckGrad
+  ctx.beginPath()
+  ctx.moveTo(275, 360)
+  ctx.quadraticCurveTo(270, 310, 275, 260)
+  ctx.lineTo(325, 260)
+  ctx.quadraticCurveTo(330, 310, 325, 360)
+  ctx.closePath()
+  ctx.fill()
+
+  // Head — distinctive triangular viper shape
+  const headGrad = ctx.createRadialGradient(300, 230, 10, 300, 230, 55)
+  headGrad.addColorStop(0, '#8BAA30')
+  headGrad.addColorStop(0.6, '#6B8A28')
+  headGrad.addColorStop(1, '#4A6A18')
+  ctx.fillStyle = headGrad
+  ctx.beginPath()
+  ctx.moveTo(250, 260)
+  ctx.lineTo(300, 195)
+  ctx.lineTo(350, 260)
+  ctx.quadraticCurveTo(330, 280, 300, 285)
+  ctx.quadraticCurveTo(270, 280, 250, 260)
+  ctx.closePath()
+  ctx.fill()
+  ctx.strokeStyle = '#2A4A08'
+  ctx.lineWidth = 1.5
+  ctx.stroke()
+
+  // Scale texture on head
+  ctx.globalAlpha = 0.15
+  ctx.fillStyle = '#AACC00'
+  for (const [sx, sy] of [[285, 225], [315, 225], [300, 215], [275, 245], [325, 245]] as [number, number][]) {
     ctx.beginPath()
-    ctx.ellipse(eyeX, 275, 14, 11, brow, 0, Math.PI * 2)
+    ctx.ellipse(sx, sy, 6, 4, 0, 0, Math.PI * 2)
     ctx.fill()
-    // Iris — amber
-    ctx.fillStyle = '#8B5E14'
+  }
+  ctx.globalAlpha = 1
+
+  // Heat pits — characteristic viper feature
+  ctx.fillStyle = '#1A2A08'
+  ctx.beginPath()
+  ctx.ellipse(275, 250, 4, 2.5, -0.3, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(325, 250, 4, 2.5, 0.3, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Eyes — bright yellow-green with vertical slit pupils
+  for (const [eyeX, dir] of [[280, -1], [320, 1]] as [number, number][]) {
+    ctx.fillStyle = '#CCEE00'
     ctx.beginPath()
-    ctx.arc(eyeX + 2, 275, 7, 0, Math.PI * 2)
+    ctx.ellipse(eyeX, 235, 12, 9, dir * 0.1, 0, Math.PI * 2)
     ctx.fill()
-    // Pupil
+    // Vertical slit pupil
     ctx.fillStyle = '#1A1A1A'
     ctx.beginPath()
-    ctx.arc(eyeX + 2, 275, 3.5, 0, Math.PI * 2)
+    ctx.ellipse(eyeX, 235, 3, 8, 0, 0, Math.PI * 2)
     ctx.fill()
-    // Highlight
+    // Eye highlight
     ctx.fillStyle = '#FFFFFF'
     ctx.beginPath()
-    ctx.arc(eyeX + 4, 273, 2.5, 0, Math.PI * 2)
+    ctx.arc(eyeX + dir * 3, 233, 2.5, 0, Math.PI * 2)
     ctx.fill()
   }
 
-  // Eyebrows — raised, mischievous
-  ctx.strokeStyle = '#5C3C08'
-  ctx.lineWidth = 2.5
+  // Open mouth — fangs bared, striking
+  ctx.fillStyle = '#4A1020'
   ctx.beginPath()
-  ctx.moveTo(258, 260)
-  ctx.quadraticCurveTo(275, 252, 290, 258)
+  ctx.moveTo(280, 268)
+  ctx.quadraticCurveTo(300, 300, 320, 268)
+  ctx.quadraticCurveTo(300, 275, 280, 268)
+  ctx.closePath()
+  ctx.fill()
+
+  // Fangs — long, curved
+  ctx.fillStyle = '#F5F0E0'
+  ctx.beginPath()
+  ctx.moveTo(285, 268)
+  ctx.lineTo(282, 295)
+  ctx.lineTo(290, 272)
+  ctx.closePath()
+  ctx.fill()
+  ctx.beginPath()
+  ctx.moveTo(315, 268)
+  ctx.lineTo(318, 295)
+  ctx.lineTo(310, 272)
+  ctx.closePath()
+  ctx.fill()
+
+  // Forked tongue
+  ctx.strokeStyle = '#CC3030'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(300, 285)
+  ctx.lineTo(300, 315)
+  ctx.stroke()
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(300, 315)
+  ctx.lineTo(294, 328)
   ctx.stroke()
   ctx.beginPath()
-  ctx.moveTo(310, 258)
-  ctx.quadraticCurveTo(325, 252, 342, 260)
+  ctx.moveTo(300, 315)
+  ctx.lineTo(306, 328)
   ctx.stroke()
 
-  // Nose — small, flat
-  ctx.fillStyle = '#6B5010'
+  // Venom drip from fang
+  ctx.fillStyle = 'rgba(170, 204, 0, 0.6)'
   ctx.beginPath()
-  ctx.ellipse(300, 295, 8, 5, 0, 0, Math.PI * 2)
-  ctx.fill()
-  // Nostrils
-  ctx.fillStyle = '#4A3008'
-  ctx.beginPath()
-  ctx.arc(296, 296, 2, 0, Math.PI * 2)
+  ctx.arc(282, 298, 3, 0, Math.PI * 2)
   ctx.fill()
   ctx.beginPath()
-  ctx.arc(304, 296, 2, 0, Math.PI * 2)
+  ctx.arc(283, 305, 2, 0, Math.PI * 2)
   ctx.fill()
-
-  // Mouth — wide mischievous grin
-  ctx.strokeStyle = '#4A3008'
-  ctx.lineWidth = 2.5
-  ctx.beginPath()
-  ctx.moveTo(275, 310)
-  ctx.quadraticCurveTo(300, 325, 325, 310)
-  ctx.stroke()
-  // Teeth — showing in grin
-  ctx.fillStyle = '#FFFFF0'
-  ctx.beginPath()
-  ctx.moveTo(285, 310)
-  ctx.quadraticCurveTo(300, 318, 315, 310)
-  ctx.lineTo(315, 313)
-  ctx.quadraticCurveTo(300, 320, 285, 313)
-  ctx.closePath()
-  ctx.fill()
-
-  // Jester hat — tri-pointed with bells
-  ctx.fillStyle = '#9B111E'
-  // Center point
-  ctx.beginPath()
-  ctx.moveTo(260, 230)
-  ctx.quadraticCurveTo(300, 160, 300, 130)
-  ctx.quadraticCurveTo(300, 160, 340, 230)
-  ctx.closePath()
-  ctx.fill()
-  // Left point
-  ctx.beginPath()
-  ctx.moveTo(240, 250)
-  ctx.quadraticCurveTo(190, 190, 170, 180)
-  ctx.quadraticCurveTo(195, 210, 260, 250)
-  ctx.closePath()
-  ctx.fill()
-  // Right point
-  ctx.beginPath()
-  ctx.moveTo(360, 250)
-  ctx.quadraticCurveTo(410, 190, 430, 180)
-  ctx.quadraticCurveTo(405, 210, 340, 250)
-  ctx.closePath()
-  ctx.fill()
-
-  // Bells on hat tips
-  ctx.fillStyle = '#FFD700'
-  ctx.beginPath()
-  ctx.arc(300, 128, 8, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(168, 178, 7, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.arc(432, 178, 7, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Bell highlights
-  ctx.fillStyle = '#FFF8E1'
-  for (const [bx, by] of [[298, 126], [166, 176], [430, 176]] as [number, number][]) {
-    ctx.beginPath()
-    ctx.arc(bx, by, 2.5, 0, Math.PI * 2)
-    ctx.fill()
-  }
 
   // Warm character lighting
   const charLight = ctx.createRadialGradient(300, 350, 30, 300, 350, 250)
-  charLight.addColorStop(0, 'rgba(255, 180, 80, 0.06)')
+  charLight.addColorStop(0, 'rgba(180, 200, 80, 0.06)')
   charLight.addColorStop(1, 'transparent')
   ctx.fillStyle = charLight
   ctx.fillRect(0, 0, 600, 840)
 }
 
-// ── QUEEN — The Tiger (Fierce Empress) ──
+// ── QUEEN — The Boa Constrictor (Coiled Empress) ──
 
 function drawAnimalKingdomQueen(ctx: CanvasRenderingContext2D) {
   drawAnimalKingdomBg(ctx)
@@ -11499,809 +11387,653 @@ function drawAnimalKingdomQueen(ctx: CanvasRenderingContext2D) {
   }
   ctx.globalAlpha = 1
 
-  // === TIGER BODY ===
-  // Tail — thick, striped, curling
-  ctx.strokeStyle = '#D4822A'
-  ctx.lineWidth = 16
-  ctx.lineCap = 'round'
-  ctx.beginPath()
-  ctx.moveTo(420, 530)
-  ctx.quadraticCurveTo(500, 480, 520, 400)
-  ctx.quadraticCurveTo(530, 340, 510, 310)
-  ctx.stroke()
-  // Tail stripes
-  ctx.strokeStyle = '#1A1A1A'
-  ctx.lineWidth = 4
-  for (const t of [0.2, 0.4, 0.6, 0.8]) {
-    const tx = 420 + (520 - 420) * t + Math.sin(t * 3) * 30
-    const ty = 530 + (310 - 530) * t + Math.cos(t * 3) * 20
-    ctx.beginPath()
-    ctx.arc(tx, ty, 8, 0, Math.PI * 2)
-    ctx.stroke()
-  }
+  // === BOA CONSTRICTOR BODY — massive, coiled, powerful ===
+  // Thick body coils — stacked layers
+  const bodyGrad = ctx.createLinearGradient(150, 400, 450, 700)
+  bodyGrad.addColorStop(0, '#8B6A30')
+  bodyGrad.addColorStop(0.3, '#A07828')
+  bodyGrad.addColorStop(0.6, '#7A5820')
+  bodyGrad.addColorStop(1, '#5A4018')
+  ctx.fillStyle = bodyGrad
 
-  // Hind legs
-  ctx.fillStyle = '#D4822A'
+  // Lower coil — thick base loop
   ctx.beginPath()
-  ctx.moveTo(220, 560)
-  ctx.quadraticCurveTo(200, 640, 190, 700)
-  ctx.quadraticCurveTo(188, 720, 205, 722)
-  ctx.quadraticCurveTo(225, 720, 230, 700)
-  ctx.quadraticCurveTo(240, 640, 260, 560)
-  ctx.closePath()
-  ctx.fill()
-  ctx.beginPath()
-  ctx.moveTo(350, 555)
-  ctx.quadraticCurveTo(370, 630, 380, 695)
-  ctx.quadraticCurveTo(382, 715, 395, 717)
-  ctx.quadraticCurveTo(410, 715, 410, 695)
-  ctx.quadraticCurveTo(400, 630, 385, 555)
+  ctx.moveTo(120, 640)
+  ctx.quadraticCurveTo(120, 720, 200, 740)
+  ctx.quadraticCurveTo(350, 760, 480, 720)
+  ctx.quadraticCurveTo(520, 700, 500, 640)
+  ctx.quadraticCurveTo(450, 620, 350, 630)
+  ctx.quadraticCurveTo(200, 640, 120, 640)
   ctx.closePath()
   ctx.fill()
 
-  // Paws with claws
-  for (const px of [197, 397]) {
-    ctx.fillStyle = '#C47020'
+  // Middle coil
+  ctx.beginPath()
+  ctx.moveTo(140, 540)
+  ctx.quadraticCurveTo(130, 620, 180, 650)
+  ctx.quadraticCurveTo(300, 680, 430, 640)
+  ctx.quadraticCurveTo(480, 620, 470, 540)
+  ctx.quadraticCurveTo(400, 520, 300, 530)
+  ctx.quadraticCurveTo(200, 540, 140, 540)
+  ctx.closePath()
+  ctx.fill()
+
+  // Upper body — rising upward
+  ctx.beginPath()
+  ctx.moveTo(200, 440)
+  ctx.quadraticCurveTo(180, 500, 190, 550)
+  ctx.quadraticCurveTo(250, 560, 350, 550)
+  ctx.quadraticCurveTo(420, 540, 430, 470)
+  ctx.quadraticCurveTo(400, 420, 350, 410)
+  ctx.quadraticCurveTo(270, 410, 200, 440)
+  ctx.closePath()
+  ctx.fill()
+
+  // Boa saddle pattern — distinctive large blotches
+  ctx.globalAlpha = 0.25
+  ctx.fillStyle = '#5A3818'
+  for (const [bx, by, bw, bh] of [[200, 660, 30, 20], [300, 680, 35, 22], [420, 650, 28, 18], [180, 570, 25, 18], [310, 560, 32, 20], [420, 550, 26, 16], [250, 460, 28, 18], [360, 450, 25, 16]] as [number, number, number, number][]) {
     ctx.beginPath()
-    ctx.ellipse(px, 722, 22, 10, 0, 0, Math.PI * 2)
+    ctx.ellipse(bx, by, bw, bh, 0.2, 0, Math.PI * 2)
     ctx.fill()
-    // Claws
-    ctx.fillStyle = '#F5F0E0'
-    for (let c = -1; c <= 1; c++) {
-      ctx.beginPath()
-      ctx.moveTo(px + c * 8, 730)
-      ctx.lineTo(px + c * 8 - 2, 738)
-      ctx.lineTo(px + c * 8 + 2, 738)
-      ctx.closePath()
-      ctx.fill()
-    }
   }
+  ctx.globalAlpha = 1
 
-  // Torso — powerful feline body
-  const torso = ctx.createRadialGradient(300, 480, 30, 300, 480, 150)
-  torso.addColorStop(0, '#E89830')
-  torso.addColorStop(0.5, '#D4822A')
-  torso.addColorStop(1, '#B06820')
-  ctx.fillStyle = torso
+  // Ventral (belly) lighter stripe on visible sections
+  ctx.fillStyle = 'rgba(220, 200, 160, 0.2)'
   ctx.beginPath()
-  ctx.moveTo(180, 390)
-  ctx.quadraticCurveTo(300, 350, 420, 390)
-  ctx.lineTo(400, 570)
-  ctx.quadraticCurveTo(300, 590, 200, 570)
+  ctx.ellipse(300, 680, 120, 15, 0, 0, Math.PI)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(300, 580, 100, 12, 0, 0, Math.PI)
+  ctx.fill()
+
+  // Tail tip visible from bottom coil
+  ctx.fillStyle = '#5A4018'
+  ctx.beginPath()
+  ctx.moveTo(490, 660)
+  ctx.quadraticCurveTo(530, 640, 540, 620)
+  ctx.quadraticCurveTo(535, 618, 525, 625)
+  ctx.quadraticCurveTo(515, 640, 480, 655)
   ctx.closePath()
   ctx.fill()
 
-  // White chest patch
-  ctx.fillStyle = 'rgba(255, 250, 240, 0.5)'
+  // === HEAD — broad boa constrictor head rising from coils ===
+  // Neck — thick, powerful
+  const neckGrad = ctx.createLinearGradient(270, 440, 330, 320)
+  neckGrad.addColorStop(0, '#8B6A30')
+  neckGrad.addColorStop(1, '#A07828')
+  ctx.fillStyle = neckGrad
   ctx.beginPath()
-  ctx.ellipse(300, 440, 55, 70, 0, 0, Math.PI * 2)
+  ctx.moveTo(260, 440)
+  ctx.quadraticCurveTo(255, 380, 260, 320)
+  ctx.lineTo(340, 320)
+  ctx.quadraticCurveTo(345, 380, 340, 440)
+  ctx.closePath()
   ctx.fill()
 
-  // Tiger stripes on body
-  ctx.strokeStyle = '#1A1A1A'
-  ctx.lineWidth = 5
-  ctx.lineCap = 'round'
-  for (const [sx, sy, ex, ey] of [[210, 420, 240, 440], [380, 415, 405, 440], [200, 470, 235, 490], [370, 470, 400, 490], [215, 520, 245, 535], [365, 515, 395, 535], [250, 550, 270, 560], [340, 545, 360, 560]] as [number, number, number, number][]) {
+  // Head — broad, rounded (boa, not triangular like viper)
+  const headGrad = ctx.createRadialGradient(300, 280, 15, 300, 280, 60)
+  headGrad.addColorStop(0, '#B88838')
+  headGrad.addColorStop(0.5, '#A07828')
+  headGrad.addColorStop(1, '#7A5820')
+  ctx.fillStyle = headGrad
+  ctx.beginPath()
+  ctx.ellipse(300, 280, 55, 45, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.strokeStyle = '#4A3010'
+  ctx.lineWidth = 1.5
+  ctx.stroke()
+
+  // Lighter chin/jaw area
+  ctx.fillStyle = 'rgba(220, 200, 160, 0.35)'
+  ctx.beginPath()
+  ctx.ellipse(300, 305, 35, 18, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Saddle markings on head
+  ctx.globalAlpha = 0.25
+  ctx.fillStyle = '#5A3818'
+  ctx.beginPath()
+  ctx.ellipse(280, 260, 14, 10, -0.2, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(320, 260, 14, 10, 0.2, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(300, 248, 12, 8, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalAlpha = 1
+
+  // Eyes — amber, hypnotic, with round pupils (boas have round pupils)
+  for (const [eyeX, dir] of [[278, -1], [322, 1]] as [number, number][]) {
+    ctx.fillStyle = '#E8C840'
+    ctx.beginPath()
+    ctx.ellipse(eyeX, 272, 11, 8, dir * 0.1, 0, Math.PI * 2)
+    ctx.fill()
+    // Round pupil (non-venomous boa)
+    ctx.fillStyle = '#1A1A1A'
+    ctx.beginPath()
+    ctx.arc(eyeX + dir, 272, 4.5, 0, Math.PI * 2)
+    ctx.fill()
+    // Highlight
+    ctx.fillStyle = '#FFFFFF'
+    ctx.beginPath()
+    ctx.arc(eyeX + dir * 3, 270, 2, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // Nostrils
+  ctx.fillStyle = '#3A2810'
+  for (const nx of [290, 310]) {
+    ctx.beginPath()
+    ctx.ellipse(nx, 298, 3, 2, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // Mouth line — dignified, closed
+  ctx.strokeStyle = '#4A3010'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(260, 310)
+  ctx.quadraticCurveTo(300, 320, 340, 310)
+  ctx.stroke()
+
+  // Forked tongue — delicate, tasting air
+  ctx.strokeStyle = '#CC5050'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(300, 315)
+  ctx.lineTo(300, 340)
+  ctx.stroke()
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(300, 340)
+  ctx.lineTo(295, 350)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(300, 340)
+  ctx.lineTo(305, 350)
+  ctx.stroke()
+
+  // === TIARA / CROWN — golden, ornate ===
+  ctx.fillStyle = '#D4A017'
+  ctx.beginPath()
+  ctx.moveTo(262, 245)
+  ctx.lineTo(265, 225)
+  ctx.lineTo(275, 235)
+  ctx.lineTo(285, 220)
+  ctx.lineTo(300, 235)
+  ctx.lineTo(315, 220)
+  ctx.lineTo(325, 235)
+  ctx.lineTo(335, 225)
+  ctx.lineTo(338, 245)
+  ctx.closePath()
+  ctx.fill()
+
+  // Crown jewels
+  ctx.fillStyle = '#9B111E'
+  ctx.beginPath()
+  ctx.arc(300, 230, 4, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#046A38'
+  ctx.beginPath()
+  ctx.arc(280, 232, 3, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(320, 232, 3, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Warm lighting
+  const charLight = ctx.createRadialGradient(300, 400, 30, 300, 400, 280)
+  charLight.addColorStop(0, 'rgba(200, 180, 80, 0.06)')
+  charLight.addColorStop(1, 'transparent')
+  ctx.fillStyle = charLight
+  ctx.fillRect(0, 0, 600, 840)
+}
+
+// ── KING — The Cobra (Supreme Ruler) ──
+
+function drawAnimalKingdomKing(ctx: CanvasRenderingContext2D) {
+  drawAnimalKingdomBg(ctx)
+
+  // Rocky jungle floor
+  ctx.fillStyle = '#3A2A18'
+  ctx.beginPath()
+  ctx.moveTo(0, 700)
+  for (let x = 0; x <= 600; x += 30) {
+    ctx.lineTo(x, 690 + Math.sin(x * 0.04) * 15)
+  }
+  ctx.lineTo(600, 840)
+  ctx.lineTo(0, 840)
+  ctx.closePath()
+  ctx.fill()
+
+  // === COBRA BODY — massive, coiled, reared up with spread hood ===
+  // Lower coils — thick, stacked
+  const bodyGrad = ctx.createLinearGradient(150, 500, 450, 800)
+  bodyGrad.addColorStop(0, '#3A5A10')
+  bodyGrad.addColorStop(0.3, '#4A6A18')
+  bodyGrad.addColorStop(0.6, '#3A5010')
+  bodyGrad.addColorStop(1, '#2A3A08')
+  ctx.fillStyle = bodyGrad
+
+  // Bottom coil
+  ctx.beginPath()
+  ctx.moveTo(100, 690)
+  ctx.quadraticCurveTo(100, 760, 200, 780)
+  ctx.quadraticCurveTo(350, 800, 500, 760)
+  ctx.quadraticCurveTo(540, 740, 520, 690)
+  ctx.quadraticCurveTo(400, 670, 300, 680)
+  ctx.quadraticCurveTo(200, 690, 100, 690)
+  ctx.closePath()
+  ctx.fill()
+
+  // Middle coil
+  ctx.beginPath()
+  ctx.moveTo(120, 600)
+  ctx.quadraticCurveTo(110, 670, 180, 700)
+  ctx.quadraticCurveTo(300, 720, 440, 690)
+  ctx.quadraticCurveTo(500, 670, 490, 600)
+  ctx.quadraticCurveTo(400, 580, 300, 590)
+  ctx.quadraticCurveTo(200, 600, 120, 600)
+  ctx.closePath()
+  ctx.fill()
+
+  // Upper body — rising up high
+  ctx.beginPath()
+  ctx.moveTo(260, 590)
+  ctx.quadraticCurveTo(250, 500, 260, 400)
+  ctx.lineTo(340, 400)
+  ctx.quadraticCurveTo(350, 500, 340, 590)
+  ctx.closePath()
+  ctx.fill()
+
+  // Scale pattern on coils
+  ctx.globalAlpha = 0.15
+  ctx.fillStyle = '#8BAA30'
+  for (let i = 0; i < 25; i++) {
+    const t = i / 25
+    const bx = 180 + Math.sin(t * Math.PI * 2) * 120 + t * 120
+    const by = 610 + t * 150 + Math.cos(t * Math.PI * 3) * 30
+    ctx.beginPath()
+    ctx.ellipse(bx, by, 10, 6, t * 1.5, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.globalAlpha = 1
+
+  // Diamond/chevron pattern on neck
+  ctx.globalAlpha = 0.2
+  ctx.fillStyle = '#2A3A08'
+  for (let i = 0; i < 8; i++) {
+    const dy = 420 + i * 22
+    ctx.beginPath()
+    ctx.moveTo(290, dy)
+    ctx.lineTo(300, dy - 8)
+    ctx.lineTo(310, dy)
+    ctx.lineTo(300, dy + 8)
+    ctx.closePath()
+    ctx.fill()
+  }
+  ctx.globalAlpha = 1
+
+  // Tail tip
+  ctx.fillStyle = '#2A3A08'
+  ctx.beginPath()
+  ctx.moveTo(510, 700)
+  ctx.quadraticCurveTo(550, 680, 570, 660)
+  ctx.quadraticCurveTo(565, 656, 555, 665)
+  ctx.quadraticCurveTo(535, 685, 500, 700)
+  ctx.closePath()
+  ctx.fill()
+
+  // === HOOD — massive spread cobra hood ===
+  const hoodGrad = ctx.createRadialGradient(300, 320, 30, 300, 320, 140)
+  hoodGrad.addColorStop(0, '#6B8A28')
+  hoodGrad.addColorStop(0.5, '#4A6A18')
+  hoodGrad.addColorStop(1, '#3A5010')
+  ctx.fillStyle = hoodGrad
+  ctx.beginPath()
+  ctx.moveTo(160, 360)
+  ctx.quadraticCurveTo(130, 280, 180, 220)
+  ctx.quadraticCurveTo(240, 170, 300, 160)
+  ctx.quadraticCurveTo(360, 170, 420, 220)
+  ctx.quadraticCurveTo(470, 280, 440, 360)
+  ctx.quadraticCurveTo(380, 400, 300, 405)
+  ctx.quadraticCurveTo(220, 400, 160, 360)
+  ctx.closePath()
+  ctx.fill()
+  ctx.strokeStyle = '#2A3A08'
+  ctx.lineWidth = 2
+  ctx.stroke()
+
+  // Hood ribs — radial lines showing stretch
+  ctx.strokeStyle = 'rgba(50, 80, 20, 0.2)'
+  ctx.lineWidth = 1
+  for (let i = 0; i < 10; i++) {
+    const angle = Math.PI * 0.3 + (i / 9) * Math.PI * 0.4
+    const sx = 300 + Math.cos(angle) * 30
+    const sy = 310 + Math.sin(angle) * 20
+    const ex = 300 + Math.cos(angle) * 130
+    const ey = 310 - Math.sin(angle) * 120
     ctx.beginPath()
     ctx.moveTo(sx, sy)
     ctx.lineTo(ex, ey)
     ctx.stroke()
   }
 
-  // Front legs
-  ctx.fillStyle = '#D4822A'
-  // Left front — forward
+  // Spectacle marking — iconic cobra hood pattern
+  ctx.fillStyle = '#D4A017'
+  ctx.globalAlpha = 0.4
+  // Left eye marking
   ctx.beginPath()
-  ctx.moveTo(210, 400)
-  ctx.quadraticCurveTo(175, 460, 160, 540)
-  ctx.quadraticCurveTo(158, 560, 172, 562)
-  ctx.quadraticCurveTo(190, 560, 192, 540)
-  ctx.quadraticCurveTo(205, 460, 235, 400)
-  ctx.closePath()
+  ctx.ellipse(245, 290, 25, 18, -0.2, 0, Math.PI * 2)
   ctx.fill()
-  // Right front — resting
+  // Right eye marking
   ctx.beginPath()
-  ctx.moveTo(390, 400)
-  ctx.quadraticCurveTo(420, 450, 430, 535)
-  ctx.quadraticCurveTo(432, 555, 418, 557)
-  ctx.quadraticCurveTo(400, 555, 400, 535)
-  ctx.quadraticCurveTo(390, 450, 370, 405)
-  ctx.closePath()
+  ctx.ellipse(355, 290, 25, 18, 0.2, 0, Math.PI * 2)
   ctx.fill()
-
-  // Front paws
-  for (const px of [166, 422]) {
-    ctx.fillStyle = '#C47020'
-    ctx.beginPath()
-    ctx.ellipse(px, 560, 20, 10, 0, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // === HEAD ===
-  // Neck fur
-  ctx.fillStyle = '#D4822A'
+  // Bridge connecting them
   ctx.beginPath()
-  ctx.moveTo(230, 400)
-  ctx.quadraticCurveTo(300, 350, 370, 400)
-  ctx.quadraticCurveTo(340, 320, 300, 300)
-  ctx.quadraticCurveTo(260, 320, 230, 400)
-  ctx.closePath()
+  ctx.moveTo(268, 295)
+  ctx.quadraticCurveTo(300, 310, 332, 295)
+  ctx.quadraticCurveTo(300, 320, 268, 295)
   ctx.fill()
+  ctx.globalAlpha = 1
 
-  // Head shape
-  const headGrad = ctx.createRadialGradient(300, 260, 15, 300, 260, 65)
-  headGrad.addColorStop(0, '#E89830')
-  headGrad.addColorStop(0.6, '#D4822A')
-  headGrad.addColorStop(1, '#B06820')
+  // === HEAD — proud cobra face ===
+  const headGrad = ctx.createRadialGradient(300, 275, 10, 300, 275, 45)
+  headGrad.addColorStop(0, '#8BAA30')
+  headGrad.addColorStop(0.6, '#6B8A28')
+  headGrad.addColorStop(1, '#4A6A18')
   ctx.fillStyle = headGrad
   ctx.beginPath()
-  ctx.ellipse(300, 260, 65, 55, 0, 0, Math.PI * 2)
+  ctx.ellipse(300, 275, 45, 40, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  // White muzzle area
-  ctx.fillStyle = 'rgba(255, 250, 240, 0.6)'
-  ctx.beginPath()
-  ctx.ellipse(300, 280, 35, 25, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Ears — triangular with inner pink
-  for (const [ex, dir] of [[252, -1], [348, 1]] as [number, number][]) {
-    ctx.fillStyle = '#D4822A'
+  // Eyes — piercing golden, vertical slit pupils
+  for (const [eyeX, dir] of [[278, -1], [322, 1]] as [number, number][]) {
+    ctx.fillStyle = '#FFD700'
     ctx.beginPath()
-    ctx.moveTo(ex - dir * 18, 240)
-    ctx.lineTo(ex, 195)
-    ctx.lineTo(ex + dir * 18, 240)
-    ctx.closePath()
+    ctx.ellipse(eyeX, 265, 12, 9, dir * 0.1, 0, Math.PI * 2)
     ctx.fill()
-    // Inner ear
-    ctx.fillStyle = '#DEBB8C'
-    ctx.beginPath()
-    ctx.moveTo(ex - dir * 10, 237)
-    ctx.lineTo(ex, 206)
-    ctx.lineTo(ex + dir * 10, 237)
-    ctx.closePath()
-    ctx.fill()
-  }
-
-  // Face stripes
-  ctx.strokeStyle = '#1A1A1A'
-  ctx.lineWidth = 3
-  // Forehead
-  ctx.beginPath(); ctx.moveTo(280, 225); ctx.lineTo(275, 240); ctx.stroke()
-  ctx.beginPath(); ctx.moveTo(320, 225); ctx.lineTo(325, 240); ctx.stroke()
-  ctx.beginPath(); ctx.moveTo(300, 220); ctx.lineTo(300, 235); ctx.stroke()
-  // Cheeks
-  ctx.beginPath(); ctx.moveTo(245, 260); ctx.lineTo(255, 270); ctx.stroke()
-  ctx.beginPath(); ctx.moveTo(355, 260); ctx.lineTo(345, 270); ctx.stroke()
-  ctx.beginPath(); ctx.moveTo(242, 275); ctx.lineTo(255, 282); ctx.stroke()
-  ctx.beginPath(); ctx.moveTo(358, 275); ctx.lineTo(345, 282); ctx.stroke()
-
-  // Eyes — fierce, amber-green
-  for (const [eyeX, dir] of [[275, -1], [325, 1]] as [number, number][]) {
-    ctx.fillStyle = '#FFFFF0'
-    ctx.beginPath()
-    ctx.ellipse(eyeX, 255, 14, 9, dir * 0.1, 0, Math.PI * 2)
-    ctx.fill()
-    // Iris
-    ctx.fillStyle = '#8B9B14'
-    ctx.beginPath()
-    ctx.arc(eyeX + dir * 2, 255, 7, 0, Math.PI * 2)
-    ctx.fill()
-    // Pupil — vertical slit
+    // Vertical slit
     ctx.fillStyle = '#1A1A1A'
     ctx.beginPath()
-    ctx.ellipse(eyeX + dir * 2, 255, 2.5, 6, 0, 0, Math.PI * 2)
+    ctx.ellipse(eyeX, 265, 3, 8, 0, 0, Math.PI * 2)
     ctx.fill()
     // Highlight
     ctx.fillStyle = '#FFFFFF'
     ctx.beginPath()
-    ctx.arc(eyeX + dir * 4, 253, 2.5, 0, Math.PI * 2)
+    ctx.arc(eyeX + dir * 3, 263, 2.5, 0, Math.PI * 2)
     ctx.fill()
   }
 
-  // Nose — pink feline
-  ctx.fillStyle = '#D4788C'
+  // Nostrils
+  ctx.fillStyle = '#2A3A08'
   ctx.beginPath()
-  ctx.moveTo(295, 275)
-  ctx.lineTo(300, 270)
-  ctx.lineTo(305, 275)
-  ctx.quadraticCurveTo(300, 280, 295, 275)
-  ctx.fill()
-
-  // Whiskers
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)'
-  ctx.lineWidth = 1
-  for (const [wx, wy, dx, dy] of [[270, 278, 210, 270], [270, 282, 205, 285], [270, 286, 215, 300], [330, 278, 390, 270], [330, 282, 395, 285], [330, 286, 385, 300]] as [number, number, number, number][]) {
-    ctx.beginPath()
-    ctx.moveTo(wx, wy)
-    ctx.lineTo(dx, dy)
-    ctx.stroke()
-  }
-
-  // Mouth
-  ctx.strokeStyle = '#5C3C08'
-  ctx.lineWidth = 1.5
-  ctx.beginPath()
-  ctx.moveTo(290, 290)
-  ctx.quadraticCurveTo(300, 296, 310, 290)
-  ctx.stroke()
-
-  // === TIARA / CROWN ===
-  ctx.fillStyle = '#D4A017'
-  ctx.beginPath()
-  ctx.moveTo(262, 220)
-  ctx.lineTo(265, 200)
-  ctx.lineTo(275, 210)
-  ctx.lineTo(285, 195)
-  ctx.lineTo(300, 210)
-  ctx.lineTo(315, 195)
-  ctx.lineTo(325, 210)
-  ctx.lineTo(335, 200)
-  ctx.lineTo(338, 220)
-  ctx.closePath()
-  ctx.fill()
-
-  // Crown jewels
-  ctx.fillStyle = '#9B111E'
-  ctx.beginPath()
-  ctx.arc(300, 206, 4, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.fillStyle = '#046A38'
-  ctx.beginPath()
-  ctx.arc(280, 208, 3, 0, Math.PI * 2)
+  ctx.ellipse(292, 285, 3, 2, 0, 0, Math.PI * 2)
   ctx.fill()
   ctx.beginPath()
-  ctx.arc(320, 208, 3, 0, Math.PI * 2)
+  ctx.ellipse(308, 285, 3, 2, 0, 0, Math.PI * 2)
   ctx.fill()
 
-  // Warm lighting
-  const charLight = ctx.createRadialGradient(300, 400, 30, 300, 400, 280)
-  charLight.addColorStop(0, 'rgba(255, 180, 80, 0.06)')
-  charLight.addColorStop(1, 'transparent')
-  ctx.fillStyle = charLight
-  ctx.fillRect(0, 0, 600, 840)
-}
-
-// ── KING — The Lion (Supreme Ruler) ──
-
-function drawAnimalKingdomKing(ctx: CanvasRenderingContext2D) {
-  drawAnimalKingdomBg(ctx)
-
-  // Throne/rocky outcrop
-  ctx.fillStyle = '#5C4033'
-  ctx.beginPath()
-  ctx.moveTo(80, 840)
-  ctx.lineTo(100, 620)
-  ctx.quadraticCurveTo(200, 580, 300, 560)
-  ctx.quadraticCurveTo(400, 580, 500, 620)
-  ctx.lineTo(520, 840)
-  ctx.closePath()
-  ctx.fill()
-  // Rock texture
-  ctx.strokeStyle = 'rgba(80, 50, 30, 0.3)'
-  ctx.lineWidth = 1
-  for (let i = 0; i < 12; i++) {
-    const rx = 120 + (i * 73) % 360
-    const ry = 640 + (i * 47) % 180
-    ctx.beginPath()
-    ctx.moveTo(rx, ry)
-    ctx.lineTo(rx + 30, ry + 10)
-    ctx.stroke()
-  }
-
-  // === LION BODY — massive, regal, seated ===
-  // Hind legs — tucked, seated on rock
-  ctx.fillStyle = '#C4903E'
-  ctx.beginPath()
-  ctx.ellipse(220, 650, 50, 35, -0.2, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.ellipse(380, 650, 50, 35, 0.2, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Tail — draped over rock edge
-  ctx.strokeStyle = '#C4903E'
-  ctx.lineWidth = 12
-  ctx.lineCap = 'round'
-  ctx.beginPath()
-  ctx.moveTo(440, 620)
-  ctx.quadraticCurveTo(500, 640, 520, 680)
-  ctx.quadraticCurveTo(530, 720, 510, 740)
-  ctx.stroke()
-  // Tail tuft
-  ctx.fillStyle = '#5C3C08'
-  ctx.beginPath()
-  ctx.ellipse(508, 745, 14, 10, 0.3, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Torso — massive chest and body
-  const torso = ctx.createRadialGradient(300, 480, 30, 300, 480, 160)
-  torso.addColorStop(0, '#DEBB8C')
-  torso.addColorStop(0.4, '#C4903E')
-  torso.addColorStop(1, '#A07028')
-  ctx.fillStyle = torso
-  ctx.beginPath()
-  ctx.moveTo(160, 400)
-  ctx.quadraticCurveTo(300, 350, 440, 400)
-  ctx.lineTo(420, 640)
-  ctx.quadraticCurveTo(300, 670, 180, 640)
-  ctx.closePath()
-  ctx.fill()
-
-  // Royal robe/mantle draped over shoulders
-  const robe = ctx.createLinearGradient(150, 380, 450, 600)
-  robe.addColorStop(0, '#9B111E')
-  robe.addColorStop(0.5, '#7A0D18')
-  robe.addColorStop(1, '#5C0A12')
-  ctx.fillStyle = robe
-  ctx.beginPath()
-  ctx.moveTo(140, 400)
-  ctx.quadraticCurveTo(300, 370, 460, 400)
-  ctx.lineTo(480, 520)
-  ctx.quadraticCurveTo(300, 550, 120, 520)
-  ctx.closePath()
-  ctx.fill()
-
-  // Robe ermine trim (white with black spots)
-  ctx.fillStyle = '#F5F0E0'
-  ctx.beginPath()
-  ctx.moveTo(130, 395)
-  ctx.quadraticCurveTo(300, 365, 470, 395)
-  ctx.lineTo(465, 415)
-  ctx.quadraticCurveTo(300, 385, 135, 415)
-  ctx.closePath()
-  ctx.fill()
-  // Ermine spots
-  ctx.fillStyle = '#1A1A1A'
-  for (const sx of [165, 210, 255, 300, 345, 390, 435]) {
-    ctx.beginPath()
-    ctx.arc(sx, 403, 3, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // Gold chain of office
-  ctx.strokeStyle = '#D4A017'
-  ctx.lineWidth = 4
-  ctx.beginPath()
-  ctx.moveTo(200, 420)
-  ctx.quadraticCurveTo(300, 460, 400, 420)
-  ctx.stroke()
-  // Pendant
-  ctx.fillStyle = '#D4A017'
-  ctx.beginPath()
-  ctx.arc(300, 455, 12, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.fillStyle = '#9B111E'
-  ctx.beginPath()
-  ctx.arc(300, 455, 6, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Front legs — planted with authority
-  ctx.fillStyle = '#C4903E'
-  // Left front
-  ctx.beginPath()
-  ctx.moveTo(195, 510)
-  ctx.quadraticCurveTo(175, 580, 170, 660)
-  ctx.quadraticCurveTo(168, 680, 185, 682)
-  ctx.quadraticCurveTo(205, 680, 208, 660)
-  ctx.quadraticCurveTo(215, 580, 230, 510)
-  ctx.closePath()
-  ctx.fill()
-  // Right front
-  ctx.beginPath()
-  ctx.moveTo(370, 510)
-  ctx.quadraticCurveTo(385, 580, 390, 660)
-  ctx.quadraticCurveTo(392, 680, 405, 682)
-  ctx.quadraticCurveTo(420, 680, 420, 660)
-  ctx.quadraticCurveTo(415, 580, 400, 510)
-  ctx.closePath()
-  ctx.fill()
-
-  // Massive paws
-  for (const px of [185, 405]) {
-    ctx.fillStyle = '#A07028'
-    ctx.beginPath()
-    ctx.ellipse(px, 682, 28, 14, 0, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // Royal scepter resting against right paw
-  ctx.fillStyle = '#D4A017'
-  ctx.save()
-  ctx.translate(430, 500)
-  ctx.rotate(0.2)
-  ctx.fillRect(-5, 0, 10, 180)
-  // Scepter orb
-  ctx.fillStyle = '#D4A017'
-  ctx.beginPath()
-  ctx.arc(0, -5, 14, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.fillStyle = '#9B111E'
-  ctx.beginPath()
-  ctx.arc(0, -5, 7, 0, Math.PI * 2)
-  ctx.fill()
-  ctx.restore()
-
-  // === HEAD — massive with glorious mane ===
-  // Mane — radiating golden tufts
-  const maneColors = ['#8B5E14', '#A07028', '#C4903E', '#8B5E14', '#6B4010']
-  for (let ring = 0; ring < 3; ring++) {
-    const radius = 105 - ring * 15
-    const count = 18 + ring * 4
-    for (let i = 0; i < count; i++) {
-      const a = (i / count) * Math.PI * 2
-      const mx = 300 + Math.cos(a) * radius
-      const my = 275 + Math.sin(a) * (radius * 0.85)
-      ctx.fillStyle = maneColors[(i + ring) % maneColors.length]
-      ctx.beginPath()
-      ctx.ellipse(mx, my, 22 - ring * 3, 14 - ring * 2, a, 0, Math.PI * 2)
-      ctx.fill()
-    }
-  }
-
-  // Head base
-  const headGrad = ctx.createRadialGradient(300, 270, 10, 300, 270, 60)
-  headGrad.addColorStop(0, '#DEBB8C')
-  headGrad.addColorStop(0.6, '#C4903E')
-  headGrad.addColorStop(1, '#A07028')
-  ctx.fillStyle = headGrad
-  ctx.beginPath()
-  ctx.ellipse(300, 275, 58, 52, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Ears — small, nestled in mane
-  for (const ex of [255, 345]) {
-    ctx.fillStyle = '#A07028'
-    ctx.beginPath()
-    ctx.arc(ex, 235, 15, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.fillStyle = '#DEBB8C'
-    ctx.beginPath()
-    ctx.arc(ex, 235, 8, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // Eyes — regal, golden, commanding
-  for (const [eyeX, dir] of [[275, -1], [325, 1]] as [number, number][]) {
-    ctx.fillStyle = '#FFFFF0'
-    ctx.beginPath()
-    ctx.ellipse(eyeX, 265, 13, 9, dir * 0.05, 0, Math.PI * 2)
-    ctx.fill()
-    // Iris — deep gold
-    ctx.fillStyle = '#D4A017'
-    ctx.beginPath()
-    ctx.arc(eyeX, 265, 7, 0, Math.PI * 2)
-    ctx.fill()
-    // Pupil
-    ctx.fillStyle = '#1A1A1A'
-    ctx.beginPath()
-    ctx.arc(eyeX, 265, 3, 0, Math.PI * 2)
-    ctx.fill()
-    // Highlight
-    ctx.fillStyle = '#FFFFFF'
-    ctx.beginPath()
-    ctx.arc(eyeX + 3, 263, 2, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // Stern brow — commanding
-  ctx.strokeStyle = '#6B4010'
-  ctx.lineWidth = 3
-  ctx.beginPath()
-  ctx.moveTo(258, 254)
-  ctx.quadraticCurveTo(275, 248, 290, 254)
-  ctx.stroke()
-  ctx.beginPath()
-  ctx.moveTo(310, 254)
-  ctx.quadraticCurveTo(325, 248, 342, 254)
-  ctx.stroke()
-
-  // Nose — broad, dark
-  ctx.fillStyle = '#3A2010'
-  ctx.beginPath()
-  ctx.moveTo(290, 283)
-  ctx.quadraticCurveTo(300, 276, 310, 283)
-  ctx.quadraticCurveTo(305, 290, 300, 292)
-  ctx.quadraticCurveTo(295, 290, 290, 283)
-  ctx.fill()
-
-  // Mouth — closed, dignified
-  ctx.strokeStyle = '#3A2010'
+  // Mouth — stern, powerful
+  ctx.strokeStyle = '#2A3A08'
   ctx.lineWidth = 2
   ctx.beginPath()
-  ctx.moveTo(285, 302)
-  ctx.quadraticCurveTo(300, 308, 315, 302)
-  ctx.stroke()
-  // Nose-to-mouth line
-  ctx.beginPath()
-  ctx.moveTo(300, 292)
-  ctx.lineTo(300, 300)
+  ctx.moveTo(270, 298)
+  ctx.quadraticCurveTo(300, 306, 330, 298)
   ctx.stroke()
 
-  // === CROWN — grand golden crown ===
+  // Forked tongue — regal
+  ctx.strokeStyle = '#CC3030'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(300, 302)
+  ctx.lineTo(300, 340)
+  ctx.stroke()
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(300, 340)
+  ctx.lineTo(293, 355)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(300, 340)
+  ctx.lineTo(307, 355)
+  ctx.stroke()
+
+  // === CROWN — grand golden crown atop the hood ===
   ctx.fillStyle = '#D4A017'
   ctx.beginPath()
-  ctx.moveTo(252, 228)
-  ctx.lineTo(248, 195)
-  ctx.lineTo(265, 210)
-  ctx.lineTo(278, 190)
-  ctx.lineTo(290, 210)
-  ctx.lineTo(300, 185)
-  ctx.lineTo(310, 210)
-  ctx.lineTo(322, 190)
-  ctx.lineTo(335, 210)
-  ctx.lineTo(352, 195)
-  ctx.lineTo(348, 228)
+  ctx.moveTo(258, 240)
+  ctx.lineTo(255, 205)
+  ctx.lineTo(270, 218)
+  ctx.lineTo(282, 200)
+  ctx.lineTo(290, 218)
+  ctx.lineTo(300, 192)
+  ctx.lineTo(310, 218)
+  ctx.lineTo(318, 200)
+  ctx.lineTo(330, 218)
+  ctx.lineTo(345, 205)
+  ctx.lineTo(342, 240)
   ctx.closePath()
   ctx.fill()
 
   // Crown base band
   ctx.fillStyle = '#B8860B'
-  ctx.fillRect(252, 225, 96, 10)
+  ctx.fillRect(258, 237, 84, 8)
 
   // Crown jewels
   ctx.fillStyle = '#9B111E'
   ctx.beginPath()
-  ctx.arc(300, 195, 6, 0, Math.PI * 2)
+  ctx.arc(300, 202, 5, 0, Math.PI * 2)
   ctx.fill()
   ctx.fillStyle = '#046A38'
-  for (const jx of [270, 330]) {
+  for (const jx of [275, 325]) {
     ctx.beginPath()
-    ctx.arc(jx, 200, 4, 0, Math.PI * 2)
-    ctx.fill()
-  }
-  ctx.fillStyle = '#1A237E'
-  for (const jx of [255, 345]) {
-    ctx.beginPath()
-    ctx.arc(jx, 205, 3, 0, Math.PI * 2)
+    ctx.arc(jx, 208, 3.5, 0, Math.PI * 2)
     ctx.fill()
   }
 
   // Warm lighting
-  const charLight = ctx.createRadialGradient(300, 400, 30, 300, 400, 300)
-  charLight.addColorStop(0, 'rgba(255, 200, 100, 0.08)')
+  const charLight = ctx.createRadialGradient(300, 380, 30, 300, 380, 300)
+  charLight.addColorStop(0, 'rgba(180, 200, 80, 0.08)')
   charLight.addColorStop(1, 'transparent')
   ctx.fillStyle = charLight
   ctx.fillRect(0, 0, 600, 840)
 }
 
-// ── ACE — The Hippo (Mighty Guardian) ──
+// ── ACE — The Snake (Coiled Guardian) ──
 
 function drawAnimalKingdomAce(ctx: CanvasRenderingContext2D) {
   drawAnimalKingdomBg(ctx)
 
-  // Water/river setting — hippo emerging from water
-  // Water surface
-  const water = ctx.createLinearGradient(0, 480, 0, 840)
-  water.addColorStop(0, 'rgba(40, 80, 100, 0.5)')
-  water.addColorStop(0.3, 'rgba(30, 60, 80, 0.6)')
-  water.addColorStop(1, 'rgba(20, 40, 60, 0.7)')
-  ctx.fillStyle = water
-  ctx.fillRect(0, 480, 600, 360)
+  // Mossy jungle floor
+  const floor = ctx.createLinearGradient(0, 500, 0, 840)
+  floor.addColorStop(0, 'rgba(30, 50, 20, 0.4)')
+  floor.addColorStop(0.5, 'rgba(25, 40, 15, 0.5)')
+  floor.addColorStop(1, 'rgba(20, 30, 10, 0.6)')
+  ctx.fillStyle = floor
+  ctx.fillRect(0, 500, 600, 340)
 
-  // Water ripples
-  ctx.strokeStyle = 'rgba(150, 200, 220, 0.15)'
+  // Fallen leaves
+  ctx.globalAlpha = 0.15
+  ctx.fillStyle = '#6B8A30'
   ctx.lineWidth = 1.5
-  for (let i = 0; i < 8; i++) {
-    const ry = 500 + i * 40
+  for (const [lx, ly, la] of [[80, 550, 0.3], [400, 600, -0.4], [200, 700, 0.6], [500, 530, -0.2], [150, 650, 0.1], [450, 680, -0.5]] as [number, number, number][]) {
+    ctx.save()
+    ctx.translate(lx, ly)
+    ctx.rotate(la)
     ctx.beginPath()
-    ctx.moveTo(0, ry)
-    for (let x = 0; x <= 600; x += 20) {
-      ctx.lineTo(x, ry + Math.sin(x * 0.03 + i) * 5)
-    }
-    ctx.stroke()
-  }
-
-  // Lily pads
-  for (const [lx, ly, lr] of [[100, 560, 25], [480, 600, 30], [150, 700, 22], [420, 520, 20]] as [number, number, number][]) {
-    ctx.fillStyle = 'rgba(40, 120, 50, 0.4)'
-    ctx.beginPath()
-    ctx.ellipse(lx, ly, lr, lr * 0.5, 0, 0, Math.PI * 2)
+    ctx.ellipse(0, 0, 20, 8, 0, 0, Math.PI * 2)
     ctx.fill()
-    // Lily pad slit
-    ctx.strokeStyle = 'rgba(20, 60, 30, 0.3)'
-    ctx.lineWidth = 1
-    ctx.beginPath()
-    ctx.moveTo(lx, ly)
-    ctx.lineTo(lx + lr, ly - lr * 0.2)
-    ctx.stroke()
+    ctx.restore()
   }
+  ctx.globalAlpha = 1
 
-  // === HIPPO BODY — massive, half-submerged ===
-  // Body rising from water
-  const bodyGrad = ctx.createRadialGradient(300, 420, 30, 300, 420, 160)
-  bodyGrad.addColorStop(0, '#8B7B8B')
-  bodyGrad.addColorStop(0.4, '#6B5B6B')
-  bodyGrad.addColorStop(1, '#4A3A4A')
-  ctx.fillStyle = bodyGrad
+  // === SNAKE — elegant, coiled in a spiral around a central point ===
+  // Large spiral coil forming the ace symbol
+  const bodyGrad = ctx.createRadialGradient(300, 420, 20, 300, 420, 200)
+  bodyGrad.addColorStop(0, '#5A7A20')
+  bodyGrad.addColorStop(0.4, '#4A6A18')
+  bodyGrad.addColorStop(0.8, '#3A5A10')
+  bodyGrad.addColorStop(1, '#2A4A08')
+
+  // Draw a spiral coil — the snake forms its own ace shape
+  ctx.strokeStyle = '#4A6A18'
+  ctx.lineWidth = 28
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
+  // Outer spiral
   ctx.beginPath()
-  ctx.moveTo(120, 520)
-  ctx.quadraticCurveTo(120, 380, 200, 340)
-  ctx.quadraticCurveTo(300, 300, 400, 340)
-  ctx.quadraticCurveTo(480, 380, 480, 520)
-  ctx.quadraticCurveTo(400, 540, 300, 530)
-  ctx.quadraticCurveTo(200, 540, 120, 520)
+  ctx.moveTo(300, 700)
+  ctx.quadraticCurveTo(120, 680, 130, 550)
+  ctx.quadraticCurveTo(140, 440, 230, 400)
+  ctx.quadraticCurveTo(320, 370, 400, 420)
+  ctx.quadraticCurveTo(460, 470, 420, 540)
+  ctx.quadraticCurveTo(380, 590, 320, 560)
+  ctx.quadraticCurveTo(270, 530, 300, 490)
+  ctx.stroke()
+
+  // Fill the body with gradient
+  ctx.fillStyle = bodyGrad
+  ctx.lineWidth = 30
+  ctx.beginPath()
+  ctx.moveTo(300, 700)
+  ctx.quadraticCurveTo(120, 680, 130, 550)
+  ctx.quadraticCurveTo(140, 440, 230, 400)
+  ctx.quadraticCurveTo(320, 370, 400, 420)
+  ctx.quadraticCurveTo(460, 470, 420, 540)
+  ctx.quadraticCurveTo(380, 590, 320, 560)
+  ctx.quadraticCurveTo(270, 530, 300, 490)
+  ctx.strokeStyle = bodyGrad
+  ctx.stroke()
+
+  // Scale texture along body
+  ctx.globalAlpha = 0.12
+  ctx.fillStyle = '#8BAA30'
+  const spiralPoints: [number, number][] = [[300, 700], [210, 670], [140, 600], [140, 500], [200, 420], [280, 390], [360, 410], [420, 470], [400, 540], [340, 570], [290, 540], [300, 500]]
+  for (const [sx, sy] of spiralPoints) {
+    ctx.beginPath()
+    ctx.ellipse(sx, sy, 10, 6, 0, 0, Math.PI * 2)
+    ctx.fill()
+  }
+  ctx.globalAlpha = 1
+
+  // Ventral stripe
+  ctx.strokeStyle = 'rgba(200, 210, 140, 0.15)'
+  ctx.lineWidth = 10
+  ctx.beginPath()
+  ctx.moveTo(300, 695)
+  ctx.quadraticCurveTo(130, 670, 140, 545)
+  ctx.quadraticCurveTo(150, 445, 235, 405)
+  ctx.stroke()
+
+  // Tail tip — tapered end at bottom
+  ctx.fillStyle = '#3A5A10'
+  ctx.beginPath()
+  ctx.moveTo(300, 700)
+  ctx.quadraticCurveTo(350, 720, 380, 740)
+  ctx.quadraticCurveTo(390, 745, 385, 738)
+  ctx.quadraticCurveTo(355, 715, 300, 695)
   ctx.closePath()
   ctx.fill()
 
-  // Wet sheen on body
-  ctx.globalAlpha = 0.1
-  const sheen = ctx.createLinearGradient(200, 350, 400, 500)
-  sheen.addColorStop(0, '#FFFFFF')
-  sheen.addColorStop(0.5, 'transparent')
-  sheen.addColorStop(1, '#FFFFFF')
-  ctx.fillStyle = sheen
+  // === HEAD — rising from center of spiral ===
+  // Neck
+  const neckGrad = ctx.createLinearGradient(290, 490, 310, 350)
+  neckGrad.addColorStop(0, '#4A6A18')
+  neckGrad.addColorStop(1, '#6B8A28')
+  ctx.fillStyle = neckGrad
   ctx.beginPath()
-  ctx.moveTo(150, 500)
-  ctx.quadraticCurveTo(150, 380, 220, 350)
-  ctx.quadraticCurveTo(300, 320, 380, 350)
-  ctx.quadraticCurveTo(450, 380, 450, 500)
+  ctx.moveTo(288, 490)
+  ctx.quadraticCurveTo(285, 420, 288, 340)
+  ctx.lineTo(312, 340)
+  ctx.quadraticCurveTo(315, 420, 312, 490)
   ctx.closePath()
+  ctx.fill()
+
+  // Head — sleek, elegant
+  const headGrad = ctx.createRadialGradient(300, 310, 8, 300, 310, 35)
+  headGrad.addColorStop(0, '#8BAA30')
+  headGrad.addColorStop(0.6, '#6B8A28')
+  headGrad.addColorStop(1, '#4A6A18')
+  ctx.fillStyle = headGrad
+  ctx.beginPath()
+  ctx.ellipse(300, 310, 32, 28, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.strokeStyle = '#2A4A08'
+  ctx.lineWidth = 1
+  ctx.stroke()
+
+  // Scale markings on head
+  ctx.globalAlpha = 0.15
+  ctx.fillStyle = '#AACC00'
+  ctx.beginPath()
+  ctx.ellipse(290, 300, 8, 5, -0.2, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.ellipse(310, 300, 8, 5, 0.2, 0, Math.PI * 2)
   ctx.fill()
   ctx.globalAlpha = 1
 
-  // Belly — lighter underside, visible at waterline
-  ctx.fillStyle = 'rgba(180, 160, 170, 0.3)'
-  ctx.beginPath()
-  ctx.ellipse(300, 510, 120, 30, 0, 0, Math.PI)
-  ctx.fill()
-
-  // Front legs — thick, partially submerged
-  ctx.fillStyle = '#6B5B6B'
-  ctx.beginPath()
-  ctx.moveTo(190, 460)
-  ctx.quadraticCurveTo(170, 520, 165, 580)
-  ctx.quadraticCurveTo(170, 600, 195, 595)
-  ctx.quadraticCurveTo(215, 590, 220, 570)
-  ctx.quadraticCurveTo(225, 510, 225, 460)
-  ctx.closePath()
-  ctx.fill()
-  ctx.beginPath()
-  ctx.moveTo(380, 460)
-  ctx.quadraticCurveTo(395, 520, 400, 575)
-  ctx.quadraticCurveTo(405, 595, 420, 593)
-  ctx.quadraticCurveTo(440, 590, 438, 570)
-  ctx.quadraticCurveTo(430, 510, 415, 460)
-  ctx.closePath()
-  ctx.fill()
-
-  // === HEAD — enormous hippo head ===
-  // Head shape — broad, massive
-  const headGrad = ctx.createRadialGradient(300, 280, 20, 300, 280, 80)
-  headGrad.addColorStop(0, '#9B8B9B')
-  headGrad.addColorStop(0.5, '#7B6B7B')
-  headGrad.addColorStop(1, '#5B4B5B')
-  ctx.fillStyle = headGrad
-  ctx.beginPath()
-  ctx.ellipse(300, 280, 80, 65, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Snout — very broad and rounded
-  ctx.fillStyle = '#8B7B8B'
-  ctx.beginPath()
-  ctx.ellipse(300, 320, 60, 40, 0, 0, Math.PI * 2)
-  ctx.fill()
-  // Snout highlight
-  ctx.fillStyle = 'rgba(180, 160, 170, 0.3)'
-  ctx.beginPath()
-  ctx.ellipse(300, 315, 45, 25, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Nostrils — prominent, high on snout
-  for (const nx of [280, 320]) {
-    ctx.fillStyle = '#3A2A3A'
+  // Eyes — round, gentle (non-venomous generic snake)
+  for (const [eyeX, dir] of [[288, -1], [312, 1]] as [number, number][]) {
+    ctx.fillStyle = '#D4C040'
     ctx.beginPath()
-    ctx.ellipse(nx, 310, 8, 6, 0, 0, Math.PI * 2)
+    ctx.ellipse(eyeX, 302, 8, 6, dir * 0.1, 0, Math.PI * 2)
     ctx.fill()
-  }
-
-  // Ears — small, upright
-  for (const [ex, dir] of [[255, -1], [345, 1]] as [number, number][]) {
-    ctx.fillStyle = '#6B5B6B'
-    ctx.beginPath()
-    ctx.ellipse(ex, 225, 12, 18, dir * 0.3, 0, Math.PI * 2)
-    ctx.fill()
-    // Inner ear
-    ctx.fillStyle = '#D4A0A0'
-    ctx.beginPath()
-    ctx.ellipse(ex, 225, 7, 12, dir * 0.3, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // Eyes — small but expressive, set high
-  for (const [eyeX, dir] of [[268, -1], [332, 1]] as [number, number][]) {
-    // Eye bump
-    ctx.fillStyle = '#7B6B7B'
-    ctx.beginPath()
-    ctx.arc(eyeX, 260, 14, 0, Math.PI * 2)
-    ctx.fill()
-    // Eye white
-    ctx.fillStyle = '#FFFFF0'
-    ctx.beginPath()
-    ctx.ellipse(eyeX, 262, 9, 7, 0, 0, Math.PI * 2)
-    ctx.fill()
-    // Iris — warm brown
-    ctx.fillStyle = '#5C3C08'
-    ctx.beginPath()
-    ctx.arc(eyeX + dir, 262, 5, 0, Math.PI * 2)
-    ctx.fill()
-    // Pupil
+    // Round pupil
     ctx.fillStyle = '#1A1A1A'
     ctx.beginPath()
-    ctx.arc(eyeX + dir, 262, 2.5, 0, Math.PI * 2)
+    ctx.arc(eyeX, 302, 3, 0, Math.PI * 2)
     ctx.fill()
     // Highlight
     ctx.fillStyle = '#FFFFFF'
     ctx.beginPath()
-    ctx.arc(eyeX + dir * 2 + 1, 260, 1.5, 0, Math.PI * 2)
+    ctx.arc(eyeX + dir * 2, 300, 1.5, 0, Math.PI * 2)
     ctx.fill()
   }
 
-  // Mouth — wide, powerful jaw
-  ctx.strokeStyle = '#3A2A3A'
-  ctx.lineWidth = 3
+  // Nostrils
+  ctx.fillStyle = '#2A3A08'
   ctx.beginPath()
-  ctx.moveTo(250, 340)
-  ctx.quadraticCurveTo(275, 355, 300, 348)
-  ctx.quadraticCurveTo(325, 355, 350, 340)
+  ctx.arc(295, 318, 1.5, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.beginPath()
+  ctx.arc(305, 318, 1.5, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Mouth
+  ctx.strokeStyle = '#2A3A08'
+  ctx.lineWidth = 1
+  ctx.beginPath()
+  ctx.moveTo(280, 325)
+  ctx.quadraticCurveTo(300, 332, 320, 325)
   ctx.stroke()
 
-  // Tusks — short, visible at jaw corners
-  ctx.fillStyle = '#F5F0E0'
-  // Left tusk
+  // Forked tongue
+  ctx.strokeStyle = '#CC5050'
+  ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.moveTo(255, 340)
-  ctx.lineTo(248, 365)
-  ctx.lineTo(262, 358)
-  ctx.closePath()
-  ctx.fill()
-  // Right tusk
+  ctx.moveTo(300, 328)
+  ctx.lineTo(300, 350)
+  ctx.stroke()
+  ctx.lineWidth = 1
   ctx.beginPath()
-  ctx.moveTo(345, 340)
-  ctx.lineTo(352, 365)
-  ctx.lineTo(338, 358)
-  ctx.closePath()
-  ctx.fill()
+  ctx.moveTo(300, 350)
+  ctx.lineTo(296, 360)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(300, 350)
+  ctx.lineTo(304, 360)
+  ctx.stroke()
 
-  // === ACE CROWN — garland of river flowers ===
-  ctx.fillStyle = '#CE93D8'
-  for (let i = 0; i < 7; i++) {
-    const a = Math.PI + (i / 6) * Math.PI
-    const fx = 300 + Math.cos(a) * 68
-    const fy = 240 + Math.sin(a) * 30
-    ctx.beginPath()
-    ctx.arc(fx, fy, 8, 0, Math.PI * 2)
-    ctx.fill()
-  }
-  // Flower centers
-  ctx.fillStyle = '#FFD700'
-  for (let i = 0; i < 7; i++) {
-    const a = Math.PI + (i / 6) * Math.PI
-    const fx = 300 + Math.cos(a) * 68
-    const fy = 240 + Math.sin(a) * 30
-    ctx.beginPath()
-    ctx.arc(fx, fy, 3, 0, Math.PI * 2)
-    ctx.fill()
-  }
-
-  // Water splash around body
-  ctx.globalAlpha = 0.2
-  ctx.fillStyle = '#B3E5FC'
-  for (const [sx, sy, sr] of [[140, 510, 6], [460, 505, 5], [180, 530, 4], [420, 535, 5], [250, 540, 3], [350, 538, 4]] as [number, number, number][]) {
-    ctx.beginPath()
-    ctx.arc(sx, sy, sr, 0, Math.PI * 2)
-    ctx.fill()
-  }
-  ctx.globalAlpha = 1
-
-  // Warm sunset lighting on character
-  const charLight = ctx.createRadialGradient(300, 350, 30, 300, 350, 250)
-  charLight.addColorStop(0, 'rgba(255, 160, 50, 0.08)')
+  // Dappled jungle light
+  const charLight = ctx.createRadialGradient(300, 420, 30, 300, 420, 250)
+  charLight.addColorStop(0, 'rgba(180, 200, 80, 0.06)')
   charLight.addColorStop(1, 'transparent')
   ctx.fillStyle = charLight
   ctx.fillRect(0, 0, 600, 840)
-
-  // Water overlay on lower body (depth)
-  ctx.fillStyle = 'rgba(30, 60, 80, 0.3)'
-  ctx.fillRect(0, 520, 600, 320)
 }
