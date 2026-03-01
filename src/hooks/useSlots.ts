@@ -41,9 +41,9 @@ function randomSymbol(): SlotSymbol {
   return 'lemon'
 }
 
-// Payouts: multiplier on bet amount
-export const PAYOUT_TABLE: { match: string; multiplier: number; description: string }[] = [
-  { match: '7-7-7', multiplier: 100, description: 'Triple 7s — JACKPOT' },
+// Payouts: multiplier on bet amount — 777 is the GRAND PRIZE JACKPOT (highest payout)
+export const PAYOUT_TABLE: { match: string; multiplier: number; description: string; isJackpot?: boolean }[] = [
+  { match: '7-7-7', multiplier: 777, description: '7-7-7 GRAND JACKPOT', isJackpot: true },
   { match: 'diamond-diamond-diamond', multiplier: 50, description: 'Triple Diamonds' },
   { match: 'star-star-star', multiplier: 30, description: 'Triple Stars' },
   { match: 'BAR-BAR-BAR', multiplier: 20, description: 'Triple BARs' },
@@ -55,26 +55,26 @@ export const PAYOUT_TABLE: { match: string; multiplier: number; description: str
   { match: 'cherry-*-*', multiplier: 1, description: 'One Cherry' },
 ]
 
-function calculatePayout(reels: SlotSymbol[], bet: number): { multiplier: number; label: string } {
+function calculatePayout(reels: SlotSymbol[], bet: number): { multiplier: number; label: string; isJackpot: boolean } {
   const key = reels.join('-')
 
   // Check triple matches
   if (reels[0] === reels[1] && reels[1] === reels[2]) {
     const entry = PAYOUT_TABLE.find(p => p.match === key)
-    if (entry) return { multiplier: entry.multiplier, label: entry.description }
+    if (entry) return { multiplier: entry.multiplier, label: entry.description, isJackpot: !!entry.isJackpot }
   }
 
   // Two cherries (first two)
   if (reels[0] === 'cherry' && reels[1] === 'cherry') {
-    return { multiplier: 3, label: 'Two Cherries' }
+    return { multiplier: 3, label: 'Two Cherries', isJackpot: false }
   }
 
   // One cherry (first reel)
   if (reels[0] === 'cherry') {
-    return { multiplier: 1, label: 'One Cherry — Push' }
+    return { multiplier: 1, label: 'One Cherry — Push', isJackpot: false }
   }
 
-  return { multiplier: 0, label: '' }
+  return { multiplier: 0, label: '', isJackpot: false }
 }
 
 export interface SlotsState {
@@ -84,6 +84,7 @@ export interface SlotsState {
   winAmount: number
   winLabel: string
   message: string
+  isJackpot: boolean
   lastWins: { reels: SlotSymbol[]; amount: number }[]
 }
 
@@ -99,13 +100,15 @@ function slotsReducer(state: SlotsState, action: SlotsAction): SlotsState {
       return { ...state, bet: action.amount }
 
     case 'SPIN':
-      return { ...state, phase: 'spinning', message: 'Spinning...', winAmount: 0, winLabel: '' }
+      return { ...state, phase: 'spinning', message: 'Spinning...', winAmount: 0, winLabel: '', isJackpot: false }
 
     case 'RESOLVE': {
-      const { multiplier, label } = calculatePayout(action.reels, state.bet)
+      const { multiplier, label, isJackpot } = calculatePayout(action.reels, state.bet)
       const winAmount = state.bet * multiplier
       let message: string
-      if (multiplier > 0) {
+      if (isJackpot) {
+        message = `GRAND JACKPOT!!! 7-7-7! You win $${winAmount}!!!`
+      } else if (multiplier > 0) {
         message = multiplier === 1
           ? `${label} — Push! Bet returned.`
           : `${label}! You win $${winAmount}!`
@@ -123,6 +126,7 @@ function slotsReducer(state: SlotsState, action: SlotsAction): SlotsState {
         winAmount,
         winLabel: label,
         message,
+        isJackpot,
         lastWins,
       }
     }
@@ -134,6 +138,7 @@ function slotsReducer(state: SlotsState, action: SlotsAction): SlotsState {
         winAmount: 0,
         winLabel: '',
         message: 'Set your bet and spin!',
+        isJackpot: false,
       }
 
     default:
@@ -149,6 +154,7 @@ function createInitialState(): SlotsState {
     winAmount: 0,
     winLabel: '',
     message: 'Set your bet and spin!',
+    isJackpot: false,
     lastWins: [],
   }
 }
