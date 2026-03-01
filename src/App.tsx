@@ -38,7 +38,12 @@ import MultiplayerSetup from './components/MultiplayerSetup'
 import type { PlayerConfig } from './components/MultiplayerSetup'
 import MultiplayerBar from './components/MultiplayerBar'
 import type { MultiplayerState } from './components/MultiplayerBar'
+import GameModeSelector from './components/GameModeSelector'
+import type { GameMode } from './components/GameModeSelector'
+import TexasHoldem from './components/TexasHoldem'
 import './App.css'
+import './components/GameModeSelector.css'
+import './components/TexasHoldem.css'
 
 function App() {
   const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, SIDE_BETS_ENABLED, MULTIPLAYER_ENABLED, ALLOW_SURRENDER, updateSetting } = useGameSettings()
@@ -55,6 +60,13 @@ function App() {
     return params.get('preview') === 'canvas'
   })
 
+  // ── Game Mode Selector ──
+  const [gameMode, setGameMode] = useState<GameMode>('blackjack')
+
+  const handleModeChange = useCallback((mode: GameMode) => {
+    setGameMode(mode)
+  }, [])
+
   const FELT_COLORS: Record<TableFeltTheme, { felt: string; feltDark: string; feltLight: string }> = {
     'classic-green': { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b' },
     'navy-blue':     { felt: '#1a3a6b', feltDark: '#0f2548', feltLight: '#245090' },
@@ -63,6 +75,14 @@ function App() {
   }
 
   const { state, actions } = useGameEngine()
+
+  // Callback for Texas Hold'em to sync chip changes back to blackjack engine
+  const handleHoldemChipsChange = useCallback((newChips: number) => {
+    const diff = newChips - state.chips
+    if (diff !== 0) {
+      actions.adjustChips(diff)
+    }
+  }, [state.chips, actions])
 
   // Active skin's environment theme overrides table felt for non-classic skins
   const activeSkinEnv = useMemo(() => {
@@ -540,9 +560,12 @@ function App() {
     <div className="app">
       <header className="header">
         <h1>
-          <span className="suit-icon" aria-hidden="true">&#9824;</span> Blackjack <span className="suit-icon red" aria-hidden="true">&#9829;</span>
+          <span className="suit-icon" aria-hidden="true">&#9824;</span>
+          {gameMode === 'blackjack' ? ' Blackjack ' : " Hold'em "}
+          <span className="suit-icon red" aria-hidden="true">&#9829;</span>
         </h1>
-        <Scoreboard stats={state.stats} />
+        <GameModeSelector currentMode={gameMode} onModeChange={handleModeChange} />
+        {gameMode === 'blackjack' && <Scoreboard stats={state.stats} />}
         <nav className="header-actions" aria-label="Game tools">
           <HandHistory history={state.handHistory} />
           <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
@@ -561,146 +584,156 @@ function App() {
         />
       )}
 
-      <main className="table" style={feltStyle} aria-label="Blackjack table">
-        <ChipAnimation
-          betTrigger={betTrigger}
-          winTrigger={winTrigger}
-        />
-
-        <CelebrationEffects
-          result={state.result}
-          gameState={state.gameState}
-          winAmount={winTrigger.amount}
-          bet={state.bet}
-        />
-
-        <ShoeIndicator
-          cardsRemaining={state.cardsRemaining}
-          shoeSize={state.shoeSize}
-          cutCardReached={state.cutCardReached}
-        />
-
-        {mpActive && (
-          <div className="mp-turn-banner" aria-live="polite">
-            {mpPlayers[mpActiveIndex]?.name}&apos;s Turn
-          </div>
-        )}
-
-        <DealerHand
-          hand={state.dealerHand}
-          dealerRevealed={state.dealerRevealed}
-          dealerVisibleScore={state.dealerVisibleScore}
-        />
-
-        <GameBanner
-          message={state.message}
-          result={state.result}
-          gameState={state.gameState}
-        />
-
-        {isSplitActive ? (
-          <SplitHandsDisplay
-            splitHands={state.splitHands}
-            activeHandIndex={state.activeHandIndex}
-            isPlaying={state.gameState === GAME_STATES.SPLITTING}
-          />
-        ) : (
-          <PlayerHand
-            hand={state.playerHand}
-            playerScore={state.playerScore}
-          />
-        )}
-
-        {STRATEGY_TRAINER_ENABLED && (
-          <StrategyOverlay
-            optimalAction={optimalAction}
-            lastFeedback={strategyFeedback}
-            accuracy={strategyAccuracy}
-          />
-        )}
-
-        {CARD_COUNTING_ENABLED && (
-          <CountingOverlay
-            runningCount={runningCount}
-            cardsRemaining={state.cardsRemaining}
-            lastDealtCard={lastDealtCard}
-            accuracy={countingAccuracy}
-            selfTestMode={selfTestMode}
-            onToggleSelfTest={handleToggleSelfTest}
-            onSubmitCount={handleSubmitCount}
-            showCountInput={showCountInput}
-          />
-        )}
-
-        {SIDE_BETS_ENABLED && isBetting && (
-          <SideBets
-            chips={state.chips}
-            mainBet={state.bet}
-            perfectPairsBet={perfectPairsBet}
-            twentyOnePlusThreeBet={twentyOnePlusThreeBet}
-            onPlacePerfectPairs={handlePlacePerfectPairs}
-            onPlaceTwentyOnePlusThree={handlePlaceTwentyOnePlusThree}
-            onClearSideBets={handleClearSideBets}
-            sideBetResult={null}
-            showResults={false}
-          />
-        )}
-
-        {SIDE_BETS_ENABLED && showSideBetResults && sideBetResult && !isBetting && (
-          <SideBets
-            chips={state.chips}
-            mainBet={state.bet}
-            perfectPairsBet={perfectPairsBet}
-            twentyOnePlusThreeBet={twentyOnePlusThreeBet}
-            onPlacePerfectPairs={handlePlacePerfectPairs}
-            onPlaceTwentyOnePlusThree={handlePlaceTwentyOnePlusThree}
-            onClearSideBets={handleClearSideBets}
-            sideBetResult={sideBetResult}
-            showResults={true}
-          />
-        )}
-
-        <div className="controls-area">
-          {(state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE) ? (
-            <BettingControls
-              chips={state.chips}
-              bet={state.bet}
-              onPlaceBet={handlePlaceBet}
-              onClearBet={actions.clearBet}
-              onAllIn={handleAllIn}
-              onDeal={dealCardsWithSideBets}
-              onButtonClick={playButtonClick}
-              lastBet={lastBet}
+      <main className="table" style={feltStyle} aria-label={gameMode === 'blackjack' ? 'Blackjack table' : "Texas Hold'em table"}>
+        {gameMode === 'blackjack' ? (
+          <>
+            <ChipAnimation
+              betTrigger={betTrigger}
+              winTrigger={winTrigger}
             />
-          ) : (
-            <ActionControls
+
+            <CelebrationEffects
+              result={state.result}
               gameState={state.gameState}
-              chips={state.chips}
+              winAmount={winTrigger.amount}
               bet={state.bet}
-              canDouble={state.canDouble}
-              canSplit={state.canSplit}
-              canSurrender={state.canSurrender}
-              canDoubleAfterSplit={state.canDoubleAfterSplit}
-              maxInsuranceBet={state.maxInsuranceBet}
-              onHit={strategyHit}
-              onStand={strategyStand}
-              onDoubleDown={strategyDoubleDown}
-              onSplit={strategySplit}
-              onSurrender={strategySurrender}
-              onAcceptInsurance={actions.acceptInsurance}
-              onDeclineInsurance={actions.declineInsurance}
-              onNewRound={mpActive ? mpNewRound : actions.newRound}
-              onReset={actions.resetGame}
-              onButtonClick={playButtonClick}
-              optimalAction={optimalAction}
-              strategyTrainerEnabled={STRATEGY_TRAINER_ENABLED}
             />
-          )}
-        </div>
+
+            <ShoeIndicator
+              cardsRemaining={state.cardsRemaining}
+              shoeSize={state.shoeSize}
+              cutCardReached={state.cutCardReached}
+            />
+
+            {mpActive && (
+              <div className="mp-turn-banner" aria-live="polite">
+                {mpPlayers[mpActiveIndex]?.name}&apos;s Turn
+              </div>
+            )}
+
+            <DealerHand
+              hand={state.dealerHand}
+              dealerRevealed={state.dealerRevealed}
+              dealerVisibleScore={state.dealerVisibleScore}
+            />
+
+            <GameBanner
+              message={state.message}
+              result={state.result}
+              gameState={state.gameState}
+            />
+
+            {isSplitActive ? (
+              <SplitHandsDisplay
+                splitHands={state.splitHands}
+                activeHandIndex={state.activeHandIndex}
+                isPlaying={state.gameState === GAME_STATES.SPLITTING}
+              />
+            ) : (
+              <PlayerHand
+                hand={state.playerHand}
+                playerScore={state.playerScore}
+              />
+            )}
+
+            {STRATEGY_TRAINER_ENABLED && (
+              <StrategyOverlay
+                optimalAction={optimalAction}
+                lastFeedback={strategyFeedback}
+                accuracy={strategyAccuracy}
+              />
+            )}
+
+            {CARD_COUNTING_ENABLED && (
+              <CountingOverlay
+                runningCount={runningCount}
+                cardsRemaining={state.cardsRemaining}
+                lastDealtCard={lastDealtCard}
+                accuracy={countingAccuracy}
+                selfTestMode={selfTestMode}
+                onToggleSelfTest={handleToggleSelfTest}
+                onSubmitCount={handleSubmitCount}
+                showCountInput={showCountInput}
+              />
+            )}
+
+            {SIDE_BETS_ENABLED && isBetting && (
+              <SideBets
+                chips={state.chips}
+                mainBet={state.bet}
+                perfectPairsBet={perfectPairsBet}
+                twentyOnePlusThreeBet={twentyOnePlusThreeBet}
+                onPlacePerfectPairs={handlePlacePerfectPairs}
+                onPlaceTwentyOnePlusThree={handlePlaceTwentyOnePlusThree}
+                onClearSideBets={handleClearSideBets}
+                sideBetResult={null}
+                showResults={false}
+              />
+            )}
+
+            {SIDE_BETS_ENABLED && showSideBetResults && sideBetResult && !isBetting && (
+              <SideBets
+                chips={state.chips}
+                mainBet={state.bet}
+                perfectPairsBet={perfectPairsBet}
+                twentyOnePlusThreeBet={twentyOnePlusThreeBet}
+                onPlacePerfectPairs={handlePlacePerfectPairs}
+                onPlaceTwentyOnePlusThree={handlePlaceTwentyOnePlusThree}
+                onClearSideBets={handleClearSideBets}
+                sideBetResult={sideBetResult}
+                showResults={true}
+              />
+            )}
+
+            <div className="controls-area">
+              {(state.gameState === GAME_STATES.BETTING || state.gameState === GAME_STATES.IDLE) ? (
+                <BettingControls
+                  chips={state.chips}
+                  bet={state.bet}
+                  onPlaceBet={handlePlaceBet}
+                  onClearBet={actions.clearBet}
+                  onAllIn={handleAllIn}
+                  onDeal={dealCardsWithSideBets}
+                  onButtonClick={playButtonClick}
+                  lastBet={lastBet}
+                />
+              ) : (
+                <ActionControls
+                  gameState={state.gameState}
+                  chips={state.chips}
+                  bet={state.bet}
+                  canDouble={state.canDouble}
+                  canSplit={state.canSplit}
+                  canSurrender={state.canSurrender}
+                  canDoubleAfterSplit={state.canDoubleAfterSplit}
+                  maxInsuranceBet={state.maxInsuranceBet}
+                  onHit={strategyHit}
+                  onStand={strategyStand}
+                  onDoubleDown={strategyDoubleDown}
+                  onSplit={strategySplit}
+                  onSurrender={strategySurrender}
+                  onAcceptInsurance={actions.acceptInsurance}
+                  onDeclineInsurance={actions.declineInsurance}
+                  onNewRound={mpActive ? mpNewRound : actions.newRound}
+                  onReset={actions.resetGame}
+                  onButtonClick={playButtonClick}
+                  optimalAction={optimalAction}
+                  strategyTrainerEnabled={STRATEGY_TRAINER_ENABLED}
+                />
+              )}
+            </div>
+          </>
+        ) : (
+          <TexasHoldem chips={state.chips} onChipsChange={handleHoldemChipsChange} />
+        )}
       </main>
 
       <footer className="footer">
-        <span>Blackjack pays {payoutLabel} &middot; {soft17Label} &middot; {deckLabel}</span>
+        {gameMode === 'blackjack' ? (
+          <span>Blackjack pays {payoutLabel} &middot; {soft17Label} &middot; {deckLabel}</span>
+        ) : (
+          <span>Texas Hold&apos;em &middot; Blinds $5/$10 &middot; 4 Players</span>
+        )}
         <span className="build-version">v{__BUILD_VERSION__}</span>
       </footer>
 

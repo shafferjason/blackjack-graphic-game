@@ -1,0 +1,84 @@
+/* ── Game Mode Selector ── */
+
+.mode-selector {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.mode-selector__btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: rgba(240, 236, 228, 0.55);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  position: relative;
+}
+
+.mode-selector__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(240, 236, 228, 0.85);
+}
+
+.mode-selector__btn--active {
+  background: rgba(212, 166, 68, 0.15);
+  border-color: rgba(212, 166, 68, 0.35);
+  color: var(--gold-light, #f0d264);
+  box-shadow: 0 1px 6px rgba(212, 166, 68, 0.12);
+}
+
+.mode-selector__btn--active:hover {
+  background: rgba(212, 166, 68, 0.2);
+}
+
+.mode-selector__btn--disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.mode-selector__icon {
+  font-size: 0.9rem;
+}
+
+.mode-selector__badge {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: rgba(168, 85, 247, 0.4);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .mode-selector__btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+  .mode-selector__label {
+    display: none;
+  }
+  .mode-selector__icon {
+    font-size: 1rem;
+  }
+  .mode-selector__btn--active .mode-selector__label {
+    display: inline;
+  }
+}
