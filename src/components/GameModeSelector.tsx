@@ -8,8 +8,8 @@ interface GameModeSelectorProps {
 const MODES: { id: GameMode; label: string; icon: string; disabled: boolean; comingSoon: boolean }[] = [
   { id: 'blackjack', label: 'Blackjack', icon: '\u2660', disabled: false, comingSoon: false },
   { id: 'texas_holdem', label: 'Texas Hold\'em', icon: '\u2663', disabled: false, comingSoon: false },
-  { id: 'roulette', label: 'Roulette', icon: '\u25CE', disabled: true, comingSoon: true },
-  { id: 'slots', label: 'Slots', icon: '\u2731', disabled: true, comingSoon: true },
+  { id: 'roulette', label: 'Roulette', icon: '\u25CE', disabled: false, comingSoon: false },
+  { id: 'slots', label: 'Slots', icon: '\u2731', disabled: false, comingSoon: false },
 ]
 
 export default function GameModeSelector({ currentMode, onModeChange }: GameModeSelectorProps) {
