@@ -43,11 +43,13 @@ import type { GameMode } from './components/GameModeSelector'
 import TexasHoldem from './components/TexasHoldem'
 import Roulette from './components/Roulette'
 import Slots from './components/Slots'
+import CoinFlip from './components/CoinFlip'
 import './App.css'
 import './components/GameModeSelector.css'
 import './components/TexasHoldem.css'
 import './components/Roulette.css'
 import './components/Slots.css'
+import './components/CoinFlip.css'
 
 function App() {
   const { GAME_STATES, NUM_DECKS, DEALER_HITS_SOFT_17, BLACKJACK_PAYOUT_RATIO, TABLE_FELT_THEME, CHIP_DENOMINATIONS, STRATEGY_TRAINER_ENABLED, CARD_COUNTING_ENABLED, SIDE_BETS_ENABLED, MULTIPLAYER_ENABLED, ALLOW_SURRENDER, updateSetting } = useGameSettings()
@@ -96,6 +98,13 @@ function App() {
   }, [state.chips, actions])
 
   const handleSlotsChipsChange = useCallback((newChips: number) => {
+    const diff = newChips - state.chips
+    if (diff !== 0) {
+      actions.adjustChips(diff)
+    }
+  }, [state.chips, actions])
+
+  const handleCoinFlipChipsChange = useCallback((newChips: number) => {
     const diff = newChips - state.chips
     if (diff !== 0) {
       actions.adjustChips(diff)
@@ -579,7 +588,7 @@ function App() {
       <header className="header">
         <h1>
           <span className="suit-icon" aria-hidden="true">&#9824;</span>
-          {gameMode === 'blackjack' ? ' Blackjack ' : gameMode === 'texas_holdem' ? " Hold'em " : gameMode === 'roulette' ? ' Roulette ' : ' Slots '}
+          {gameMode === 'blackjack' ? ' Blackjack ' : gameMode === 'texas_holdem' ? " Hold'em " : gameMode === 'roulette' ? ' Roulette ' : gameMode === 'slots' ? ' Slots ' : ' Coin Flip '}
           <span className="suit-icon red" aria-hidden="true">&#9829;</span>
         </h1>
         <GameModeSelector currentMode={gameMode} onModeChange={handleModeChange} />
@@ -602,7 +611,7 @@ function App() {
         />
       )}
 
-      <main className="table" style={feltStyle} aria-label={`${gameMode === 'blackjack' ? 'Blackjack' : gameMode === 'texas_holdem' ? "Texas Hold'em" : gameMode === 'roulette' ? 'Roulette' : 'Slots'} table`}>
+      <main className="table" style={feltStyle} aria-label={`${gameMode === 'blackjack' ? 'Blackjack' : gameMode === 'texas_holdem' ? "Texas Hold'em" : gameMode === 'roulette' ? 'Roulette' : gameMode === 'slots' ? 'Slots' : 'Coin Flip'} table`}>
         {gameMode === 'blackjack' ? (
           <>
             <ChipAnimation
@@ -745,8 +754,10 @@ function App() {
           <TexasHoldem chips={state.chips} onChipsChange={handleHoldemChipsChange} />
         ) : gameMode === 'roulette' ? (
           <Roulette chips={state.chips} onChipsChange={handleRouletteChipsChange} />
-        ) : (
+        ) : gameMode === 'slots' ? (
           <Slots chips={state.chips} onChipsChange={handleSlotsChipsChange} />
+        ) : (
+          <CoinFlip chips={state.chips} onChipsChange={handleCoinFlipChipsChange} />
         )}
       </main>
 
@@ -757,8 +768,10 @@ function App() {
           <span>Texas Hold&apos;em &middot; Blinds $5/$10 &middot; 4 Players</span>
         ) : gameMode === 'roulette' ? (
           <span>European Roulette &middot; Single Zero &middot; 0-36</span>
-        ) : (
+        ) : gameMode === 'slots' ? (
           <span>Slots &middot; 3 Reels &middot; 8 Symbols</span>
+        ) : (
+          <span>Coin Flip &middot; 1:1 Payout &middot; 50/50 Odds</span>
         )}
         <span className="build-version">v{__BUILD_VERSION__}</span>
       </footer>
