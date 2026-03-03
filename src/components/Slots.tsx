@@ -9,6 +9,23 @@ interface SlotsProps {
 
 const BET_OPTIONS = [1, 5, 10, 25, 50, 100]
 
+// VIP tier thresholds
+const VIP_TIERS = [
+  { name: 'Bronze', min: 0, max: 25, icon: '\u25C6', cls: 'bronze' },
+  { name: 'Silver', min: 25, max: 75, icon: '\u25C7', cls: 'silver' },
+  { name: 'Gold', min: 75, max: 200, icon: '\u2726', cls: 'gold' },
+  { name: 'Diamond', min: 200, max: Infinity, icon: '\u2666', cls: 'diamond' },
+] as const
+
+function getVipTier(totalSpins: number) {
+  const tier = VIP_TIERS.find(t => totalSpins >= t.min && totalSpins < t.max) ?? VIP_TIERS[3]
+  const nextTier = VIP_TIERS[VIP_TIERS.indexOf(tier) + 1]
+  const progressInTier = nextTier
+    ? ((totalSpins - tier.min) / (nextTier.min - tier.min)) * 100
+    : 100
+  return { ...tier, progress: Math.min(progressInTier, 100) }
+}
+
 function ReelSymbol({ symbol, spinning, stopped, index }: {
   symbol: SlotSymbol
   spinning: boolean
@@ -39,7 +56,9 @@ function WinParticles({ isJackpot, isWin }: { isJackpot: boolean; isWin: boolean
       const size = isJackpot ? 3 + Math.random() * 5 : 2 + Math.random() * 3
       const duration = 0.8 + Math.random() * 0.6
       const delay = Math.random() * 0.3
-      const hue = isJackpot ? 40 + Math.random() * 20 : 120 + Math.random() * 40
+      // Purple/cyan/pink hues for neon theme
+      const hueOptions = [280, 190, 330, 260]
+      const hue = hueOptions[i % hueOptions.length] + Math.random() * 20
       return { angle, distance, size, duration, delay, hue, id: i }
     })
   }, [isJackpot, isWin])
@@ -101,6 +120,44 @@ function CoinShower({ active, count }: { active: boolean; count: number }) {
   )
 }
 
+// VIP Tier Badge
+function VipBadge({ totalSpins }: { totalSpins: number }) {
+  const tier = getVipTier(totalSpins)
+  return (
+    <div className={`slots-vip-badge slots-vip-badge--${tier.cls}`}>
+      <span className="slots-vip-badge__icon">{tier.icon}</span>
+      <span>{tier.name}</span>
+      {tier.progress < 100 && (
+        <div className="slots-vip-badge__progress">
+          <div
+            className="slots-vip-badge__progress-fill"
+            style={{ width: `${tier.progress}%` }}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Win Streak Multiplier Trail
+function MultiplierTrail({ winStreak }: { winStreak: number }) {
+  const steps = 5
+  return (
+    <div className="slots-multiplier-trail" aria-hidden="true">
+      {Array.from({ length: steps }, (_, i) => (
+        <div
+          key={i}
+          className={`slots-multiplier-trail__step ${
+            i < winStreak
+              ? winStreak >= 3 ? 'slots-multiplier-trail__step--hot' : 'slots-multiplier-trail__step--active'
+              : ''
+          }`}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function Slots({ chips, onChipsChange }: SlotsProps) {
   const { state, setBet, spin, newRound } = useSlots(chips, onChipsChange)
   const [showPaytable, setShowPaytable] = useState(false)
@@ -133,8 +190,16 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
   // Check if all 3 reels match (for highlight)
   const allMatch = isResult && state.reels[0] === state.reels[1] && state.reels[1] === state.reels[2]
 
+  // Progressive jackpot display value (visual only — bet * 777)
+  const jackpotDisplay = state.bet * 777
+
   return (
+    <div className="slots-3d-scene">
     <div className={`slots-machine ${isJackpot ? 'slots-machine--jackpot' : ''} ${isWin && !isJackpot ? 'slots-machine--win' : ''}`}>
+
+      {/* 3D side panels */}
+      <div className="slots-side-panel slots-side-panel--left" aria-hidden="true" />
+      <div className="slots-side-panel slots-side-panel--right" aria-hidden="true" />
 
       {/* Ambient glow behind machine */}
       <div className={`slots-ambient ${isJackpot ? 'slots-ambient--jackpot' : ''} ${isWin && !isJackpot ? 'slots-ambient--win' : ''}`} aria-hidden="true" />
@@ -142,8 +207,9 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
       {/* Coin shower overlay */}
       <CoinShower active={winTier === 'jackpot' || winTier === 'big'} count={winTier === 'jackpot' ? 30 : 15} />
 
-      {/* Cabinet top — arched marquee with retro title */}
+      {/* Cabinet top — 3D marquee with depth overhang and LED lights */}
       <div className="slots-cabinet-top">
+        <div className="slots-cabinet-top__depth" aria-hidden="true" />
         <div className="slots-cabinet-top__arch" />
         <div className="slots-marquee">
           <div className="slots-marquee__lights">
@@ -152,7 +218,7 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
             ))}
           </div>
           <h2 className="slots-title">
-            {isJackpot ? '★ JACKPOT ★' : '♦ LUCKY 7s ♦'}
+            {isJackpot ? '\u2605 JACKPOT \u2605' : '\u2666 LUCKY 7s \u2666'}
           </h2>
           <div className="slots-marquee__lights">
             {Array.from({ length: 14 }, (_, i) => (
@@ -162,7 +228,7 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
         </div>
       </div>
 
-      {/* Grand jackpot payout panel */}
+      {/* PREMIUM FEATURE 1: Progressive jackpot counter with live bet-scaled value */}
       <div className="slots-payout-bar">
         <button
           className="slots-paytable-toggle"
@@ -172,9 +238,12 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
           {showPaytable ? 'Hide Paytable' : 'Show Paytable'}
         </button>
         <div className="slots-payout-bar__jackpot">
-          GRAND JACKPOT 7-7-7: <span className="slots-payout-bar__jackpot-value">777×</span>
+          GRAND JACKPOT 7-7-7: <span className="slots-payout-bar__jackpot-value">${jackpotDisplay.toLocaleString()}</span>
         </div>
       </div>
+
+      {/* PREMIUM FEATURE 2: VIP Tier Badge */}
+      <VipBadge totalSpins={state.totalSpins} />
 
       {/* Paytable */}
       {showPaytable && (
@@ -182,15 +251,16 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
           {PAYOUT_TABLE.map((entry, i) => (
             <div key={i} className={`slots-paytable__row ${entry.isJackpot ? 'slots-paytable__row--jackpot' : ''}`}>
               <span className="slots-paytable__desc">{entry.description}</span>
-              <span className={`slots-paytable__mult ${entry.isJackpot ? 'slots-paytable__mult--jackpot' : ''}`}>×{entry.multiplier}</span>
+              <span className={`slots-paytable__mult ${entry.isJackpot ? 'slots-paytable__mult--jackpot' : ''}`}>\u00d7{entry.multiplier}</span>
             </div>
           ))}
         </div>
       )}
 
-      {/* Reel window — 3 vertical reel windows with strong bezel borders */}
+      {/* Reel window — 3D recessed frame with glass reflections */}
       <div className={`slots-reels-frame ${isWin ? 'slots-reels-frame--win' : ''} ${isJackpot ? 'slots-reels-frame--jackpot' : ''}`}>
         <div className="slots-reels-frame__glass" />
+        <div className="slots-reels-frame__reflection" aria-hidden="true" />
         <div className={`slots-payline ${isWin ? 'slots-payline--win' : ''} ${isJackpot ? 'slots-payline--jackpot' : ''}`} />
 
         {/* Win particles burst from center of reels */}
@@ -210,15 +280,18 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
         </div>
       </div>
 
+      {/* PREMIUM FEATURE 3: Win Streak Multiplier Trail */}
+      <MultiplierTrail winStreak={state.winStreak} />
+
       {/* Win display area */}
       <div className="slots-result-area">
         {/* Win label */}
         {isResult && state.winLabel && (
           <div className={`slots-win-label ${isWin ? 'slots-win-label--big' : ''} ${isJackpot ? 'slots-win-label--jackpot' : ''} ${isPush ? 'slots-win-label--push' : ''}`}>
             <span className="slots-win-label__text">
-              {isJackpot && <span className="slots-win-label__stars">★ </span>}
+              {isJackpot && <span className="slots-win-label__stars">{'\u2605'} </span>}
               {state.winLabel}
-              {isJackpot && <span className="slots-win-label__stars"> ★</span>}
+              {isJackpot && <span className="slots-win-label__stars"> {'\u2605'}</span>}
             </span>
             {state.winAmount > 0 && (
               <span className={`slots-win-amount ${isJackpot ? 'slots-win-amount--jackpot' : ''}`}>
@@ -226,7 +299,7 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
               </span>
             )}
             {isWin && state.winAmount > 0 && (
-              <span className="slots-win-multiplier">×{Math.round(state.winAmount / state.bet)}</span>
+              <span className="slots-win-multiplier">\u00d7{Math.round(state.winAmount / state.bet)}</span>
             )}
           </div>
         )}
@@ -307,7 +380,7 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
                 disabled={!canSpin}
                 aria-label={`Spin for $${state.bet}`}
               >
-                <span className="slots-spin-btn__icon">▶</span>
+                <span className="slots-spin-btn__icon">{'\u25B6'}</span>
                 {isResult ? 'SPIN AGAIN' : 'SPIN'} — ${state.bet}
               </button>
               {/* Decorative side lever */}
@@ -347,6 +420,7 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }

@@ -225,3 +225,36 @@ The bet → spin → watch → result cycle should feel seamless:
 - [GameDesigning.org — Micro-Interactions in Slot UX](https://gamedesigning.org/beyond/micro-interactions-in-slot-ux-small-details-big-impact/)
 - [eJaw — Slot Game Design Insights](https://ejaw.net/the-art-of-slot-game-design-strategies-for-success/)
 - [WeirdWorm — Smooth Motion Effects in Online Slots](https://www.weirdworm.net/smooth-motion-effects-used-in-online-slot-games/)
+
+---
+
+## Applied in preview build
+
+**Branch**: `preview/slots-graphics-v2`
+
+### Theme: Neon Vegas Spectacular
+
+Complete visual overhaul from the dark mechanical cabinet aesthetic to a high-energy neon theme. The redesign applies several research-backed principles from this document while introducing a distinct visual identity.
+
+### Changes applied
+
+- **Color system overhaul**: Deep purple/black base (`#0a0414`) with electric cyan (`#00f0ff`), hot pink (`#ff2d78`), and neon purple (`#b44dff`) accents. Replaces the warm brown/gold mechanical palette with cool neon energy.
+- **Neon edge strips**: Animated gradient border strips on cabinet sides (cyan-to-pink and pink-to-cyan) with glow effects, replacing the static gold chrome trim.
+- **LED marquee**: Multi-color neon bulbs (cyan/pink/purple cycling) replace the uniform gold chase lights. Title uses gradient text with background-clip instead of solid gold.
+- **Neon underglow on reel frame**: Animated color-shifting glow strip beneath the reel window. Changes color based on game state (purple idle, green win, gold jackpot). Implements the "win-state lighting changes" pattern from Section 1.
+- **Redesigned spin button**: Hot pink gradient with animated neon ring glow (pseudo-element blur pulse). Replaces the classic red button.
+- **Rounded, pill-shaped controls**: Bet buttons and paytable toggle use rounded pill shapes with neon border highlights instead of rectangular gold-bordered buttons.
+
+### Premium features added
+
+1. **Progressive Jackpot Counter**: Shows a live dollar value (`bet * 777`) instead of the static "777x" multiplier. Updates dynamically when bet changes, with shimmer animation on the value. Applies the "progressive display" pattern from Section 8.
+2. **VIP Tier Badge**: Session-based player tier (Bronze/Silver/Gold/Diamond) based on total spins with progress bar to next tier. Implements the "session stats add depth" principle from Section 8.
+3. **Win Streak Multiplier Trail**: Visual 5-step indicator below the reel frame that fills and pulses as win streaks build. Active steps glow purple; 3+ streak steps pulse hot pink. Applies the "streak/bonus presentation" pattern from Section 4.
+
+### What was preserved
+
+- All gameplay logic untouched (`useSlots.ts` unmodified)
+- Mobile responsive breakpoints at 480px and 360px maintained
+- `prefers-reduced-motion` support fully preserved
+- ARIA labels, roles, and live regions unchanged
+- All 310 unit tests pass; production build succeeds
