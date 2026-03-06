@@ -1,6 +1,15 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useSlots, SYMBOL_DISPLAY, PAYOUT_TABLE } from '../hooks/useSlots'
 import type { SlotSymbol } from '../hooks/useSlots'
+import SlotReelRenderer from './SlotReelRenderer'
+import {
+  playSlotSpin,
+  playSlotReelStop,
+  playSlotWin,
+  playSlotJackpot,
+  playSlotLoss,
+  playButtonClick,
+} from '../utils/sound'
 
 interface SlotsProps {
   chips: number
@@ -24,25 +33,6 @@ function getVipTier(totalSpins: number) {
     ? ((totalSpins - tier.min) / (nextTier.min - tier.min)) * 100
     : 100
   return { ...tier, progress: Math.min(progressInTier, 100) }
-}
-
-function ReelSymbol({ symbol, spinning, stopped, index }: {
-  symbol: SlotSymbol
-  spinning: boolean
-  stopped: boolean
-  index: number
-}) {
-  const isActive = !spinning || stopped
-  return (
-    <div
-      className={`slots-reel ${spinning && !stopped ? 'slots-reel--spinning' : ''} ${stopped && spinning ? 'slots-reel--landing' : ''}`}
-      style={spinning && !stopped ? { animationDelay: `${index * 0.05}s` } : undefined}
-    >
-      <div className={`slots-reel__symbol ${isActive ? 'slots-reel__symbol--visible' : ''}`}>
-        {SYMBOL_DISPLAY[symbol]}
-      </div>
-    </div>
-  )
 }
 
 // Particle burst on wins
@@ -161,6 +151,8 @@ function MultiplierTrail({ winStreak }: { winStreak: number }) {
 export default function Slots({ chips, onChipsChange }: SlotsProps) {
   const { state, setBet, spin, newRound } = useSlots(chips, onChipsChange)
   const [showPaytable, setShowPaytable] = useState(false)
+  const prevPhaseRef = useRef(state.phase)
+  const audioPlayedRef = useRef(false)
 
   const isIdle = state.phase === 'idle'
   const isSpinning = state.phase === 'spinning' || state.phase === 'stopping'
@@ -172,7 +164,51 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
   // Determine win tier for celebration scaling
   const winTier = isJackpot ? 'jackpot' : (state.winAmount >= state.bet * 20) ? 'big' : isWin ? 'normal' : null
 
+  // Determine which reels are "winning" for highlight in PixiJS renderer
+  const winningReels = useMemo(() => {
+    if (!isResult) return [false, false, false]
+    const allMatch = state.reels[0] === state.reels[1] && state.reels[1] === state.reels[2]
+    if (allMatch) return [true, true, true]
+    if (isWin && state.reels[0] === 'cherry' && state.reels[1] === 'cherry') return [true, true, false]
+    if (isWin && state.reels[0] === 'cherry') return [true, false, false]
+    return [false, false, false]
+  }, [isResult, isWin, state.reels])
+
+  // ── Audio: spin start ──
+  useEffect(() => {
+    if (state.phase === 'spinning' && prevPhaseRef.current !== 'spinning') {
+      playSlotSpin()
+      audioPlayedRef.current = false
+    }
+    prevPhaseRef.current = state.phase
+  }, [state.phase])
+
+  // ── Audio: result sounds ──
+  useEffect(() => {
+    if (state.phase === 'result' && !audioPlayedRef.current) {
+      audioPlayedRef.current = true
+      // Delay slightly so all reels have visually settled
+      const timer = setTimeout(() => {
+        if (state.isJackpot) {
+          playSlotJackpot()
+        } else if (state.winAmount > state.bet) {
+          playSlotWin()
+        } else if (state.winAmount === 0) {
+          playSlotLoss()
+        }
+        // Push (bet returned) gets no sound — neutral
+      }, 150)
+      return () => clearTimeout(timer)
+    }
+  }, [state.phase, state.isJackpot, state.winAmount, state.bet])
+
+  // ── Audio: reel land callback from PixiJS renderer ──
+  const handleReelLand = useCallback((index: number) => {
+    playSlotReelStop(index)
+  }, [])
+
   const handleBetChange = useCallback((amount: number) => {
+    playButtonClick()
     setBet(amount)
   }, [setBet])
 
@@ -214,7 +250,11 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
         <div className="slots-marquee">
           <div className="slots-marquee__lights">
             {Array.from({ length: 14 }, (_, i) => (
-              <div key={i} className="slots-marquee__bulb" style={{ animationDelay: `${i * 0.15}s` }} />
+              <div
+                key={i}
+                className={`slots-marquee__bulb ${isSpinning ? 'slots-marquee__bulb--spinning' : ''}`}
+                style={{ animationDelay: `${i * 0.15}s` }}
+              />
             ))}
           </div>
           <h2 className="slots-title">
@@ -222,17 +262,21 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
           </h2>
           <div className="slots-marquee__lights">
             {Array.from({ length: 14 }, (_, i) => (
-              <div key={i} className="slots-marquee__bulb" style={{ animationDelay: `${(i + 7) * 0.15}s` }} />
+              <div
+                key={i}
+                className={`slots-marquee__bulb ${isSpinning ? 'slots-marquee__bulb--spinning' : ''}`}
+                style={{ animationDelay: `${(i + 7) * 0.15}s` }}
+              />
             ))}
           </div>
         </div>
       </div>
 
-      {/* PREMIUM FEATURE 1: Progressive jackpot counter with live bet-scaled value */}
+      {/* Progressive jackpot counter with live bet-scaled value */}
       <div className="slots-payout-bar">
         <button
           className="slots-paytable-toggle"
-          onClick={() => setShowPaytable(!showPaytable)}
+          onClick={() => { playButtonClick(); setShowPaytable(!showPaytable) }}
           aria-expanded={showPaytable}
         >
           {showPaytable ? 'Hide Paytable' : 'Show Paytable'}
@@ -242,7 +286,7 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
         </div>
       </div>
 
-      {/* PREMIUM FEATURE 2: VIP Tier Badge */}
+      {/* VIP Tier Badge */}
       <VipBadge totalSpins={state.totalSpins} />
 
       {/* Paytable */}
@@ -251,14 +295,14 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
           {PAYOUT_TABLE.map((entry, i) => (
             <div key={i} className={`slots-paytable__row ${entry.isJackpot ? 'slots-paytable__row--jackpot' : ''}`}>
               <span className="slots-paytable__desc">{entry.description}</span>
-              <span className={`slots-paytable__mult ${entry.isJackpot ? 'slots-paytable__mult--jackpot' : ''}`}>\u00d7{entry.multiplier}</span>
+              <span className={`slots-paytable__mult ${entry.isJackpot ? 'slots-paytable__mult--jackpot' : ''}`}>{'\u00d7'}{entry.multiplier}</span>
             </div>
           ))}
         </div>
       )}
 
-      {/* Reel window — 3D recessed frame with glass reflections */}
-      <div className={`slots-reels-frame ${isWin ? 'slots-reels-frame--win' : ''} ${isJackpot ? 'slots-reels-frame--jackpot' : ''}`}>
+      {/* Reel window — 3D recessed frame with PixiJS canvas */}
+      <div className={`slots-reels-frame slots-reels-frame--pixi ${isWin ? 'slots-reels-frame--win' : ''} ${isJackpot ? 'slots-reels-frame--jackpot' : ''}`}>
         <div className="slots-reels-frame__glass" />
         <div className="slots-reels-frame__reflection" aria-hidden="true" />
         <div className={`slots-payline ${isWin ? 'slots-payline--win' : ''} ${isJackpot ? 'slots-payline--jackpot' : ''}`} />
@@ -266,21 +310,24 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
         {/* Win particles burst from center of reels */}
         <WinParticles isJackpot={isJackpot} isWin={isWin} />
 
-        <div className="slots-reels">
-          {state.reels.map((symbol, i) => (
-            <div key={i} className={`slots-reel-wrapper ${isResult && (allMatch || (isWin && i < (state.reels[0] === 'cherry' ? (state.reels[1] === 'cherry' ? 2 : 1) : 3))) ? 'slots-reel-wrapper--winning' : ''}`}>
-              <ReelSymbol
-                symbol={symbol}
-                spinning={isSpinning}
-                stopped={state.stoppedReels[i]}
-                index={i}
-              />
-            </div>
-          ))}
+        {/* PixiJS reel renderer */}
+        <SlotReelRenderer
+          reels={state.reels}
+          spinning={isSpinning}
+          stoppedReels={state.stoppedReels}
+          winningReels={winningReels}
+          isJackpot={isJackpot}
+          isWin={isWin}
+          onReelLand={handleReelLand}
+        />
+
+        {/* Accessible hidden text for screen readers */}
+        <div className="sr-only" role="status" aria-live="polite">
+          {isResult && `Reels show: ${state.reels.map(s => SYMBOL_DISPLAY[s]).join(', ')}`}
         </div>
       </div>
 
-      {/* PREMIUM FEATURE 3: Win Streak Multiplier Trail */}
+      {/* Win Streak Multiplier Trail */}
       <MultiplierTrail winStreak={state.winStreak} />
 
       {/* Win display area */}
@@ -299,7 +346,7 @@ export default function Slots({ chips, onChipsChange }: SlotsProps) {
               </span>
             )}
             {isWin && state.winAmount > 0 && (
-              <span className="slots-win-multiplier">\u00d7{Math.round(state.winAmount / state.bet)}</span>
+              <span className="slots-win-multiplier">{'\u00d7'}{Math.round(state.winAmount / state.bet)}</span>
             )}
           </div>
         )}

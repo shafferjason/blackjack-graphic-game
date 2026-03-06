@@ -1077,3 +1077,285 @@ export function playPush(): void {
   osc2.start(now + 0.04)
   osc2.stop(now + 0.22)
 }
+
+// ── Slot Machine Sound Effects ──
+
+/** Slot spin start — mechanical whir with accelerating clicks */
+export function playSlotSpin(): void {
+  if (muted) return
+  const ctx = getCtx()
+  const dest = getMaster()
+  const now = ctx.currentTime
+  const pg = profileGain()
+  const isModern = currentProfile === 'modern-casino'
+
+  // Mechanical motor whir — rising filtered noise
+  const whirDur = 0.6
+  const whirBuf = noiseBuffer(ctx, whirDur, t => {
+    const attack = Math.min(t * 5, 1)
+    return attack * 0.4
+  })
+  const whir = ctx.createBufferSource()
+  whir.buffer = whirBuf
+  const whirBP = ctx.createBiquadFilter()
+  whirBP.type = 'bandpass'
+  whirBP.frequency.setValueAtTime(200, now)
+  whirBP.frequency.linearRampToValueAtTime(isModern ? 800 : 1000, now + whirDur)
+  whirBP.Q.value = 1.2
+  const whirGain = ctx.createGain()
+  whirGain.gain.setValueAtTime(0.06 * pg, now)
+  whirGain.gain.linearRampToValueAtTime(0.1 * pg, now + 0.3)
+  whirGain.gain.exponentialRampToValueAtTime(0.03 * pg, now + whirDur)
+  whir.connect(whirBP).connect(whirGain).connect(dest)
+  whir.start(now)
+  whir.stop(now + whirDur)
+
+  // Lever pull clunk
+  const clunk = ctx.createOscillator()
+  clunk.type = 'sine'
+  clunk.frequency.setValueAtTime(isModern ? 180 : 200, now)
+  clunk.frequency.exponentialRampToValueAtTime(60, now + 0.06)
+  const clunkGain = ctx.createGain()
+  clunkGain.gain.setValueAtTime(0.12 * pg, now)
+  clunkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
+  clunk.connect(clunkGain).connect(dest)
+  clunk.start(now)
+  clunk.stop(now + 0.08)
+
+  // Accelerating reel clicks
+  for (let i = 0; i < 6; i++) {
+    const t = now + 0.05 + i * (0.06 - i * 0.006)
+    const clickBuf = noiseBuffer(ctx, 0.008, tt => Math.pow(1 - tt, 8))
+    const clickSrc = ctx.createBufferSource()
+    clickSrc.buffer = clickBuf
+    const clickHP = ctx.createBiquadFilter()
+    clickHP.type = 'highpass'
+    clickHP.frequency.value = isModern ? 3000 : 3500
+    const clickGain = ctx.createGain()
+    clickGain.gain.value = (0.03 + i * 0.005) * pg
+    clickSrc.connect(clickHP).connect(clickGain).connect(dest)
+    clickSrc.start(t)
+    clickSrc.stop(t + 0.008)
+  }
+}
+
+/** Slot reel landing — solid mechanical thunk with ratchet click */
+export function playSlotReelStop(reelIndex: number): void {
+  if (muted) return
+  const ctx = getCtx()
+  const dest = getMaster()
+  const now = ctx.currentTime
+  const pg = profileGain()
+  const isModern = currentProfile === 'modern-casino'
+
+  // Pitch rises slightly per reel for musical progression
+  const pitchMult = 1 + reelIndex * 0.12
+
+  // Heavy mechanical thunk
+  const thunk = ctx.createOscillator()
+  thunk.type = 'sine'
+  thunk.frequency.setValueAtTime((isModern ? 160 : 180) * pitchMult, now)
+  thunk.frequency.exponentialRampToValueAtTime(50 * pitchMult, now + 0.07)
+  const thunkLP = ctx.createBiquadFilter()
+  thunkLP.type = 'lowpass'
+  thunkLP.frequency.value = isModern ? 400 : 500
+  const thunkGain = ctx.createGain()
+  thunkGain.gain.setValueAtTime(0.16 * pg, now)
+  thunkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.1)
+  thunk.connect(thunkLP).connect(thunkGain).connect(dest)
+  thunk.start(now)
+  thunk.stop(now + 0.1)
+
+  // Ratchet click impact
+  const clickDur = 0.015
+  const clickBuf = noiseBuffer(ctx, clickDur, t => Math.pow(1 - t, 5))
+  const clickSrc = ctx.createBufferSource()
+  clickSrc.buffer = clickBuf
+  const clickBP = ctx.createBiquadFilter()
+  clickBP.type = 'bandpass'
+  clickBP.frequency.value = (isModern ? 2200 : 2600) * pitchMult
+  clickBP.Q.value = 1.0
+  const clickGain = ctx.createGain()
+  clickGain.gain.setValueAtTime(0.09 * pg, now)
+  clickGain.gain.exponentialRampToValueAtTime(0.001, now + clickDur)
+  clickSrc.connect(clickBP).connect(clickGain).connect(dest)
+  clickSrc.start(now)
+  clickSrc.stop(now + clickDur)
+
+  // Metal resonance ring
+  const ring = ctx.createOscillator()
+  ring.type = 'sine'
+  ring.frequency.value = (isModern ? 1400 : 1600) * pitchMult
+  const ringGain = ctx.createGain()
+  ringGain.gain.setValueAtTime(0.02 * pg, now + 0.005)
+  ringGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
+  ring.connect(ringGain).connect(dest)
+  ring.start(now + 0.005)
+  ring.stop(now + 0.08)
+}
+
+/** Slot win — bright ascending chime cascade with sparkle */
+export function playSlotWin(): void {
+  if (muted) return
+  const ctx = getCtx()
+  const dest = getMaster()
+  const now = ctx.currentTime
+  const pg = profileGain()
+  const isModern = currentProfile === 'modern-casino'
+  const rv = profileReverb()
+
+  const reverb = createReverb(ctx, rv.dur, rv.decay)
+  const reverbGain = ctx.createGain()
+  reverbGain.gain.value = isModern ? 0.12 : 0.06
+  reverb.connect(reverbGain).connect(dest)
+
+  // Bright ascending major pentatonic
+  const notes = [659.25, 783.99, 880, 1046.5, 1174.66] // E5 G5 A5 C6 D6
+  notes.forEach((freq, i) => {
+    const t = now + i * 0.07
+    const osc = ctx.createOscillator()
+    osc.type = 'triangle'
+    osc.frequency.value = freq
+    const lp = ctx.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = isModern ? 4000 : 5000
+    const gain = ctx.createGain()
+    gain.gain.setValueAtTime(0.001, t)
+    gain.gain.linearRampToValueAtTime(0.1 * pg, t + 0.01)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25)
+    osc.connect(lp).connect(gain)
+    gain.connect(dest)
+    gain.connect(reverb)
+    osc.start(t)
+    osc.stop(t + 0.25)
+  })
+
+  // Coin chime overlay
+  if (samplesLoaded) {
+    setTimeout(() => playRandomSample('chipsCollide', 2, 0.3), 150)
+    setTimeout(() => playRandomSample('chipsStack', 2, 0.25), 300)
+  }
+}
+
+/** Slot jackpot — grand celebration with sustained chord, shimmer, and sub bass */
+export function playSlotJackpot(): void {
+  if (muted) return
+  const ctx = getCtx()
+  const dest = getMaster()
+  const now = ctx.currentTime
+  const pg = profileGain()
+  const isModern = currentProfile === 'modern-casino'
+  const rv = profileReverb()
+
+  // Lush reverb
+  const reverb = createReverb(ctx, rv.dur + 0.4, rv.decay)
+  const reverbGain = ctx.createGain()
+  reverbGain.gain.value = isModern ? 0.2 : 0.1
+  reverb.connect(reverbGain).connect(dest)
+
+  // Grand ascending arpeggio: C5 E5 G5 B5 C6 E6
+  const notes = [523.25, 659.25, 783.99, 987.77, 1046.5, 1318.5]
+  notes.forEach((freq, i) => {
+    const t = now + i * 0.09
+    const osc = ctx.createOscillator()
+    osc.type = 'triangle'
+    osc.frequency.value = freq
+    const lp = ctx.createBiquadFilter()
+    lp.type = 'lowpass'
+    lp.frequency.value = isModern ? 4500 : 5500
+    const gain = ctx.createGain()
+    gain.gain.setValueAtTime(0.001, t)
+    gain.gain.linearRampToValueAtTime(0.13 * pg, t + 0.012)
+    gain.gain.setValueAtTime(0.13 * pg, t + 0.15)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6)
+    osc.connect(lp).connect(gain)
+    gain.connect(dest)
+    gain.connect(reverb)
+    osc.start(t)
+    osc.stop(t + 0.6)
+
+    // Octave shimmer
+    const harm = ctx.createOscillator()
+    harm.type = 'sine'
+    harm.frequency.value = freq * 2
+    const hGain = ctx.createGain()
+    hGain.gain.setValueAtTime(0.001, t)
+    hGain.gain.linearRampToValueAtTime(0.025 * pg, t + 0.02)
+    hGain.gain.exponentialRampToValueAtTime(0.001, t + 0.35)
+    harm.connect(hGain).connect(dest)
+    harm.start(t)
+    harm.stop(t + 0.35)
+  })
+
+  // Sub-bass punch
+  const sub = ctx.createOscillator()
+  sub.type = 'sine'
+  sub.frequency.setValueAtTime(65, now)
+  sub.frequency.exponentialRampToValueAtTime(30, now + 0.5)
+  const subGain = ctx.createGain()
+  subGain.gain.setValueAtTime(0.001, now)
+  subGain.gain.linearRampToValueAtTime(0.08 * pg, now + 0.02)
+  subGain.gain.exponentialRampToValueAtTime(0.001, now + 0.5)
+  sub.connect(subGain).connect(dest)
+  sub.start(now)
+  sub.stop(now + 0.5)
+
+  // Sparkle noise burst
+  const sparkDur = 0.15
+  const sparkBuf = noiseBuffer(ctx, sparkDur, t => Math.pow(1 - t, 2))
+  const sparkSrc = ctx.createBufferSource()
+  sparkSrc.buffer = sparkBuf
+  const sparkHP = ctx.createBiquadFilter()
+  sparkHP.type = 'highpass'
+  sparkHP.frequency.value = isModern ? 6000 : 7000
+  const sparkGain = ctx.createGain()
+  sparkGain.gain.value = 0.03 * pg
+  sparkSrc.connect(sparkHP).connect(sparkGain).connect(dest)
+  sparkSrc.start(now + 0.5)
+  sparkSrc.stop(now + 0.5 + sparkDur)
+
+  // Chip cascade
+  if (samplesLoaded) {
+    setTimeout(() => playRandomSample('chipsCollide', 2, 0.4), 200)
+    setTimeout(() => playRandomSample('chipsStack', 2, 0.35), 400)
+    setTimeout(() => playRandomSample('chipsHandle', 2, 0.3), 600)
+  }
+}
+
+/** Slot loss — soft sympathetic descending tone */
+export function playSlotLoss(): void {
+  if (muted) return
+  const ctx = getCtx()
+  const dest = getMaster()
+  const now = ctx.currentTime
+  const pg = profileGain()
+  const isModern = currentProfile === 'modern-casino'
+
+  // Gentle descending minor third
+  const osc = ctx.createOscillator()
+  osc.type = 'triangle'
+  osc.frequency.setValueAtTime(isModern ? 400 : 440, now)
+  osc.frequency.exponentialRampToValueAtTime(isModern ? 320 : 350, now + 0.2)
+  const lp = ctx.createBiquadFilter()
+  lp.type = 'lowpass'
+  lp.frequency.value = isModern ? 1500 : 2000
+  const gain = ctx.createGain()
+  gain.gain.setValueAtTime(0.001, now)
+  gain.gain.linearRampToValueAtTime(0.06 * pg, now + 0.01)
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25)
+  osc.connect(lp).connect(gain).connect(dest)
+  osc.start(now)
+  osc.stop(now + 0.25)
+
+  // Soft thud
+  const thud = ctx.createOscillator()
+  thud.type = 'sine'
+  thud.frequency.setValueAtTime(80, now)
+  thud.frequency.exponentialRampToValueAtTime(35, now + 0.15)
+  const thudGain = ctx.createGain()
+  thudGain.gain.setValueAtTime(0.04 * pg, now)
+  thudGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15)
+  thud.connect(thudGain).connect(dest)
+  thud.start(now)
+  thud.stop(now + 0.15)
+}
