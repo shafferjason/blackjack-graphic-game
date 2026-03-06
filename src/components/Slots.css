@@ -1869,6 +1869,88 @@
   .slots-cabinet-top__depth { display: none; }
 }
 
+/* ══ PIXI CANVAS INTEGRATION ══ */
+
+.slots-pixi-canvas {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  image-rendering: auto;
+}
+
+.slots-pixi-canvas canvas {
+  display: block;
+  border-radius: 8px;
+}
+
+/* Smooth gradient mask on top/bottom edges of the PixiJS reel window */
+.slots-reels-frame--pixi {
+  padding: 12px 16px;
+}
+
+.slots-reels-frame--pixi .slots-pixi-canvas {
+  -webkit-mask-image: linear-gradient(180deg,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.3) 8%,
+    rgba(0,0,0,1) 20%,
+    rgba(0,0,0,1) 80%,
+    rgba(0,0,0,0.3) 92%,
+    rgba(0,0,0,0) 100%
+  );
+  mask-image: linear-gradient(180deg,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,0.3) 8%,
+    rgba(0,0,0,1) 20%,
+    rgba(0,0,0,1) 80%,
+    rgba(0,0,0,0.3) 92%,
+    rgba(0,0,0,0) 100%
+  );
+}
+
+/* ══ ENHANCED IDLE LIGHT CHASE ══ */
+
+@keyframes sv2-led-chase-enhanced {
+  0%   { opacity: 0.1; transform: scale(0.85); }
+  40%  { opacity: 1; transform: scale(1.15); box-shadow: 0 0 10px var(--sv2-neon-cyan), 0 0 20px rgba(0, 240, 255, 0.5); }
+  100% { opacity: 0.1; transform: scale(0.85); }
+}
+
+.slots-machine:not(.slots-machine--win):not(.slots-machine--jackpot) .slots-marquee__bulb {
+  animation: sv2-led-chase-enhanced 2.4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Faster chase during spin */
+.slots-machine .slots-marquee__bulb.slots-marquee__bulb--spinning {
+  animation-duration: 0.8s;
+}
+
+/* ══ PREMIUM SPIN BUTTON PULSE ══ */
+
+@keyframes sv2-spin-btn-idle-glow {
+  0%, 100% {
+    box-shadow:
+      0 4px 0 0 #4a0820,
+      0 5px 0 0 #3a0618,
+      0 8px 20px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(255, 45, 120, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+  50% {
+    box-shadow:
+      0 4px 0 0 #4a0820,
+      0 5px 0 0 #3a0618,
+      0 8px 20px rgba(0, 0, 0, 0.5),
+      0 0 30px rgba(255, 45, 120, 0.45),
+      0 0 60px rgba(255, 45, 120, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  }
+}
+
+.slots-spin-btn:not(:disabled):not(:hover):not(:active) {
+  animation: sv2-spin-btn-idle-glow 3s ease-in-out infinite;
+}
+
 /* ══ REDUCED MOTION ══ */
 
 @media (prefers-reduced-motion: reduce) {
@@ -1916,5 +1998,9 @@
 
   .slots-reels-frame__reflection::before {
     display: none;
+  }
+
+  .slots-spin-btn:not(:disabled):not(:hover):not(:active) {
+    animation: none !important;
   }
 }
