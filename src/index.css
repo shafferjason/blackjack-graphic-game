@@ -5,17 +5,39 @@
 }
 
 :root {
+  /* ── Premier Casino Palette ── */
   --felt: #0b6623;
   --felt-dark: #084a1a;
   --felt-light: #0d7a2b;
   --gold: #d4a644;
   --gold-light: #f0d68a;
-  --bg-dark: #0a0f1a;
+  --gold-deep: #a07c30;
+  --gold-glow: rgba(212, 166, 68, 0.35);
+  --bg-dark: #080c16;
+  --bg-deeper: #050810;
+  --bg-surface: #0e1424;
   --text-primary: #f0ece4;
   --text-secondary: #b0a890;
+  --text-muted: rgba(240, 236, 228, 0.4);
   --red: #e74c3c;
   --green: #27ae60;
   --blue: #3498db;
+
+  /* ── Premium Depth & Lighting ── */
+  --shadow-ambient: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-card: 0 4px 16px rgba(0,0,0,0.25), 0 1px 4px rgba(0,0,0,0.15);
+  --shadow-elevated: 0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-gold-glow: 0 0 20px rgba(212,166,68,0.15), 0 0 60px rgba(212,166,68,0.06);
+  --border-subtle: 1px solid rgba(255,255,255,0.06);
+  --border-gold: 1px solid rgba(212,166,68,0.25);
+
+  /* ── Motion ── */
+  --ease-premium: cubic-bezier(0.22, 0.68, 0.35, 1.0);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --duration-fast: 0.15s;
+  --duration-normal: 0.25s;
+  --duration-slow: 0.5s;
 }
 
 body {
@@ -27,6 +49,10 @@ body {
   overflow-x: hidden;
   -webkit-text-size-adjust: 100%;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) 0 env(safe-area-inset-left);
+  /* Subtle radial vignette on body */
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(212,166,68,0.03) 0%, transparent 60%),
+    var(--bg-dark);
 }
 
 #root {

@@ -244,21 +244,24 @@ export function setSoundProfile(profile: SoundProfile): void {
 function startAmbience(): void {
   if (muted || !audioCtx || ambienceSource) return
   const ctx = getCtx()
-  // Generate a long low-level room-tone loop (subtle filtered noise)
-  const dur = 4
+  // Generate a richer casino room-tone loop: brownian noise + subtle tonal warmth
+  const dur = 6
   const len = Math.ceil(ctx.sampleRate * dur)
   const buf = ctx.createBuffer(2, len, ctx.sampleRate)
   for (let ch = 0; ch < 2; ch++) {
     const data = buf.getChannelData(ch)
-    // Brownian noise (warm rumble)
+    // Brownian noise (warm rumble) with slight stereo offset
     let prev = 0
+    const offset = ch * 0.005
     for (let i = 0; i < len; i++) {
-      prev += (Math.random() * 2 - 1) * 0.03
-      prev *= 0.998
-      data[i] = prev
+      prev += (Math.random() * 2 - 1) * 0.028
+      prev *= 0.997
+      // Add subtle tonal warmth — very quiet sine undertone
+      const tonal = Math.sin(2 * Math.PI * 60 * i / ctx.sampleRate) * 0.003
+      data[i] = prev + tonal + offset
     }
-    // Smooth loop point — fade last 2000 samples
-    const fade = Math.min(2000, len / 4)
+    // Smooth loop point — crossfade last 4000 samples
+    const fade = Math.min(4000, len / 4)
     for (let i = 0; i < fade; i++) {
       const t = i / fade
       data[len - fade + i] *= (1 - t)
@@ -269,16 +272,22 @@ function startAmbience(): void {
   src.buffer = buf
   src.loop = true
 
-  // Bandpass to isolate room-tone character
+  // Bandpass to isolate room-tone character — slightly wider for richness
   const bp = ctx.createBiquadFilter()
   bp.type = 'bandpass'
-  bp.frequency.value = 180
-  bp.Q.value = 0.3
+  bp.frequency.value = 200
+  bp.Q.value = 0.25
+
+  // Additional low shelf for bass warmth
+  const lowShelf = ctx.createBiquadFilter()
+  lowShelf.type = 'lowshelf'
+  lowShelf.frequency.value = 120
+  lowShelf.gain.value = 3
 
   const gn = ctx.createGain()
-  gn.gain.value = muted ? 0 : 0.025
+  gn.gain.value = muted ? 0 : 0.03
 
-  src.connect(bp).connect(gn).connect(ctx.destination)
+  src.connect(bp).connect(lowShelf).connect(gn).connect(ctx.destination)
   src.start()
   ambienceSource = src
   ambienceGain = gn

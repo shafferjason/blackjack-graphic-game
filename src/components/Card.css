@@ -148,21 +148,54 @@
   border-radius: 12px;
   position: relative;
   flex-shrink: 0;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  transition:
+    transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease,
+    filter 0.3s ease;
   transform-style: preserve-3d;
 }
 
-/* Only apply hover effects on devices with hover capability (excludes touch) */
+/* Premium hover — lift + golden glow on hover-capable devices */
 @media (hover: hover) {
   .card:hover {
-    transform: translateY(-6px) rotate(0.5deg);
+    transform: translateY(-8px) rotate(0.5deg);
     z-index: 10;
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.08),
-      0 4px 8px rgba(0, 0, 0, 0.1),
-      0 8px 18px rgba(0, 0, 0, 0.12),
-      0 14px 30px rgba(0, 0, 0, 0.16);
+      0 4px 8px rgba(0, 0, 0, 0.12),
+      0 8px 20px rgba(0, 0, 0, 0.14),
+      0 16px 36px rgba(0, 0, 0, 0.18),
+      0 0 20px rgba(212, 166, 68, 0.08);
   }
+}
+
+/* Win highlight — golden glow */
+.card-wrapper.card-win .card {
+  box-shadow:
+    0 0 16px rgba(74, 222, 128, 0.3),
+    0 0 32px rgba(74, 222, 128, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+  animation: cardWinPulse 0.6s var(--ease-bounce, cubic-bezier(0.34, 1.56, 0.64, 1));
+}
+
+/* Blackjack win — extra golden */
+.card-wrapper.card-blackjack .card {
+  box-shadow:
+    0 0 20px rgba(212, 166, 68, 0.35),
+    0 0 40px rgba(212, 166, 68, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes cardWinPulse {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.04) rotate(0.5deg); }
+  100% { transform: scale(1); }
+}
+
+/* Loss state — subtle desaturation */
+.card-wrapper.card-lose .card {
+  filter: brightness(0.85) saturate(0.7);
+  transition: filter 0.5s ease 0.3s;
 }
 
 /* ── Face-up card — premium card stock ── */
@@ -412,17 +445,34 @@
     1px 1px 0 #fff;
 }
 
-/* Card back */
+/* Card back — premium with edge highlight */
 .card-back {
   box-shadow:
-    0 0.5px 1px rgba(0, 0, 0, 0.08),
-    0 2px 4px rgba(0, 0, 0, 0.12),
-    0 4px 10px rgba(0, 0, 0, 0.16),
-    0 8px 24px rgba(0, 0, 0, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 0.5px 1px rgba(0, 0, 0, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.18),
+    0 8px 24px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   overflow: hidden;
   padding: 0;
   border: none;
+  position: relative;
+}
+
+/* Subtle sheen on card back */
+.card-back::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+    rgba(255,255,255,0.06) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(255,255,255,0.03) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
 }
 
 .card-back-svg {

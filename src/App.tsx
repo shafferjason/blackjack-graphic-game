@@ -44,7 +44,9 @@ import TexasHoldem from './components/TexasHoldem'
 import Roulette from './components/Roulette'
 import Slots from './components/Slots'
 import CoinFlip from './components/CoinFlip'
+import AmbientParticles from './components/AmbientParticles'
 import './App.css'
+import './components/AmbientParticles.css'
 import './components/GameModeSelector.css'
 import './components/TexasHoldem.css'
 import './components/Roulette.css'
@@ -612,6 +614,7 @@ function App() {
       )}
 
       <main className="table" style={feltStyle} aria-label={`${gameMode === 'blackjack' ? 'Blackjack' : gameMode === 'texas_holdem' ? "Texas Hold'em" : gameMode === 'roulette' ? 'Roulette' : gameMode === 'slots' ? 'Slots' : 'Coin Flip'} table`}>
+        <AmbientParticles />
         {gameMode === 'blackjack' ? (
           <>
             <ChipAnimation
