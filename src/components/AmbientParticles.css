@@ -88,3 +88,28 @@
     animation: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 4 — AMBIENT PARTICLE REFINEMENT
+   Warmer gold tones, refined opacity breathing
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Primary particle — warmer gold core ── */
+.ambient-particle {
+  background: radial-gradient(circle, rgba(212, 166, 68, 0.55) 0%, rgba(212, 166, 68, 0) 65%);
+}
+
+/* ── Warm variant — richer cream tone ── */
+.ambient-particle:nth-child(3n) {
+  background: radial-gradient(circle, rgba(255, 235, 190, 0.45) 0%, rgba(255, 235, 190, 0) 65%);
+}
+
+/* ── Green felt variant — subtler ── */
+.ambient-particle:nth-child(5n) {
+  background: radial-gradient(circle, rgba(170, 210, 170, 0.3) 0%, rgba(170, 210, 170, 0) 65%);
+}
+
+/* ── Spotlight catch — refined flare ── */
+.ambient-particle:nth-child(7n) {
+  background: radial-gradient(circle, rgba(255, 255, 235, 0.65) 0%, rgba(255, 255, 235, 0) 55%);
+}

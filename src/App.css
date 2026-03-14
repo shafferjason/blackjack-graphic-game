@@ -4511,3 +4511,310 @@
     display: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 4 — PREMIUM TIER VISUAL POLISH
+   Final layering, refined typography hierarchy, high-end
+   interaction states, cohesive luxury finish
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Header typography refinement — tighter hierarchy, gold accent underline ── */
+.header h1 {
+  font-size: clamp(1.1rem, 3.5vw, 1.6rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: linear-gradient(170deg, var(--gold-highlight, #ffe4a0) 0%, var(--gold-light) 35%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+/* ── Stats bar — refined pill treatment with micro-border glow ── */
+.stat {
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  background: var(--surface-glass);
+  border: 1px solid var(--border-glass);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  letter-spacing: 0.02em;
+}
+
+.stat:hover {
+  background: var(--surface-glass-hover);
+  border-color: var(--border-glass-hover);
+  box-shadow: 0 0 8px rgba(212, 166, 68, 0.06);
+}
+
+/* ── Score pill — elevated glass with refined states ── */
+.score-pill {
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  padding: 5px 18px;
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+}
+
+.score-pill.blackjack {
+  background:
+    linear-gradient(135deg, rgba(255, 228, 160, 0.08) 0%, transparent 50%),
+    rgba(212, 166, 68, 0.35);
+  text-shadow: 0 0 10px rgba(212, 166, 68, 0.35);
+}
+
+/* ── Hand title — refined weight and tracking ── */
+.hand-title {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(240, 236, 228, 0.55);
+}
+
+/* ── Banner — premium frosted glass with inner light edge ── */
+.banner {
+  padding: 11px 36px;
+  border-radius: 32px;
+  backdrop-filter: blur(20px) saturate(1.3);
+  -webkit-backdrop-filter: blur(20px) saturate(1.3);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.15) inset;
+}
+
+.banner p {
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.banner.blackjack p {
+  font-family: 'Playfair Display', 'Georgia', serif;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+/* ── Chip total — luxury numeral treatment ── */
+.chip-total {
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: 0.02em;
+}
+
+.chip-coin {
+  filter: drop-shadow(0 0 4px rgba(212, 166, 68, 0.2));
+}
+
+/* ── Bet display — refined secondary typography ── */
+.bet-display {
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+}
+
+.bet-display strong {
+  font-weight: 800;
+  color: var(--gold-light);
+  text-shadow: 0 0 10px rgba(212, 166, 68, 0.15);
+}
+
+/* ── Chip row — refined surface glow ── */
+.chip-row::after {
+  background: radial-gradient(ellipse at 50% 0%, rgba(212, 166, 68, 0.1) 0%, transparent 75%);
+  filter: blur(6px);
+}
+
+/* ── Chips — premium depth and tactile feel ── */
+.chip {
+  transition:
+    transform var(--duration-normal) var(--ease-bounce),
+    box-shadow var(--duration-normal) var(--ease-silk, ease),
+    filter var(--duration-fast) ease;
+}
+
+.chip:not(:disabled):hover {
+  filter: brightness(1.08);
+}
+
+.chip:not(:disabled):active {
+  filter: brightness(0.95);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.18),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Action buttons — refined interaction states ── */
+.btn {
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  border-radius: 16px;
+  transition:
+    transform var(--duration-normal) var(--ease-bounce),
+    box-shadow var(--duration-normal) var(--ease-silk, ease),
+    background var(--duration-fast) ease,
+    filter var(--duration-fast) ease;
+}
+
+.btn:not(:disabled):active {
+  filter: brightness(0.92);
+  transition-duration: 0.06s;
+}
+
+/* Primary button — gold foil sheen on hover */
+.btn-primary:not(:disabled):hover {
+  filter: brightness(1.06);
+}
+
+/* Hit/Stand/Double — unified hover lift and glow intensify */
+.btn-hit:not(:disabled):hover,
+.btn-stand:not(:disabled):hover,
+.btn-double:not(:disabled):hover {
+  filter: brightness(1.05);
+}
+
+/* ── Controls area — refined glass separation ── */
+.controls-area {
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+  border-top: 1px solid rgba(212, 166, 68, 0.1);
+  box-shadow:
+    0 -2px 12px rgba(0, 0, 0, 0.15),
+    0 -8px 32px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Settings panel — luxury glass refinement ── */
+.settings-panel {
+  box-shadow:
+    0 24px 80px rgba(0, 0, 0, 0.7),
+    0 0 1px rgba(212, 166, 68, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 22px;
+}
+
+.settings-header h2 {
+  letter-spacing: 0.04em;
+}
+
+/* ── Setting chips — refined interactive glass ── */
+.setting-chip {
+  transition: all 0.2s var(--ease-silk, ease);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.setting-chip:hover {
+  border-color: var(--border-glass-hover);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.03);
+}
+
+.setting-chip-active {
+  box-shadow:
+    0 2px 8px rgba(212, 166, 68, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* ── Shop skin items — premium card-like hover ── */
+.shop-skin-item {
+  transition: border-color 0.25s var(--ease-silk, ease), background 0.25s ease, box-shadow 0.35s ease, transform 0.25s var(--ease-silk, ease);
+}
+
+.shop-skin-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--border-glass-hover);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  transform: translateX(3px);
+}
+
+.shop-skin-active {
+  box-shadow:
+    0 0 12px rgba(212, 166, 68, 0.12),
+    inset 0 0 0 1px rgba(212, 166, 68, 0.08);
+}
+
+/* ── Split hand active — refined glow ring ── */
+.split-hand-active {
+  box-shadow:
+    0 0 12px rgba(212, 166, 68, 0.35),
+    0 0 28px rgba(212, 166, 68, 0.1),
+    inset 0 0 0 1px rgba(212, 166, 68, 0.06);
+}
+
+/* ── Sound/Settings toggle — refined glass hover states ── */
+.sound-toggle,
+.settings-toggle {
+  transition: all var(--duration-normal) var(--ease-silk, ease);
+}
+
+.sound-toggle:hover,
+.settings-toggle:hover {
+  border-color: rgba(212, 166, 68, 0.35);
+  background: rgba(212, 166, 68, 0.1);
+  box-shadow:
+    0 0 10px rgba(212, 166, 68, 0.08),
+    inset 0 0 8px rgba(212, 166, 68, 0.04);
+}
+
+/* ── Shoe indicator — subtle refinement ── */
+.shoe-track {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Table vignette — Phase 4 refined depth with warm inner glow ── */
+.table::before {
+  background:
+    /* Warm inner glow — premium felt illumination */
+    radial-gradient(ellipse 55% 35% at 50% 35%, rgba(212, 166, 68, 0.012) 0%, transparent 100%),
+    /* Cinematic light sweep */
+    radial-gradient(ellipse 40% 30% at var(--light-x, 45%) var(--light-y, 30%), rgba(255, 255, 255, 0.02) 0%, transparent 100%),
+    /* Corner shadows — deeper */
+    radial-gradient(ellipse at 0% 0%, rgba(0,0,0,0.40) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.38) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, rgba(0,0,0,0.34) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.34) 0%, transparent 50%),
+    /* Main vignette — deeper edges */
+    radial-gradient(ellipse at 50% 38%, transparent 18%, rgba(0, 0, 0, 0.26) 55%, rgba(0, 0, 0, 0.60) 100%);
+}
+
+/* ── Responsive Phase 4 adjustments ── */
+@media (min-width: 768px) {
+  .banner {
+    padding: 13px 42px;
+  }
+
+  .banner p {
+    font-size: 1.1rem;
+  }
+
+  .chip-total {
+    font-size: 1.5rem;
+  }
+
+  .hand-title {
+    font-size: 0.82rem;
+    letter-spacing: 3.5px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .banner.blackjack p {
+    font-size: 1.2rem;
+    letter-spacing: 3px;
+  }
+}
+
+/* ── Phase 4: Reduced motion safety ── */
+@media (prefers-reduced-motion: reduce) {
+  .header h1 {
+    -webkit-text-fill-color: var(--gold-light);
+    background: none;
+  }
+}
