@@ -14,22 +14,28 @@
   height: 8px;
   border-radius: 50%;
   background: var(--gold);
-  box-shadow: 0 0 6px rgba(212, 166, 68, 0.8);
+  box-shadow:
+    0 0 8px rgba(212, 166, 68, 0.9),
+    0 0 16px rgba(212, 166, 68, 0.4);
   will-change: transform, opacity;
-  animation: particleBurst 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: particleBurst 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 @keyframes particleBurst {
   0% {
     opacity: 1;
-    transform: translate(var(--dx), var(--dy)) scale(1);
+    transform: translate(var(--dx), var(--dy)) scale(1.2);
+  }
+  30% {
+    opacity: 1;
+    transform: translate(calc(var(--dx) * 2), calc(var(--dy) * 2)) scale(1);
   }
   60% {
-    opacity: 0.8;
+    opacity: 0.7;
   }
   100% {
     opacity: 0;
-    transform: translate(calc(var(--dx) * 4), calc(var(--dy) * 4 + 40px)) scale(0);
+    transform: translate(calc(var(--dx) * 5), calc(var(--dy) * 5 + 50px)) scale(0);
   }
 }
 
@@ -42,41 +48,78 @@
   font-family: 'Playfair Display', serif;
   font-size: 2.5rem;
   font-weight: 900;
-  letter-spacing: 4px;
+  letter-spacing: 5px;
   color: var(--gold-light);
   text-shadow:
-    0 0 20px rgba(212, 166, 68, 0.6),
-    0 0 40px rgba(212, 166, 68, 0.3),
-    0 2px 4px rgba(0, 0, 0, 0.5);
+    0 0 24px rgba(212, 166, 68, 0.7),
+    0 0 48px rgba(212, 166, 68, 0.35),
+    0 0 80px rgba(212, 166, 68, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.6);
   white-space: nowrap;
-  animation: blackjackTextPop 1.8s ease-out forwards;
+  animation: blackjackTextPop 2s ease-out forwards;
   z-index: 61;
+}
+
+/* Golden ring burst behind blackjack text */
+.blackjack-text::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(212, 166, 68, 0.5);
+  box-shadow: 0 0 20px rgba(212, 166, 68, 0.3);
+  animation: goldenRingBurst 1.2s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes goldenRingBurst {
+  0% {
+    width: 0;
+    height: 0;
+    opacity: 0.9;
+    transform: translate(-50%, -50%);
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    width: 280px;
+    height: 280px;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+  }
 }
 
 @keyframes blackjackTextPop {
   0% {
     opacity: 0;
     transform: translate(-50%, -50%) scale(0.3);
+    filter: brightness(2);
   }
-  15% {
+  12% {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1.2);
+    transform: translate(-50%, -50%) scale(1.25);
+    filter: brightness(1.5);
   }
-  25% {
-    transform: translate(-50%, -50%) scale(0.95);
+  22% {
+    transform: translate(-50%, -50%) scale(0.93);
+    filter: brightness(1);
   }
-  35% {
-    transform: translate(-50%, -50%) scale(1.05);
+  32% {
+    transform: translate(-50%, -50%) scale(1.06);
   }
-  45% {
+  42% {
     transform: translate(-50%, -50%) scale(1);
   }
-  75% {
+  72% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translate(-50%, -50%) scale(1) translateY(-15px);
+    transform: translate(-50%, -50%) scale(1) translateY(-18px);
   }
 }
 
@@ -84,19 +127,27 @@
 .bust-flash {
   position: absolute;
   inset: 0;
-  background: radial-gradient(ellipse at 50% 70%, rgba(239, 68, 68, 0.25) 0%, transparent 70%);
-  animation: bustFlash 0.6s ease-out forwards;
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(239, 68, 68, 0.3) 0%, transparent 60%),
+    linear-gradient(180deg, transparent 0%, rgba(239, 68, 68, 0.08) 100%);
+  animation: bustFlash 0.7s ease-out forwards;
 }
 
 @keyframes bustFlash {
   0% {
     opacity: 0;
+    filter: brightness(1);
   }
-  20% {
+  15% {
     opacity: 1;
+    filter: brightness(1.1);
+  }
+  30% {
+    opacity: 0.7;
   }
   100% {
     opacity: 0;
+    filter: brightness(1);
   }
 }
 
@@ -108,22 +159,27 @@
   height: 14px;
   border-radius: 2px;
   will-change: transform, opacity;
-  animation: confettiFall var(--fall-duration, 1.6s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: confettiFall var(--fall-duration, 1.8s) cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
   animation-delay: var(--delay, 0s);
   opacity: 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
 }
 
 @keyframes confettiFall {
   0% {
     opacity: 1;
-    transform: translateX(0) translateY(0) rotate(0deg);
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1.1);
   }
-  25% {
+  15% {
+    opacity: 1;
+    transform: translateX(calc(var(--sway, 20px) * -0.3)) translateY(calc(var(--fall-dist, 400px) * 0.1)) rotate(calc(var(--spin, 720deg) * 0.15)) scale(1);
+  }
+  40% {
     opacity: 1;
   }
   100% {
     opacity: 0;
-    transform: translateX(var(--sway, 20px)) translateY(var(--fall-dist, 400px)) rotate(var(--spin, 720deg));
+    transform: translateX(var(--sway, 20px)) translateY(var(--fall-dist, 400px)) rotate(var(--spin, 720deg)) scale(0.8);
   }
 }
 
