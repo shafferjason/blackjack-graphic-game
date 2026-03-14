@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useRoulette, getNumberColor, WHEEL_NUMBERS } from '../hooks/useRoulette'
 import type { RouletteBetType } from '../hooks/useRoulette'
 
@@ -9,10 +9,40 @@ interface RouletteProps {
 
 const CHIP_AMOUNTS = [1, 5, 10, 25, 100]
 
+/** Denomination color coding — matches real casino chip colors */
+const CHIP_COLORS: Record<number, { bg: string; border: string; text: string }> = {
+  1:   { bg: '#f5f5f5', border: '#ccc',    text: '#333' },
+  5:   { bg: '#c0392b', border: '#922b21', text: '#fff' },
+  10:  { bg: '#2980b9', border: '#1f6692', text: '#fff' },
+  25:  { bg: '#27ae60', border: '#1e8449', text: '#fff' },
+  100: { bg: '#1a1a1a', border: '#444',    text: '#f0d264' },
+}
+
+/** Color for each pocket on the wheel */
+const POCKET_COLORS: Record<string, string> = {
+  red: '#b91c1c',
+  black: '#1a1a1a',
+  green: '#166534',
+}
+
 // Layout: numbers 1-36 in 3 columns, 12 rows
 const BOARD_ROWS: number[][] = []
 for (let row = 0; row < 12; row++) {
   BOARD_ROWS.push([row * 3 + 1, row * 3 + 2, row * 3 + 3])
+}
+
+/** Generate a 37-pocket conic-gradient from the European wheel number order */
+function buildWheelGradient(): string {
+  const count = WHEEL_NUMBERS.length
+  const sliceDeg = 360 / count
+  const stops: string[] = []
+  for (let i = 0; i < count; i++) {
+    const color = POCKET_COLORS[getNumberColor(WHEEL_NUMBERS[i])]
+    const startDeg = (i * sliceDeg).toFixed(2)
+    const endDeg = ((i + 1) * sliceDeg).toFixed(2)
+    stops.push(`${color} ${startDeg}deg ${endDeg}deg`)
+  }
+  return `conic-gradient(from 0deg, ${stops.join(', ')})`
 }
 
 function NumberCell({ n, isActive, onClick }: { n: number; isActive: boolean; onClick: () => void }) {
@@ -52,14 +82,37 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
     state.bets.filter(b => b.type !== 'straight').map(b => b.type)
   )
 
+  // 37-pocket wheel gradient (memoized — never changes)
+  const wheelGradient = useMemo(() => buildWheelGradient(), [])
+
+  // Phase-based root class
+  const phaseClass = isSpinning
+    ? 'roulette-table--spinning'
+    : isResult
+      ? state.winAmount > 0 ? 'roulette-table--result-win' : 'roulette-table--result-lose'
+      : 'roulette-table--betting'
+
+  // Wheel number translateY based on wheel size (CSS handles sizing, use relative)
+  const wheelNumberOffset = -85
+
   return (
-    <div className="roulette-table">
+    <div className={`roulette-table ${phaseClass}`}>
+      {/* Accessible result announcement */}
+      <div className="roulette-sr-result" aria-live="assertive" role="status">
+        {isResult && state.result !== null && (
+          `Result: ${state.result} ${getNumberColor(state.result)}. ${state.message}`
+        )}
+      </div>
+
       {/* Wheel visualization */}
       <div className="roulette-wheel-area">
-        <div className={`roulette-wheel ${isSpinning ? 'roulette-wheel--spinning' : ''}`}>
+        <div
+          className={`roulette-wheel ${isSpinning ? 'roulette-wheel--spinning' : ''}`}
+          style={{ background: wheelGradient }}
+        >
           <div className="roulette-wheel__inner">
             {state.result !== null ? (
-              <div className={`roulette-wheel__result roulette-wheel__result--${getNumberColor(state.result)}`}>
+              <div className={`roulette-wheel__result roulette-wheel__result--${getNumberColor(state.result)} ${isResult ? 'roulette-wheel__result--revealing' : ''}`}>
                 {state.result}
               </div>
             ) : (
@@ -71,7 +124,7 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
               <span
                 key={n}
                 className={`roulette-wheel__number roulette-wheel__number--${getNumberColor(n)} ${state.result === n ? 'roulette-wheel__number--hit' : ''}`}
-                style={{ transform: `rotate(${(i / WHEEL_NUMBERS.length) * 360}deg) translateY(-68px)` }}
+                style={{ transform: `rotate(${(i / WHEEL_NUMBERS.length) * 360}deg) translateY(${wheelNumberOffset}px)` }}
                 aria-hidden="true"
               >
                 {n}
@@ -99,24 +152,34 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
 
       {/* Chip selector */}
       {isBetting && (
-        <div className="roulette-chips" role="radiogroup" aria-label="Select chip value">
-          {CHIP_AMOUNTS.filter(a => a <= chips).map(amount => (
-            <button
-              key={amount}
-              className={`roulette-chip ${selectedChip === amount ? 'roulette-chip--selected' : ''}`}
-              onClick={() => setSelectedChip(amount)}
-              role="radio"
-              aria-checked={selectedChip === amount}
-            >
-              ${amount}
-            </button>
-          ))}
+        <div className="roulette-chips roulette-phase-fade" role="radiogroup" aria-label="Select chip value">
+          {CHIP_AMOUNTS.filter(a => a <= chips).map(amount => {
+            const colors = CHIP_COLORS[amount] || CHIP_COLORS[1]
+            return (
+              <button
+                key={amount}
+                className={`roulette-chip ${selectedChip === amount ? 'roulette-chip--selected' : ''}`}
+                onClick={() => setSelectedChip(amount)}
+                role="radio"
+                aria-checked={selectedChip === amount}
+                style={{
+                  background: colors.bg,
+                  borderColor: colors.border,
+                  color: colors.text,
+                  borderWidth: '3px',
+                  borderStyle: 'solid',
+                }}
+              >
+                ${amount}
+              </button>
+            )
+          })}
         </div>
       )}
 
       {/* Betting board */}
       {isBetting && (
-        <div className="roulette-board">
+        <div className="roulette-board roulette-phase-fade">
           {/* Zero */}
           <div className="roulette-board__zero">
             <NumberCell n={0} isActive={activeStraights.has(0)} onClick={() => handleNumberClick(0)} />
