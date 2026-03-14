@@ -58,7 +58,8 @@
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 900;
-  letter-spacing: 1.5px;
+  letter-spacing: 0.05em;
+  line-height: 0.95;
   color: var(--gold-light);
   text-shadow:
     0 1px 2px rgba(0, 0, 0, 0.5),
@@ -118,6 +119,8 @@
   padding-bottom: 0;
   gap: 8px;
   background:
+    /* Warm amber accent light (offset left) */
+    radial-gradient(ellipse 40% 35% at 30% 25%, rgba(212, 166, 68, 0.02) 0%, transparent 100%),
     /* Overhead spotlight */
     radial-gradient(ellipse 70% 50% at 50% 20%, rgba(255,255,255,0.04) 0%, transparent 100%),
     /* Core felt gradient with warm center */
@@ -136,6 +139,13 @@
   pointer-events: none;
   z-index: 0;
   opacity: 0.7;
+  mix-blend-mode: multiply;
+  animation: feltBreathe 8s ease-in-out infinite;
+}
+
+@keyframes feltBreathe {
+  0%, 100% { opacity: 0.65; }
+  50% { opacity: 0.75; }
 }
 
 /* Deep vignette — cinema-grade edge darkening */
@@ -195,7 +205,8 @@
   padding: 4px 16px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
@@ -224,8 +235,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 110px;
-  padding: 4px 8px;
+  min-height: 120px;
+  padding: 6px 10px;
   width: 100%;
 }
 
@@ -248,7 +259,8 @@
   border-radius: 30px;
   background: rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
@@ -350,9 +362,9 @@
       rgba(8, 12, 22, 0.85) 80%,
       transparent 100%
     );
-  padding: 12px 8px;
-  padding-top: 24px;
-  padding-bottom: max(12px, env(safe-area-inset-bottom));
+  padding: 14px 10px;
+  padding-top: 26px;
+  padding-bottom: max(14px, env(safe-area-inset-bottom));
   margin-top: auto;
   backdrop-filter: blur(8px);
 }
@@ -382,6 +394,7 @@
   font-size: 1.4rem;
   font-weight: 700;
   color: var(--gold-light);
+  font-variant-numeric: tabular-nums;
 }
 
 .chip-coin {
@@ -392,6 +405,7 @@
 .bet-display {
   font-size: 1rem;
   color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
 }
 
 .bet-display strong {
@@ -404,10 +418,10 @@
 }
 
 .chip {
-  width: 56px;
-  height: 56px;
-  min-width: 44px;
-  min-height: 44px;
+  width: 62px;
+  height: 62px;
+  min-width: 48px;
+  min-height: 48px;
   border-radius: 50%;
   font-weight: 700;
   font-size: 0.75rem;
@@ -441,10 +455,11 @@
 }
 
 .chip:not(:disabled):hover {
-  transform: translateY(-4px) scale(1.06);
+  transform: translateY(-4px) scale(1.08);
   box-shadow:
     0 6px 12px rgba(0, 0, 0, 0.35),
     0 12px 28px rgba(0, 0, 0, 0.5),
+    0 0 16px rgba(212, 166, 68, 0.12),
     inset 0 2px 4px rgba(255, 255, 255, 0.28),
     inset 0 -2px 3px rgba(0, 0, 0, 0.2);
 }
@@ -481,12 +496,12 @@
 
 /* Buttons — 44px minimum touch target, premium feel */
 .btn {
-  padding: 12px 28px;
-  border-radius: 12px;
+  padding: 14px 28px;
+  border-radius: 14px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 1rem;
   letter-spacing: 0.5px;
-  min-height: 44px;
+  min-height: 48px;
   touch-action: manipulation;
   position: relative;
   overflow: hidden;
@@ -564,11 +579,11 @@
   box-shadow:
     0 4px 12px rgba(34, 197, 94, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.15);
-  padding: 12px 20px;
-  font-size: 1rem;
+  padding: 14px 24px;
+  font-size: 1.05rem;
   font-weight: 700;
-  border-radius: 12px;
-  min-height: 48px;
+  border-radius: 14px;
+  min-height: 52px;
   flex: 1 1 auto;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -588,11 +603,11 @@
   box-shadow:
     0 4px 12px rgba(239, 68, 68, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  padding: 12px 20px;
-  font-size: 1rem;
+  padding: 14px 24px;
+  font-size: 1.05rem;
   font-weight: 700;
-  border-radius: 12px;
-  min-height: 48px;
+  border-radius: 14px;
+  min-height: 52px;
   flex: 1 1 auto;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -612,11 +627,11 @@
   box-shadow:
     0 4px 12px rgba(212, 166, 68, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-  padding: 12px 20px;
-  font-size: 1rem;
+  padding: 14px 24px;
+  font-size: 1.05rem;
   font-weight: 700;
-  border-radius: 12px;
-  min-height: 48px;
+  border-radius: 14px;
+  min-height: 52px;
   flex: 1 1 auto;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -650,6 +665,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  font-variant-numeric: tabular-nums;
 }
 
 .bet-tag {
@@ -2070,8 +2086,8 @@
   }
 
   .cards-row {
-    min-height: 100px;
-    padding: 2px 4px;
+    min-height: 115px;
+    padding: 4px 8px;
   }
 
   .card-slot {
@@ -2118,9 +2134,9 @@
   }
 
   .chip {
-    width: 48px;
-    height: 48px;
-    font-size: 0.7rem;
+    width: 58px;
+    height: 58px;
+    font-size: 0.78rem;
   }
 
   .chip-row {
@@ -2129,14 +2145,15 @@
 
   .btn {
     padding: 10px 16px;
-    font-size: 0.85rem;
-    min-height: 44px;
+    font-size: 0.9rem;
+    min-height: 48px;
   }
 
   .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
-    padding: 10px 12px;
-    font-size: 0.9rem;
-    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 1.0rem;
+    min-height: 50px;
+    border-radius: 14px;
   }
 
   .play-buttons {
@@ -2144,8 +2161,8 @@
   }
 
   .controls-area {
-    padding: 10px 6px;
-    padding-top: 16px;
+    padding: 14px 8px;
+    padding-top: 22px;
   }
 
   .split-hands-container {
@@ -2189,8 +2206,8 @@
   }
 
   .cards-row {
-    min-height: 110px;
-    padding: 4px 6px;
+    min-height: 125px;
+    padding: 6px 10px;
   }
 
   .card-slot {
@@ -2219,14 +2236,16 @@
   }
 
   .chip {
-    width: 52px;
-    height: 52px;
-    font-size: 0.72rem;
+    width: 62px;
+    height: 62px;
+    font-size: 0.8rem;
   }
 
   .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
-    padding: 11px 16px;
-    font-size: 0.95rem;
+    padding: 13px 20px;
+    font-size: 1.05rem;
+    min-height: 52px;
+    border-radius: 14px;
   }
 
   .split-hand .cards-row {
@@ -2338,6 +2357,7 @@
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
 .stats-metric-label {
@@ -2419,6 +2439,7 @@
   font-size: 1rem;
   font-weight: 700;
   color: var(--gold-light);
+  font-variant-numeric: tabular-nums;
 }
 
 .stats-ht-label {
@@ -2432,8 +2453,8 @@
 /* ── Medium phones (414px - 599px) — iPhone 12/13/14/15 standard & Plus ── */
 @media (min-width: 414px) and (max-width: 599px) {
   .cards-row {
-    min-height: 130px;
-    padding: 6px 10px;
+    min-height: 145px;
+    padding: 8px 12px;
   }
 
   .card-slot {
@@ -2454,14 +2475,16 @@
   }
 
   .chip {
-    width: 56px;
-    height: 56px;
-    font-size: 0.75rem;
+    width: 66px;
+    height: 66px;
+    font-size: 0.85rem;
   }
 
   .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
-    padding: 12px 20px;
-    font-size: 1rem;
+    padding: 14px 24px;
+    font-size: 1.1rem;
+    min-height: 54px;
+    border-radius: 14px;
   }
 }
 
@@ -2474,8 +2497,8 @@
   }
 
   .cards-row {
-    min-height: 170px;
-    padding: 8px 20px;
+    min-height: 185px;
+    padding: 10px 24px;
   }
 
   .card-slot {
@@ -2498,22 +2521,29 @@
   }
 
   .chip {
-    width: 60px;
-    height: 60px;
-    font-size: 0.8rem;
+    width: 72px;
+    height: 72px;
+    font-size: 0.9rem;
   }
 
   .controls-area {
-    max-width: 520px;
+    max-width: 540px;
     margin-left: auto;
     margin-right: auto;
     position: sticky;
     bottom: 0;
+    padding: 18px 18px;
+    padding-top: 30px;
+  }
+
+  .chip-total {
+    font-size: 1.5rem;
   }
 
   .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
-    padding: 14px 28px;
-    font-size: 1.05rem;
+    padding: 16px 32px;
+    font-size: 1.15rem;
+    min-height: 56px;
   }
 
   /* No swipe on tablets, show all split hands */
@@ -2543,8 +2573,8 @@
   }
 
   .cards-row {
-    min-height: 200px;
-    padding: 10px 30px;
+    min-height: 230px;
+    padding: 12px 32px;
   }
 
   .card-slot {
@@ -2567,22 +2597,29 @@
   }
 
   .chip {
-    width: 64px;
-    height: 64px;
-    font-size: 0.85rem;
+    width: 78px;
+    height: 78px;
+    font-size: 0.95rem;
   }
 
   .controls-area {
-    max-width: 560px;
+    max-width: 580px;
     margin-left: auto;
     margin-right: auto;
     position: sticky;
     bottom: 0;
+    padding: 18px 24px;
+    padding-top: 30px;
+  }
+
+  .chip-total {
+    font-size: 1.6rem;
   }
 
   .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
-    padding: 14px 32px;
-    font-size: 1.1rem;
+    padding: 16px 36px;
+    font-size: 1.2rem;
+    min-height: 58px;
   }
 
   .play-buttons {
@@ -2616,7 +2653,7 @@
   }
 
   .controls-area {
-    max-width: 640px;
+    max-width: 660px;
     position: sticky;
     bottom: 0;
     background:
@@ -2626,8 +2663,18 @@
         transparent 100%
       );
     border-radius: 20px 20px 0 0;
-    padding: 16px 24px;
-    padding-top: 28px;
+    padding: 20px 28px;
+    padding-top: 32px;
+  }
+
+  .card-slot {
+    width: 150px;
+    height: 218px;
+    border-radius: 14px;
+  }
+
+  .chip-total {
+    font-size: 1.8rem;
   }
 
   .hand-area {
@@ -2645,6 +2692,19 @@
 
   .footer {
     letter-spacing: 0.8px;
+  }
+}
+
+/* ── Ultrawide desktop (1440px+) ── */
+@media (min-width: 1440px) {
+  .card-slot {
+    width: 160px;
+    height: 232px;
+    border-radius: 16px;
+  }
+
+  .chip-total {
+    font-size: 2.0rem;
   }
 }
 
@@ -4273,9 +4333,10 @@
 
   /* Ensure action buttons don't overflow */
   .btn-hit, .btn-stand, .btn-double, .btn-split, .btn-surrender, .btn-insurance {
-    padding: 10px 10px;
-    font-size: 0.85rem;
+    padding: 10px 12px;
+    font-size: 0.9rem;
     min-width: 0;
+    min-height: 48px;
   }
 }
 
@@ -4327,6 +4388,10 @@
   }
 
   .achievement-toast {
+    animation: none !important;
+  }
+
+  .table::after {
     animation: none !important;
   }
 }
