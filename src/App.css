@@ -503,13 +503,24 @@
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.25),
-    0 4px 12px rgba(0, 0, 0, 0.4),
-    0 8px 20px rgba(0, 0, 0, 0.15),
-    inset 0 2px 4px rgba(255, 255, 255, 0.22),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.2);
-  border: 3px dashed rgba(255, 255, 255, 0.25);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    /* 3D dome highlight — top catch light */
+    0 -1px 1px rgba(255, 255, 255, 0.15),
+    /* Ambient occlusion tight */
+    0 1px 2px rgba(0, 0, 0, 0.3),
+    /* Near shadow */
+    0 3px 6px rgba(0, 0, 0, 0.35),
+    /* Mid shadow — depth */
+    0 6px 16px rgba(0, 0, 0, 0.3),
+    /* Far shadow — elevation */
+    0 10px 24px rgba(0, 0, 0, 0.15),
+    /* Inner dome bevel — top light */
+    inset 0 3px 6px rgba(255, 255, 255, 0.28),
+    /* Inner dome bevel — bottom shadow */
+    inset 0 -3px 5px rgba(0, 0, 0, 0.25),
+    /* Rim edge glow */
+    inset 0 0 2px rgba(255, 255, 255, 0.1);
+  border: 3px solid rgba(255, 255, 255, 0.18);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 6px rgba(0, 0, 0, 0.3);
   touch-action: manipulation;
   transition:
     transform var(--duration-normal) var(--ease-bounce),
@@ -517,19 +528,21 @@
   position: relative;
 }
 
-/* Inner ring detail for realism */
+/* Inner ring detail — concentric inlay circle */
 .chip::before {
   content: '';
   position: absolute;
-  inset: 4px;
+  inset: 5px;
   border-radius: 50%;
-  border: 1.5px solid rgba(255,255,255,0.12);
+  border: 1.5px solid rgba(255,255,255,0.15);
   pointer-events: none;
   box-shadow:
-    inset 0 0 6px rgba(255,255,255,0.04);
+    inset 0 1px 3px rgba(255,255,255,0.06),
+    inset 0 -1px 2px rgba(0,0,0,0.1),
+    0 0 3px rgba(0,0,0,0.08);
 }
 
-/* Edge notch marks — casino-authentic tick detail */
+/* Edge striping — conic-gradient for 3D rim texture */
 .chip::after {
   content: '';
   position: absolute;
@@ -537,23 +550,25 @@
   border-radius: 50%;
   background:
     repeating-conic-gradient(
-      transparent 0deg, transparent 8deg,
-      rgba(255,255,255,0.10) 8deg, rgba(255,255,255,0.10) 10deg,
-      transparent 10deg, transparent 20deg
+      transparent 0deg, transparent 6deg,
+      rgba(255,255,255,0.14) 6deg, rgba(255,255,255,0.14) 9deg,
+      transparent 9deg, transparent 15deg
     );
   pointer-events: none;
-  mask-image: radial-gradient(transparent 68%, black 70%, black 100%);
-  -webkit-mask-image: radial-gradient(transparent 68%, black 70%, black 100%);
+  mask-image: radial-gradient(transparent 72%, black 74%, black 100%);
+  -webkit-mask-image: radial-gradient(transparent 72%, black 74%, black 100%);
 }
 
 .chip:not(:disabled):hover {
-  transform: translateY(-4px) scale(1.08);
+  transform: translateY(-5px) scale(1.08);
   box-shadow:
-    0 6px 12px rgba(0, 0, 0, 0.35),
-    0 12px 28px rgba(0, 0, 0, 0.5),
-    0 0 16px rgba(212, 166, 68, 0.12),
-    inset 0 2px 4px rgba(255, 255, 255, 0.28),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+    0 -1px 1px rgba(255, 255, 255, 0.18),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 8px 20px rgba(0, 0, 0, 0.35),
+    0 14px 32px rgba(0, 0, 0, 0.2),
+    0 0 18px rgba(212, 166, 68, 0.12),
+    inset 0 3px 6px rgba(255, 255, 255, 0.3),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.22);
 }
 
 .chip:not(:disabled):active {
@@ -563,30 +578,38 @@
 
 .chip-10 {
   background:
-    radial-gradient(ellipse 80% 40% at 35% 25%, rgba(255,255,255,0.18) 0%, transparent 60%),
-    linear-gradient(145deg, #4b92ff 0%, #2563eb 50%, #1d4ed8 100%);
+    /* Dome specular highlight */
+    radial-gradient(ellipse 60% 35% at 38% 22%, rgba(255,255,255,0.32) 0%, transparent 55%),
+    /* Secondary catch light — bottom rim */
+    radial-gradient(ellipse 40% 20% at 62% 78%, rgba(255,255,255,0.08) 0%, transparent 50%),
+    /* Depth gradient */
+    linear-gradient(145deg, #5a9cff 0%, #3b82f6 30%, #2563eb 60%, #1d4ed8 100%);
 }
 .chip-25 {
   background:
-    radial-gradient(ellipse 80% 40% at 35% 25%, rgba(255,255,255,0.15) 0%, transparent 60%),
-    linear-gradient(145deg, #34d583 0%, #22c55e 50%, #15803d 100%);
+    radial-gradient(ellipse 60% 35% at 38% 22%, rgba(255,255,255,0.28) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 20% at 62% 78%, rgba(255,255,255,0.06) 0%, transparent 50%),
+    linear-gradient(145deg, #4ade80 0%, #22c55e 30%, #16a34a 60%, #15803d 100%);
 }
 .chip-50 {
   background:
-    radial-gradient(ellipse 80% 40% at 35% 25%, rgba(255,255,255,0.14) 0%, transparent 60%),
-    linear-gradient(145deg, #f87171 0%, #ef4444 50%, #b91c1c 100%);
+    radial-gradient(ellipse 60% 35% at 38% 22%, rgba(255,255,255,0.26) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 20% at 62% 78%, rgba(255,255,255,0.06) 0%, transparent 50%),
+    linear-gradient(145deg, #f87171 0%, #ef4444 30%, #dc2626 60%, #b91c1c 100%);
 }
 .chip-100 {
   background:
-    radial-gradient(ellipse 80% 40% at 35% 25%, rgba(255,255,255,0.12) 0%, transparent 60%),
-    linear-gradient(145deg, #2a2a4e 0%, #1a1a2e 50%, #0f0f1e 100%);
+    radial-gradient(ellipse 60% 35% at 38% 22%, rgba(255,255,255,0.18) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 20% at 62% 78%, rgba(212,166,68,0.1) 0%, transparent 50%),
+    linear-gradient(145deg, #33335a 0%, #1a1a2e 30%, #121228 60%, #0f0f1e 100%);
   border-color: var(--gold);
   box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.25),
-    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 -1px 1px rgba(212, 166, 68, 0.15),
+    0 3px 6px rgba(0, 0, 0, 0.35),
+    0 6px 16px rgba(0, 0, 0, 0.3),
     0 0 14px rgba(212, 166, 68, 0.2),
-    inset 0 2px 4px rgba(255, 255, 255, 0.15),
-    inset 0 -2px 3px rgba(0, 0, 0, 0.2);
+    inset 0 3px 6px rgba(255, 255, 255, 0.15),
+    inset 0 -3px 5px rgba(0, 0, 0, 0.25);
 }
 
 .bet-actions {
@@ -4628,7 +4651,7 @@
   filter: blur(6px);
 }
 
-/* ── Chips — premium depth and tactile feel ── */
+/* ── Chips — premium 3D depth and tactile feel ── */
 .chip {
   transition:
     transform var(--duration-normal) var(--ease-bounce),
@@ -4637,14 +4660,14 @@
 }
 
 .chip:not(:disabled):hover {
-  filter: brightness(1.08);
+  filter: brightness(1.1);
 }
 
 .chip:not(:disabled):active {
-  filter: brightness(0.95);
+  filter: brightness(0.94);
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.3),
-    0 2px 6px rgba(0, 0, 0, 0.4),
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 2px 4px rgba(0, 0, 0, 0.4),
     inset 0 2px 4px rgba(255, 255, 255, 0.18),
     inset 0 -2px 3px rgba(0, 0, 0, 0.25);
 }

@@ -175,38 +175,42 @@
   }
 }
 
-/* Win highlight — layered golden glow */
+/* Win highlight — layered green glow with depth */
 .card-wrapper.card-win .card {
   box-shadow:
-    0 0 16px rgba(74, 222, 128, 0.3),
-    0 0 32px rgba(74, 222, 128, 0.12),
-    0 0 48px rgba(74, 222, 128, 0.06),
+    0 0 12px rgba(74, 222, 128, 0.35),
+    0 0 28px rgba(74, 222, 128, 0.18),
+    0 0 48px rgba(74, 222, 128, 0.08),
+    0 0 64px rgba(74, 222, 128, 0.04),
     0 4px 16px rgba(0, 0, 0, 0.2);
-  animation: cardWinPulse 0.7s var(--ease-cinematic, cubic-bezier(0.16, 1, 0.3, 1));
+  animation: cardWinPulse 0.8s var(--ease-cinematic, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-/* Blackjack win — extra golden with radiance */
+/* Blackjack win — radiant golden aura with brightness surge */
 .card-wrapper.card-blackjack .card {
   box-shadow:
-    0 0 20px rgba(212, 166, 68, 0.4),
-    0 0 40px rgba(212, 166, 68, 0.18),
-    0 0 60px rgba(212, 166, 68, 0.08),
+    0 0 16px rgba(212, 166, 68, 0.5),
+    0 0 36px rgba(212, 166, 68, 0.25),
+    0 0 56px rgba(212, 166, 68, 0.12),
+    0 0 80px rgba(212, 166, 68, 0.06),
     0 4px 16px rgba(0, 0, 0, 0.2);
-  animation: cardBlackjackPulse 0.8s var(--ease-cinematic, cubic-bezier(0.16, 1, 0.3, 1));
+  animation: cardBlackjackPulse 0.9s var(--ease-cinematic, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 @keyframes cardWinPulse {
   0% { transform: scale(1); filter: brightness(1); }
-  25% { transform: scale(1.05) rotate(0.5deg); filter: brightness(1.08); }
-  50% { transform: scale(0.99); }
+  18% { transform: scale(1.06) rotate(0.6deg); filter: brightness(1.12); }
+  40% { transform: scale(0.98) rotate(-0.2deg); filter: brightness(1.02); }
+  60% { transform: scale(1.015); }
   100% { transform: scale(1); filter: brightness(1); }
 }
 
 @keyframes cardBlackjackPulse {
   0% { transform: scale(1); filter: brightness(1); }
-  20% { transform: scale(1.06) rotate(0.8deg); filter: brightness(1.12); }
-  45% { transform: scale(0.98) rotate(-0.3deg); }
-  70% { transform: scale(1.01); }
+  12% { transform: scale(1.08) rotate(0.8deg); filter: brightness(1.2); }
+  30% { transform: scale(0.96) rotate(-0.4deg); filter: brightness(1.04); }
+  50% { transform: scale(1.03) rotate(0.2deg); filter: brightness(1.02); }
+  70% { transform: scale(0.99); }
   100% { transform: scale(1); filter: brightness(1); }
 }
 
@@ -271,16 +275,17 @@
   overflow: hidden;
 }
 
-/* Vignette + subtle surface sheen for premium card feel */
+/* Vignette + surface sheen — premium card stock with directional light */
 .card-face::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background:
-    /* Directional sheen catch — simulates overhead light reflection */
-    linear-gradient(155deg, rgba(255, 255, 255, 0.06) 0%, transparent 35%, transparent 65%, rgba(0, 0, 0, 0.015) 100%),
-    radial-gradient(ellipse at 40% 30%, transparent 50%, rgba(0, 0, 0, 0.03) 100%);
+    /* Primary sheen catch — overhead light reflection, stronger for depth */
+    linear-gradient(150deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.02) 25%, transparent 45%, transparent 60%, rgba(0, 0, 0, 0.025) 100%),
+    /* Corner vignette — adds framing depth */
+    radial-gradient(ellipse at 40% 30%, transparent 45%, rgba(0, 0, 0, 0.04) 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -368,15 +373,34 @@
   shape-rendering: geometricPrecision;
 }
 
-/* Refined inner glow on face cards — warm and subtle */
+/* Refined inner glow on face cards — warm portrait spotlight with depth */
 .face-card-type .card-center {
-  background: radial-gradient(ellipse at 45% 40%, rgba(255, 252, 240, 0.35) 0%, transparent 55%);
+  background:
+    /* Primary warm spotlight — portrait focus */
+    radial-gradient(ellipse at 45% 38%, rgba(255, 252, 240, 0.4) 0%, rgba(255, 250, 235, 0.15) 35%, transparent 60%),
+    /* Subtle edge darkening for depth */
+    radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.03) 100%);
 }
 
 /* Size-aware face card rendering — boost contrast at small gameplay sizes */
 .face-svg {
-  /* Slightly warmer color profile for painted look */
-  filter: contrast(1.04) saturate(1.06);
+  /* Warmer color profile with subtle sharpening for painted look */
+  filter: contrast(1.06) saturate(1.08);
+}
+
+/* Face card premium border inner glow */
+.face-card-type .card-face {
+  border-color: rgba(160, 140, 110, 0.55);
+  box-shadow:
+    0 0.5px 1px rgba(0, 0, 0, 0.08),
+    0 2px 5px rgba(0, 0, 0, 0.1),
+    0 5px 12px rgba(0, 0, 0, 0.12),
+    0 10px 26px rgba(0, 0, 0, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.05),
+    inset 1px 0 0 rgba(255, 255, 255, 0.35),
+    /* Warm inner glow — face card premium feel */
+    inset 0 0 12px rgba(255, 248, 230, 0.12);
 }
 
 /* Face card text rendering — ensure serif consistency */
@@ -770,12 +794,12 @@
 
 @keyframes legendaryIdleGlow {
   0%, 100% {
-    box-shadow: 0 0 6px rgba(251, 191, 36, 0.15), 0 2px 6px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 8px rgba(251, 191, 36, 0.18), 0 0 16px rgba(251, 191, 36, 0.06), 0 2px 6px rgba(0, 0, 0, 0.25);
     filter: brightness(1);
   }
   50% {
-    box-shadow: 0 0 16px rgba(251, 191, 36, 0.32), 0 0 28px rgba(245, 158, 11, 0.14), 0 0 40px rgba(251, 191, 36, 0.06), 0 2px 6px rgba(0, 0, 0, 0.25);
-    filter: brightness(1.02);
+    box-shadow: 0 0 18px rgba(251, 191, 36, 0.38), 0 0 32px rgba(245, 158, 11, 0.18), 0 0 48px rgba(251, 191, 36, 0.08), 0 2px 6px rgba(0, 0, 0, 0.25);
+    filter: brightness(1.03);
   }
 }
 

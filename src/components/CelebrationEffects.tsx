@@ -71,9 +71,9 @@ const STYLE_TEXT_GLOW: Record<CelebrationStyle, { color: string; glow: string }>
   emerald: { color: '#86EFAC', glow: 'rgba(34, 197, 94, 0.6)' },
 }
 
-const PARTICLE_COUNT = 24
-const CONFETTI_COUNT = 40
-const EFFECT_CLEANUP_MS = 2000
+const PARTICLE_COUNT = 32
+const CONFETTI_COUNT = 50
+const EFFECT_CLEANUP_MS = 2400
 
 function getActiveCelebrationStyle(): CelebrationStyle {
   const state = loadCardSkinState()
@@ -122,12 +122,13 @@ export default function CelebrationEffects({ result, gameState, winAmount, bet }
       const shapes: Particle['shape'][] = style === 'petals' ? ['petal'] : style === 'jewels' ? ['diamond'] : style === 'electric' ? ['spark'] : ['circle']
       for (let i = 0; i < PARTICLE_COUNT; i++) {
         const angle = (i / PARTICLE_COUNT) * Math.PI * 2
-        const speed = 20 + rng() * 30
+        // More explosive: faster base speed + wider variation
+        const speed = 25 + rng() * 40
         newParticles.push({
           id: ++idRef.current,
           dx: Math.cos(angle) * speed,
-          dy: Math.sin(angle) * speed - 10,
-          size: 4 + rng() * 6,
+          dy: Math.sin(angle) * speed - 14,
+          size: 5 + rng() * 7,
           color: particleColors[i % particleColors.length],
           shape: shapes[i % shapes.length],
         })
@@ -143,11 +144,11 @@ export default function CelebrationEffects({ result, gameState, winAmount, bet }
           id: ++idRef.current,
           left: rng() * 100,
           color: confettiColors[i % confettiColors.length],
-          delay: rng() * 0.4,
-          sway: (rng() - 0.5) * 60,
-          spin: 360 + rng() * 720,
-          fallDuration: 1.2 + rng() * 0.6,
-          fallDist: 300 + rng() * 200,
+          delay: rng() * 0.5,
+          sway: (rng() - 0.5) * 80,
+          spin: 360 + rng() * 1080,
+          fallDuration: 1.3 + rng() * 0.8,
+          fallDist: 350 + rng() * 250,
         })
       }
       setConfetti(pieces)
@@ -173,9 +174,10 @@ export default function CelebrationEffects({ result, gameState, winAmount, bet }
   const particleShape = celebStyle === 'petals' ? 'petal' : celebStyle === 'jewels' ? 'diamond' : celebStyle === 'electric' ? 'spark' : 'circle'
 
   return (
-    <div className="celebration-layer" aria-hidden="true">
+    <div className={`celebration-layer${activeEffect === 'blackjack' ? ' shake' : ''}`} aria-hidden="true">
       {activeEffect === 'blackjack' && (
         <>
+          <div className="gold-vignette-flash" />
           {particles.map(p => (
             <div
               key={p.id}
@@ -186,7 +188,7 @@ export default function CelebrationEffects({ result, gameState, winAmount, bet }
                 width: p.size,
                 height: p.size,
                 backgroundColor: p.color,
-                boxShadow: `0 0 6px ${p.color}`,
+                boxShadow: `0 0 4px ${p.color}, 0 0 10px ${p.color}80`,
                 ['--dx' as string]: `${p.dx}px`,
                 ['--dy' as string]: `${p.dy}px`,
               }}
@@ -196,7 +198,7 @@ export default function CelebrationEffects({ result, gameState, winAmount, bet }
             className="blackjack-text"
             style={{
               color: textGlow.color,
-              textShadow: `0 0 20px ${textGlow.glow}, 0 0 40px ${textGlow.glow}80, 0 2px 4px rgba(0,0,0,0.5)`,
+              textShadow: `0 0 20px ${textGlow.glow}, 0 0 40px ${textGlow.glow}80, 0 0 70px ${textGlow.glow}40, 0 2px 4px rgba(0,0,0,0.6)`,
             }}
           >
             BLACKJACK!
