@@ -1,3 +1,16 @@
+/* Register cinematic light position properties */
+@property --light-x {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 45%;
+}
+
+@property --light-y {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 30%;
+}
+
 /* Screen reader only utility class */
 .sr-only {
   position: absolute;
@@ -17,13 +30,15 @@
   flex-direction: column;
 }
 
-/* Header — premium casino bar with depth */
+/* Header — premium casino bar with cinematic depth */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 10px 20px;
   background:
+    /* Subtle top-edge inner highlight */
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 30%),
     linear-gradient(180deg,
       rgba(14, 20, 36, 0.98) 0%,
       rgba(8, 12, 22, 0.97) 100%
@@ -31,8 +46,8 @@
   border-bottom: 1px solid rgba(212, 166, 68, 0.22);
   box-shadow:
     0 1px 0 rgba(212, 166, 68, 0.1),
-    0 4px 20px rgba(0, 0, 0, 0.45),
-    0 8px 32px rgba(0, 0, 0, 0.2);
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 12px 40px rgba(0, 0, 0, 0.25);
   z-index: 100;
   position: relative;
 }
@@ -109,7 +124,7 @@
 .loss-stat { color: #f87171; }
 .push-stat { color: #60a5fa; }
 
-/* Table — immersive felt environment with lighting */
+/* Table — immersive felt environment with cinematic lighting */
 .table {
   flex: 1;
   display: flex;
@@ -120,12 +135,16 @@
   padding-bottom: 0;
   gap: 8px;
   background:
-    /* Secondary cool accent (right side) */
-    radial-gradient(ellipse 30% 40% at 75% 60%, rgba(100, 180, 120, 0.025) 0%, transparent 100%),
+    /* Directional warm key light (upper-left, cinema-style) */
+    radial-gradient(ellipse 50% 45% at 25% 10%, rgba(255, 220, 160, 0.04) 0%, transparent 100%),
+    /* Secondary cool fill (right side, counter-balance) */
+    radial-gradient(ellipse 30% 40% at 78% 55%, rgba(100, 180, 120, 0.025) 0%, transparent 100%),
     /* Warm amber accent light (offset left) */
     radial-gradient(ellipse 40% 35% at 30% 25%, rgba(212, 166, 68, 0.03) 0%, transparent 100%),
-    /* Overhead spotlight — tighter, brighter cone */
-    radial-gradient(ellipse 55% 40% at 50% 15%, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 50%, transparent 100%),
+    /* Overhead spotlight — focused cone with soft falloff */
+    radial-gradient(ellipse 50% 35% at 50% 12%, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 45%, transparent 100%),
+    /* Subtle rim light along bottom edge */
+    linear-gradient(0deg, rgba(212, 166, 68, 0.015) 0%, transparent 15%),
     /* Core felt gradient with warm center */
     radial-gradient(ellipse at 50% 35%, var(--felt-light) 0%, var(--felt) 35%, var(--felt-dark) 100%);
   position: relative;
@@ -151,24 +170,32 @@
   50% { opacity: 0.75; }
 }
 
-/* Deep vignette — cinema-grade edge darkening */
+/* Deep vignette — cinema-grade edge darkening with light sweep */
 .table::before {
   content: '';
   position: absolute;
   inset: 0;
   background:
+    /* Cinematic light sweep — subtle moving highlight */
+    radial-gradient(ellipse 40% 30% at var(--light-x, 45%) var(--light-y, 30%), rgba(255, 255, 255, 0.02) 0%, transparent 100%),
     /* Corner shadows — deeper */
-    radial-gradient(ellipse at 0% 0%, rgba(0,0,0,0.35) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.35) 0%, transparent 50%),
-    radial-gradient(ellipse at 0% 100%, rgba(0,0,0,0.3) 0%, transparent 50%),
-    radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.3) 0%, transparent 50%),
-    /* Main vignette — heavier falloff */
-    radial-gradient(ellipse at 50% 40%, transparent 20%, rgba(0, 0, 0, 0.22) 60%, rgba(0, 0, 0, 0.52) 100%);
+    radial-gradient(ellipse at 0% 0%, rgba(0,0,0,0.38) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(0,0,0,0.36) 0%, transparent 50%),
+    radial-gradient(ellipse at 0% 100%, rgba(0,0,0,0.32) 0%, transparent 50%),
+    radial-gradient(ellipse at 100% 100%, rgba(0,0,0,0.32) 0%, transparent 50%),
+    /* Main vignette — deeper edges for cinema feel */
+    radial-gradient(ellipse at 50% 38%, transparent 18%, rgba(0, 0, 0, 0.24) 55%, rgba(0, 0, 0, 0.56) 100%);
   pointer-events: none;
   z-index: 0;
   /* Table rail — gold bead along bottom edge */
-  border-bottom: 2px solid rgba(212, 166, 68, 0.12);
-  box-shadow: inset 0 -1px 0 rgba(212, 166, 68, 0.06);
+  border-bottom: 2px solid rgba(212, 166, 68, 0.14);
+  box-shadow: inset 0 -1px 0 rgba(212, 166, 68, 0.08);
+  animation: cinematicLightDrift 12s ease-in-out infinite alternate;
+}
+
+@keyframes cinematicLightDrift {
+  0% { --light-x: 40%; --light-y: 28%; }
+  100% { --light-x: 55%; --light-y: 35%; }
 }
 
 /* Gold rail - refined */
@@ -204,7 +231,9 @@
 }
 
 .score-pill {
-  background: rgba(0, 0, 0, 0.6);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 60%),
+    rgba(0, 0, 0, 0.6);
   color: #fff;
   font-weight: 700;
   font-size: 0.9rem;
@@ -219,7 +248,8 @@
   font-variant-numeric: tabular-nums;
   transition: background var(--duration-normal) var(--ease-smooth),
               border-color var(--duration-normal) var(--ease-smooth),
-              box-shadow var(--duration-normal) var(--ease-smooth);
+              box-shadow var(--duration-normal) var(--ease-smooth),
+              transform var(--duration-normal) var(--ease-bounce);
 }
 
 .score-pill.bust {
@@ -268,24 +298,26 @@
   margin-left: 0;
 }
 
-/* Banner */
+/* Banner — frosted glass with cinematic entrance */
 .banner {
   text-align: center;
   padding: 10px 32px;
   border-radius: 30px;
-  background: rgba(0, 0, 0, 0.55);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    rgba(0, 0, 0, 0.55);
   border: 1px solid rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    0 1px 0 rgba(255, 255, 255, 0.04) inset;
   z-index: 2;
   min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.4s var(--ease-smooth);
+  transition: all 0.4s var(--ease-cinematic, var(--ease-smooth));
 }
 
 .banner p {
@@ -328,9 +360,10 @@
 }
 
 @keyframes bannerWinGlow {
-  0% { transform: scale(0.93); opacity: 0.4; }
-  55% { transform: scale(1.04); }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.9); opacity: 0; filter: brightness(1.3); }
+  35% { transform: scale(1.05); opacity: 1; filter: brightness(1.1); }
+  60% { transform: scale(0.98); }
+  100% { transform: scale(1); opacity: 1; filter: brightness(1); }
 }
 
 .banner.lose {
@@ -366,7 +399,7 @@
   50% { opacity: 0.6; }
 }
 
-/* Controls — premium bottom bar with frosted glass */
+/* Controls — premium bottom bar with frosted glass and inner glow */
 .controls-area {
   z-index: 15;
   width: 100%;
@@ -376,6 +409,8 @@
   left: 0;
   right: 0;
   background:
+    /* Inner top highlight for depth separation */
+    linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, transparent 8%),
     linear-gradient(0deg,
       rgba(8, 12, 22, 0.98) 0%,
       rgba(8, 12, 22, 0.96) 50%,
@@ -386,8 +421,10 @@
   padding-top: 26px;
   padding-bottom: max(14px, env(safe-area-inset-bottom));
   margin-top: auto;
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(212, 166, 68, 0.06);
+  backdrop-filter: blur(12px) saturate(1.1);
+  -webkit-backdrop-filter: blur(12px) saturate(1.1);
+  border-top: 1px solid rgba(212, 166, 68, 0.08);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.2);
 }
 
 .betting-panel,
@@ -437,6 +474,20 @@
 .chip-row {
   display: flex;
   gap: 8px;
+  position: relative;
+}
+
+/* Illuminated surface glow beneath chips */
+.chip-row::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  left: 10%;
+  right: 10%;
+  height: 12px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(212, 166, 68, 0.08) 0%, transparent 80%);
+  pointer-events: none;
+  filter: blur(4px);
 }
 
 .chip {
@@ -1261,8 +1312,9 @@
 }
 
 @keyframes panelSlideUp {
-  from { opacity: 0; transform: translateY(20px) scale(0.97); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+  0% { opacity: 0; transform: translateY(24px) scale(0.95); filter: brightness(0.8); }
+  60% { opacity: 1; transform: translateY(-3px) scale(1.005); filter: brightness(1.02); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: brightness(1); }
 }
 
 .settings-header {

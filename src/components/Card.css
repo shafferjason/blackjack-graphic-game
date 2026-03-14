@@ -11,9 +11,9 @@
   margin-left: 0;
 }
 
-/* ── Deal-from-shoe animation — premium physics ── */
+/* ── Deal-from-shoe animation — cinematic physics with bloom ── */
 .card-wrapper.deal-animate {
-  animation: dealFromShoe 0.62s cubic-bezier(0.22, 0.68, 0.35, 1.0) both;
+  animation: dealFromShoe 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: calc(var(--deal-i, 0) * 0.15s);
 }
 
@@ -21,29 +21,29 @@
   0% {
     opacity: 0;
     transform: translate(clamp(100px, 30vw, 300px), -120px) rotate(-25deg) scale(0.4);
-    filter: brightness(0.6);
+    filter: brightness(0.5) blur(2px);
     box-shadow: 0 0 0 rgba(0, 0, 0, 0);
   }
-  30% {
+  25% {
     opacity: 1;
-    transform: translate(50px, -70px) rotate(-14deg) scale(0.72);
-    filter: brightness(0.85);
+    transform: translate(60px, -80px) rotate(-16deg) scale(0.7);
+    filter: brightness(0.8) blur(0.5px);
   }
-  55% {
-    transform: translate(10px, -15px) rotate(3deg) scale(1.02);
-    filter: brightness(1.02);
+  50% {
+    transform: translate(12px, -18px) rotate(3deg) scale(1.03);
+    filter: brightness(1.06) blur(0px);
   }
-  72% {
+  68% {
     transform: translate(-2px, 3px) rotate(-1.5deg) scale(0.995);
-    filter: brightness(1);
+    filter: brightness(1.01);
   }
-  86% {
+  84% {
     transform: translate(1px, -1px) rotate(0.5deg) scale(1.003);
   }
   100% {
     opacity: 1;
     transform: translate(0, 0) rotate(0deg) scale(1);
-    filter: brightness(1);
+    filter: brightness(1) blur(0px);
   }
 }
 
@@ -94,18 +94,22 @@
 @keyframes flipReveal {
   0% {
     transform: rotateY(0deg) scale(1);
+    filter: brightness(1);
   }
   15% {
     transform: rotateY(8deg) scale(1.02);
   }
   25% {
     transform: rotateY(85deg) scale(1.08);
+    filter: brightness(1.15);
   }
   42% {
     transform: rotateY(95deg) scale(1.08);
+    filter: brightness(1.1);
   }
   68% {
     transform: rotateY(176deg) scale(1.03);
+    filter: brightness(1.04);
   }
   82% {
     transform: rotateY(183deg) scale(0.985);
@@ -115,6 +119,7 @@
   }
   100% {
     transform: rotateY(180deg) scale(1);
+    filter: brightness(1);
   }
 }
 
@@ -155,47 +160,63 @@
   transform-style: preserve-3d;
 }
 
-/* Premium hover — lift + golden glow on hover-capable devices */
+/* Premium hover — parallax lift + golden glow on hover-capable devices */
 @media (hover: hover) {
   .card:hover {
-    transform: translateY(-8px) rotate(0.5deg);
+    transform: translateY(-10px) rotate(0.5deg) scale(1.02);
     z-index: 10;
     box-shadow:
       0 1px 2px rgba(0, 0, 0, 0.08),
       0 4px 8px rgba(0, 0, 0, 0.12),
-      0 8px 20px rgba(0, 0, 0, 0.14),
-      0 16px 36px rgba(0, 0, 0, 0.18),
-      0 0 20px rgba(212, 166, 68, 0.08);
+      0 8px 20px rgba(0, 0, 0, 0.16),
+      0 20px 40px rgba(0, 0, 0, 0.2),
+      0 0 24px rgba(212, 166, 68, 0.1);
+    filter: brightness(1.03);
   }
 }
 
-/* Win highlight — golden glow */
+/* Win highlight — layered golden glow */
 .card-wrapper.card-win .card {
   box-shadow:
     0 0 16px rgba(74, 222, 128, 0.3),
     0 0 32px rgba(74, 222, 128, 0.12),
+    0 0 48px rgba(74, 222, 128, 0.06),
     0 4px 16px rgba(0, 0, 0, 0.2);
-  animation: cardWinPulse 0.6s var(--ease-bounce, cubic-bezier(0.34, 1.56, 0.64, 1));
+  animation: cardWinPulse 0.7s var(--ease-cinematic, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-/* Blackjack win — extra golden */
+/* Blackjack win — extra golden with radiance */
 .card-wrapper.card-blackjack .card {
   box-shadow:
-    0 0 20px rgba(212, 166, 68, 0.35),
-    0 0 40px rgba(212, 166, 68, 0.15),
+    0 0 20px rgba(212, 166, 68, 0.4),
+    0 0 40px rgba(212, 166, 68, 0.18),
+    0 0 60px rgba(212, 166, 68, 0.08),
     0 4px 16px rgba(0, 0, 0, 0.2);
+  animation: cardBlackjackPulse 0.8s var(--ease-cinematic, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 @keyframes cardWinPulse {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.04) rotate(0.5deg); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); filter: brightness(1); }
+  25% { transform: scale(1.05) rotate(0.5deg); filter: brightness(1.08); }
+  50% { transform: scale(0.99); }
+  100% { transform: scale(1); filter: brightness(1); }
 }
 
-/* Loss state — subtle desaturation */
+@keyframes cardBlackjackPulse {
+  0% { transform: scale(1); filter: brightness(1); }
+  20% { transform: scale(1.06) rotate(0.8deg); filter: brightness(1.12); }
+  45% { transform: scale(0.98) rotate(-0.3deg); }
+  70% { transform: scale(1.01); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+/* Loss state — cinematic desaturation with shadow collapse */
 .card-wrapper.card-lose .card {
-  filter: brightness(0.85) saturate(0.7);
-  transition: filter 0.5s ease 0.3s;
+  filter: brightness(0.82) saturate(0.65);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: filter 0.6s ease 0.3s, box-shadow 0.6s ease 0.3s;
 }
 
 /* ── Face-up card — premium card stock ── */
@@ -250,13 +271,16 @@
   overflow: hidden;
 }
 
-/* Subtle vignette overlay for premium card feel */
+/* Vignette + subtle surface sheen for premium card feel */
 .card-face::before {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(ellipse at 40% 30%, transparent 50%, rgba(0, 0, 0, 0.025) 100%);
+  background:
+    /* Directional sheen catch — simulates overhead light reflection */
+    linear-gradient(155deg, rgba(255, 255, 255, 0.06) 0%, transparent 35%, transparent 65%, rgba(0, 0, 0, 0.015) 100%),
+    radial-gradient(ellipse at 40% 30%, transparent 50%, rgba(0, 0, 0, 0.03) 100%);
   pointer-events: none;
   z-index: 1;
 }
@@ -459,20 +483,27 @@
   position: relative;
 }
 
-/* Subtle sheen on card back */
+/* Ambient sheen on card back — subtle breathing reflection */
 .card-back::after {
   content: '';
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: linear-gradient(135deg,
-    rgba(255,255,255,0.06) 0%,
-    transparent 40%,
-    transparent 60%,
-    rgba(255,255,255,0.03) 100%
+    rgba(255,255,255,0.07) 0%,
+    transparent 35%,
+    transparent 55%,
+    rgba(255,255,255,0.04) 100%
   );
   pointer-events: none;
   z-index: 1;
+  animation: cardBackSheen 6s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+
+@keyframes cardBackSheen {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
 }
 
 .card-back-svg {
@@ -740,9 +771,11 @@
 @keyframes legendaryIdleGlow {
   0%, 100% {
     box-shadow: 0 0 6px rgba(251, 191, 36, 0.15), 0 2px 6px rgba(0, 0, 0, 0.25);
+    filter: brightness(1);
   }
   50% {
-    box-shadow: 0 0 14px rgba(251, 191, 36, 0.3), 0 0 24px rgba(245, 158, 11, 0.12), 0 2px 6px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 16px rgba(251, 191, 36, 0.32), 0 0 28px rgba(245, 158, 11, 0.14), 0 0 40px rgba(251, 191, 36, 0.06), 0 2px 6px rgba(0, 0, 0, 0.25);
+    filter: brightness(1.02);
   }
 }
 
