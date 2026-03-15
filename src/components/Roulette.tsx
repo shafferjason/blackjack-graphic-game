@@ -1,6 +1,13 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useRoulette, getNumberColor, WHEEL_NUMBERS } from '../hooks/useRoulette'
 import type { RouletteBetType } from '../hooks/useRoulette'
+import {
+  playChipPlace,
+  playChipCollect,
+  playWinFanfare,
+  playLossThud,
+  playButtonClick,
+} from '../utils/sound'
 
 interface RouletteProps {
   chips: number
@@ -128,6 +135,42 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
       return () => clearTimeout(climaxTimer)
     }
   }, [isResult, state.result, state.winAmount])
+
+  // ── Audio: bet placement ──
+  const prevBetCountRef = useRef(state.bets.length)
+  useEffect(() => {
+    if (state.bets.length > prevBetCountRef.current) {
+      playChipPlace()
+    }
+    prevBetCountRef.current = state.bets.length
+  }, [state.bets.length])
+
+  // ── Audio: spin start ──
+  useEffect(() => {
+    if (state.phase === 'spinning' && prevPhaseRef.current !== 'spinning') {
+      playButtonClick()
+    }
+  }, [state.phase])
+
+  // ── Audio: result sounds ──
+  const audioPlayedRef = useRef(false)
+  useEffect(() => {
+    if (state.phase === 'spinning') {
+      audioPlayedRef.current = false
+    }
+    if (state.phase === 'result' && !audioPlayedRef.current) {
+      audioPlayedRef.current = true
+      const timer = setTimeout(() => {
+        if (state.winAmount > 0) {
+          playWinFanfare()
+          setTimeout(() => playChipCollect(), 350)
+        } else {
+          playLossThud()
+        }
+      }, 300)
+      return () => clearTimeout(timer)
+    }
+  }, [state.phase, state.winAmount])
 
   // Get active bets for highlighting
   const activeStraights = new Set(

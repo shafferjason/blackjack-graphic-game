@@ -1,8 +1,16 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useTexasHoldem } from '../hooks/useTexasHoldem'
 import type { HoldemPlayer } from '../hooks/useTexasHoldem'
 import type { Card as CardType } from '../types'
 import Card from './Card'
+import {
+  playCardDeal,
+  playChipPlace,
+  playChipCollect,
+  playWinFanfare,
+  playLossThud,
+  playButtonClick,
+} from '../utils/sound'
 
 interface TexasHoldemProps {
   chips: number
@@ -81,6 +89,54 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
   const isShowdown = state.phase === 'round_over' && state.winner !== null
   const isIdle = state.phase === 'idle'
   const isRoundOver = state.phase === 'round_over'
+
+  // ── Audio: phase transitions ──
+  const prevPhaseRef = useRef(state.phase)
+  const prevPotRef = useRef(state.pot)
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current
+    prevPhaseRef.current = state.phase
+
+    // Deal cards sound when hand starts
+    if (prevPhase === 'idle' && state.phase === 'pre_flop') {
+      playCardDeal()
+      setTimeout(() => playCardDeal(), 90)
+      setTimeout(() => playCardDeal(), 175)
+      setTimeout(() => playCardDeal(), 260)
+    }
+
+    // Community card sounds (flop/turn/river)
+    if (state.phase === 'flop' && prevPhase === 'pre_flop') {
+      playCardDeal()
+      setTimeout(() => playCardDeal(), 80)
+      setTimeout(() => playCardDeal(), 160)
+    }
+    if ((state.phase === 'turn' && prevPhase === 'flop') ||
+        (state.phase === 'river' && prevPhase === 'turn')) {
+      playCardDeal()
+    }
+
+    // Round over — win/loss
+    if (state.phase === 'round_over' && prevPhase !== 'round_over') {
+      const humanWon = state.winner?.includes('You')
+      setTimeout(() => {
+        if (humanWon) {
+          playWinFanfare()
+          setTimeout(() => playChipCollect(), 350)
+        } else {
+          playLossThud()
+        }
+      }, 200)
+    }
+  }, [state.phase, state.winner])
+
+  // ── Audio: chip bets ──
+  useEffect(() => {
+    if (state.pot > prevPotRef.current && state.pot > 0) {
+      playChipPlace()
+    }
+    prevPotRef.current = state.pot
+  }, [state.pot])
 
   // Determine min/max raise
   const minRaise = state.minRaise
