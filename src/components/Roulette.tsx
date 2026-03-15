@@ -7,6 +7,9 @@ interface RouletteProps {
   onChipsChange: (newChips: number) => void
 }
 
+/** Number of sparkle particles for win celebration */
+const WIN_SPARKLE_COUNT = 12
+
 const CHIP_AMOUNTS = [1, 5, 10, 25, 100]
 
 /** Denomination color coding — matches real casino chip colors */
@@ -72,6 +75,8 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
   const wheelBaseRef = useRef(0)
   const spinTargetRef = useRef(0)
   const prevPhaseRef = useRef(state.phase)
+  const [showClimax, setShowClimax] = useState(false)
+  const [showWinBurst, setShowWinBurst] = useState(false)
 
   const handleNumberClick = useCallback((n: number) => {
     placeBet('straight', selectedChip, n)
@@ -91,13 +96,15 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
     prevPhaseRef.current = state.phase
 
     if (state.phase === 'spinning' && prevPhase !== 'spinning') {
-      const spinAmount = 1800 + Math.random() * 360
+      const spinAmount = 2160 + Math.random() * 720
       spinTargetRef.current = wheelBaseRef.current + spinAmount
       setWheelDeg(spinTargetRef.current)
+      setShowClimax(false)
+      setShowWinBurst(false)
     }
   }, [state.phase])
 
-  // Result: settle wheel to land winning number at pointer
+  // Result: settle wheel to land winning number at pointer + climax flash
   useEffect(() => {
     if (isResult && state.result !== null) {
       const idx = WHEEL_NUMBERS.indexOf(state.result)
@@ -107,8 +114,20 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
       const target = spinTargetRef.current + offset
       wheelBaseRef.current = target
       setWheelDeg(target)
+
+      // Trigger climax flash
+      setShowClimax(true)
+      const climaxTimer = setTimeout(() => setShowClimax(false), 800)
+
+      // Trigger win burst after a beat
+      if (state.winAmount > 0) {
+        const winTimer = setTimeout(() => setShowWinBurst(true), 300)
+        const winEndTimer = setTimeout(() => setShowWinBurst(false), 2000)
+        return () => { clearTimeout(climaxTimer); clearTimeout(winTimer); clearTimeout(winEndTimer) }
+      }
+      return () => clearTimeout(climaxTimer)
     }
-  }, [isResult, state.result])
+  }, [isResult, state.result, state.winAmount])
 
   // Get active bets for highlighting
   const activeStraights = new Set(
@@ -128,11 +147,11 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
       ? state.winAmount > 0 ? 'roulette-table--result-win' : 'roulette-table--result-lose'
       : 'roulette-table--betting'
 
-  // Wheel inline rotation + transition
+  // Wheel inline rotation + transition — longer dramatic spin with realistic deceleration
   const wheelTransition = isSpinning
-    ? 'transform 2.5s cubic-bezier(0.12, 0.76, 0.3, 1)'
+    ? 'transform 3.2s cubic-bezier(0.06, 0.7, 0.24, 1)'
     : isResult
-      ? 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
+      ? 'transform 1.0s cubic-bezier(0.22, 1, 0.36, 1)'
       : 'none'
 
   const wheelNumberOffset = -85
@@ -148,7 +167,10 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
 
       {/* Wheel visualization */}
       <div className="roulette-wheel-area">
-        <div className="roulette-wheel-container">
+        <div className={`roulette-wheel-container ${isSpinning ? 'roulette-wheel-container--spinning' : ''}`}>
+          {/* Ambient ring glow — intensifies during spin */}
+          <div className={`roulette-wheel__ambient ${isSpinning ? 'roulette-wheel__ambient--active' : ''} ${isResult && state.winAmount > 0 ? 'roulette-wheel__ambient--win' : ''}`} aria-hidden="true" />
+
           {/* Ball — orbits during spin, settles at result */}
           {isSpinning && (
             <div className="roulette-ball roulette-ball--spinning" aria-hidden="true" />
@@ -157,8 +179,13 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
             <div className="roulette-ball roulette-ball--settled" aria-hidden="true" />
           )}
 
+          {/* Climax flash on result reveal */}
+          {showClimax && (
+            <div className={`roulette-climax-flash roulette-climax-flash--${state.result !== null ? getNumberColor(state.result) : 'green'}`} aria-hidden="true" />
+          )}
+
           <div
-            className="roulette-wheel"
+            className={`roulette-wheel ${isSpinning ? 'roulette-wheel--spinning' : ''}`}
             style={{
               background: wheelGradient,
               transform: `rotate(${wheelDeg}deg)`,
@@ -189,6 +216,23 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
           </div>
         </div>
       </div>
+
+      {/* Win celebration sparkles */}
+      {showWinBurst && (
+        <div className="roulette-win-burst" aria-hidden="true">
+          {Array.from({ length: WIN_SPARKLE_COUNT }, (_, i) => (
+            <div
+              key={i}
+              className="roulette-win-burst__sparkle"
+              style={{
+                '--sparkle-angle': `${(i / WIN_SPARKLE_COUNT) * 360}deg`,
+                '--sparkle-delay': `${i * 40}ms`,
+                '--sparkle-distance': `${60 + (i % 3) * 25}px`,
+              } as React.CSSProperties}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Message banner */}
       <div className={`roulette-banner ${state.winAmount > 0 && isResult ? 'roulette-banner--win' : ''} ${isResult && state.winAmount === 0 ? 'roulette-banner--lose' : ''}`}>
@@ -312,7 +356,7 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
         {isSpinning && (
           <div className="roulette-spinning-indicator">
             <div className="roulette-spinning-indicator__dot" />
-            <span>Spinning...</span>
+            <span>No more bets...</span>
           </div>
         )}
       </div>

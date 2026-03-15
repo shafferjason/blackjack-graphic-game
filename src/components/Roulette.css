@@ -1,5 +1,5 @@
-/* ── Roulette Table — Phase 2 Premium Visual Upgrade ── */
-/* Wheel depth, animated ball, result-synced rotation, lighting, typography */
+/* ── Roulette Table — Phase 3 Casino Spectacle Polish ── */
+/* Climax VFX, dramatic ball motion, ambient depth, refined typography, win celebrations */
 
 /* ── Token-mapped custom properties ── */
 .roulette-table {
@@ -70,21 +70,34 @@
 .roulette-table--spinning {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 0 80px rgba(0, 0, 0, 0.4),
+    inset 0 0 80px rgba(0, 0, 0, 0.45),
     0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 60px rgba(59, 130, 246, 0.1),
-    0 0 120px rgba(59, 130, 246, 0.04);
-  transition: box-shadow 0.6s ease-out;
+    0 0 60px rgba(59, 130, 246, 0.12),
+    0 0 120px rgba(59, 130, 246, 0.05);
+  transition: box-shadow 0.8s ease-out;
+  animation: table-spin-breathe 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes table-spin-breathe {
+  from { border-color: rgba(212, 166, 68, 0.15); }
+  to   { border-color: rgba(59, 130, 246, 0.2); }
 }
 
 .roulette-table--result-win {
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    inset 0 0 60px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 60px rgba(0, 0, 0, 0.15),
     0 8px 32px rgba(0, 0, 0, 0.5),
-    0 0 80px rgba(212, 166, 68, 0.18),
-    0 0 160px rgba(212, 166, 68, 0.06);
-  transition: box-shadow 0.4s ease-out;
+    0 0 80px rgba(212, 166, 68, 0.22),
+    0 0 160px rgba(212, 166, 68, 0.08);
+  border-color: rgba(212, 166, 68, 0.35);
+  transition: box-shadow 0.4s ease-out, border-color 0.4s ease-out;
+  animation: table-win-glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes table-win-glow {
+  from { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 80px rgba(212, 166, 68, 0.22), 0 0 160px rgba(212, 166, 68, 0.08); }
+  to   { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 100px rgba(212, 166, 68, 0.3), 0 0 200px rgba(212, 166, 68, 0.12); }
 }
 
 .roulette-table--result-lose {
@@ -145,6 +158,67 @@
   z-index: 0;
 }
 
+/* Ambient glow ring behind wheel — reacts to phase */
+.roulette-wheel__ambient {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease-out;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+  z-index: -1;
+}
+
+.roulette-wheel__ambient--active {
+  opacity: 1;
+  animation: ambient-spin-pulse 1.2s ease-in-out infinite alternate;
+}
+
+.roulette-wheel__ambient--win {
+  opacity: 1;
+  background: radial-gradient(circle, rgba(212, 166, 68, 0.25) 0%, rgba(74, 222, 128, 0.08) 50%, transparent 70%);
+  animation: ambient-win-glow 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes ambient-spin-pulse {
+  from { opacity: 0.5; transform: scale(1); }
+  to   { opacity: 1; transform: scale(1.08); }
+}
+
+@keyframes ambient-win-glow {
+  from { opacity: 0.6; transform: scale(1); }
+  to   { opacity: 1; transform: scale(1.12); }
+}
+
+/* Climax flash — radial burst on result reveal */
+.roulette-climax-flash {
+  position: absolute;
+  inset: -30px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9;
+  animation: climax-burst 0.8s ease-out forwards;
+}
+
+.roulette-climax-flash--red {
+  background: radial-gradient(circle, rgba(239, 68, 68, 0.5) 0%, rgba(239, 68, 68, 0.1) 40%, transparent 70%);
+}
+
+.roulette-climax-flash--black {
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.35) 0%, rgba(200, 200, 200, 0.08) 40%, transparent 70%);
+}
+
+.roulette-climax-flash--green {
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.5) 0%, rgba(34, 197, 94, 0.1) 40%, transparent 70%);
+}
+
+@keyframes climax-burst {
+  0%   { transform: scale(0.4); opacity: 1; }
+  40%  { transform: scale(1.2); opacity: 0.8; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
 .roulette-wheel {
   position: relative;
   width: 200px;
@@ -159,6 +233,17 @@
     inset 0 0 30px rgba(0, 0, 0, 0.7),
     0 6px 20px rgba(0, 0, 0, 0.5);
   will-change: transform;
+}
+
+/* Wheel border intensifies during spin */
+.roulette-wheel--spinning {
+  border-color: var(--rt-gold);
+  box-shadow:
+    0 0 0 1px rgba(212, 166, 68, 0.9),
+    0 0 0 3px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(212, 166, 68, 0.3),
+    inset 0 0 30px rgba(0, 0, 0, 0.7),
+    0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 .roulette-wheel__inner {
@@ -194,27 +279,37 @@
 
 /* Result number display — large and dramatic */
 .roulette-wheel__result {
-  font-size: 1.8rem;
+  font-size: 1.9rem;
   font-weight: 800;
   font-family: 'Playfair Display', serif;
   text-shadow: 0 0 16px currentColor, 0 0 32px currentColor, 0 1px 3px rgba(0, 0, 0, 0.8);
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
 }
 
 .roulette-wheel__result--revealing {
-  animation: result-reveal 0.6s var(--rt-easing-spring) forwards;
+  animation: result-reveal 0.7s var(--rt-easing-spring) forwards;
 }
 
 @keyframes result-reveal {
-  0% { transform: scale(0); opacity: 0; filter: blur(4px); }
-  50% { transform: scale(1.2); opacity: 1; filter: blur(0); }
-  75% { transform: scale(0.92); }
+  0%   { transform: scale(0); opacity: 0; filter: blur(6px); }
+  35%  { transform: scale(1.4); opacity: 1; filter: blur(0); }
+  55%  { transform: scale(0.88); }
+  75%  { transform: scale(1.06); }
   100% { transform: scale(1); opacity: 1; filter: blur(0); }
 }
 
-.roulette-wheel__result--red { color: #ef4444; text-shadow: 0 0 16px rgba(239, 68, 68, 0.6), 0 0 32px rgba(239, 68, 68, 0.3); }
-.roulette-wheel__result--black { color: #e5e7eb; text-shadow: 0 0 16px rgba(229, 231, 235, 0.4), 0 0 32px rgba(229, 231, 235, 0.2); }
-.roulette-wheel__result--green { color: #22c55e; text-shadow: 0 0 16px rgba(34, 197, 94, 0.6), 0 0 32px rgba(34, 197, 94, 0.3); }
+.roulette-wheel__result--red {
+  color: #ef4444;
+  text-shadow: 0 0 16px rgba(239, 68, 68, 0.7), 0 0 32px rgba(239, 68, 68, 0.35), 0 0 48px rgba(239, 68, 68, 0.15);
+}
+.roulette-wheel__result--black {
+  color: #e5e7eb;
+  text-shadow: 0 0 16px rgba(229, 231, 235, 0.5), 0 0 32px rgba(229, 231, 235, 0.2), 0 0 48px rgba(229, 231, 235, 0.1);
+}
+.roulette-wheel__result--green {
+  color: #22c55e;
+  text-shadow: 0 0 16px rgba(34, 197, 94, 0.7), 0 0 32px rgba(34, 197, 94, 0.35), 0 0 48px rgba(34, 197, 94, 0.15);
+}
 
 .roulette-wheel__ring {
   position: absolute;
@@ -269,26 +364,30 @@
 }
 
 .roulette-ball--spinning {
-  animation: ball-orbit 2.5s cubic-bezier(0.08, 0.65, 0.3, 1) forwards;
+  animation: ball-orbit 3.2s cubic-bezier(0.04, 0.6, 0.22, 1) forwards;
 }
 
 @keyframes ball-orbit {
-  0%   { transform: translate(-50%, -50%) rotate(0deg) translateY(-106px); }
-  30%  { transform: translate(-50%, -50%) rotate(-900deg) translateY(-102px); }
-  60%  { transform: translate(-50%, -50%) rotate(-1620deg) translateY(-96px); }
-  85%  { transform: translate(-50%, -50%) rotate(-2340deg) translateY(-90px); }
-  100% { transform: translate(-50%, -50%) rotate(-2520deg) translateY(-88px); }
+  0%   { transform: translate(-50%, -50%) rotate(0deg) translateY(-106px); opacity: 1; }
+  15%  { transform: translate(-50%, -50%) rotate(-720deg) translateY(-105px); }
+  35%  { transform: translate(-50%, -50%) rotate(-1440deg) translateY(-102px); }
+  55%  { transform: translate(-50%, -50%) rotate(-2160deg) translateY(-97px); }
+  75%  { transform: translate(-50%, -50%) rotate(-2700deg) translateY(-92px); }
+  90%  { transform: translate(-50%, -50%) rotate(-2970deg) translateY(-89px); }
+  100% { transform: translate(-50%, -50%) rotate(-3060deg) translateY(-88px); opacity: 1; }
 }
 
 .roulette-ball--settled {
-  animation: ball-settle 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: ball-settle 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @keyframes ball-settle {
   0%   { transform: translate(-50%, -50%) translateY(-94px); opacity: 0; }
-  25%  { transform: translate(-50%, -50%) translateY(-86px); opacity: 1; }
-  50%  { transform: translate(-50%, -50%) translateY(-90px); }
-  75%  { transform: translate(-50%, -50%) translateY(-87px); }
+  15%  { transform: translate(-50%, -50%) translateY(-85px); opacity: 1; }
+  35%  { transform: translate(-50%, -50%) translateY(-91px); }
+  50%  { transform: translate(-50%, -50%) translateY(-86px); }
+  70%  { transform: translate(-50%, -50%) translateY(-89px); }
+  85%  { transform: translate(-50%, -50%) translateY(-87px); }
   100% { transform: translate(-50%, -50%) translateY(-88px); opacity: 1; }
 }
 
@@ -319,25 +418,26 @@
 }
 
 .roulette-banner--win {
-  background: rgba(39, 174, 96, 0.25);
-  border-color: rgba(39, 174, 96, 0.5);
-  box-shadow: 0 0 24px rgba(39, 174, 96, 0.2), 0 0 60px rgba(39, 174, 96, 0.06);
-  animation: banner-win-pulse 0.6s var(--rt-easing-spring) forwards;
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.3) 0%, rgba(212, 166, 68, 0.15) 100%);
+  border-color: rgba(39, 174, 96, 0.55);
+  box-shadow: 0 0 24px rgba(39, 174, 96, 0.25), 0 0 60px rgba(39, 174, 96, 0.08), 0 0 80px rgba(212, 166, 68, 0.05);
+  animation: banner-win-pulse 0.7s var(--rt-easing-spring) forwards;
 }
 
 @keyframes banner-win-pulse {
-  0% { transform: scale(0.92); opacity: 0.3; }
-  50% { transform: scale(1.04); }
+  0%   { transform: scale(0.88); opacity: 0; }
+  40%  { transform: scale(1.06); opacity: 1; }
+  65%  { transform: scale(0.97); }
   100% { transform: scale(1); opacity: 1; }
 }
 
 .roulette-banner--win p {
   color: var(--rt-status-win-bright);
   font-family: 'Playfair Display', serif;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  text-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
-  letter-spacing: 0.3px;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.5), 0 0 24px rgba(74, 222, 128, 0.2);
+  letter-spacing: 0.5px;
 }
 
 .roulette-banner--lose {
@@ -681,6 +781,38 @@
 }
 
 
+/* ── Win celebration sparkles ── */
+
+.roulette-win-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.roulette-win-burst__sparkle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--rt-gold-light) 0%, var(--rt-gold) 50%, transparent 100%);
+  box-shadow: 0 0 6px var(--rt-gold-glow), 0 0 12px rgba(212, 166, 68, 0.2);
+  animation: sparkle-shoot 1.2s ease-out var(--sparkle-delay, 0ms) forwards;
+  transform: rotate(var(--sparkle-angle, 0deg)) translateY(0);
+  opacity: 0;
+}
+
+@keyframes sparkle-shoot {
+  0%   { transform: rotate(var(--sparkle-angle, 0deg)) translateY(0); opacity: 0; }
+  15%  { opacity: 1; }
+  50%  { opacity: 0.8; }
+  100% { transform: rotate(var(--sparkle-angle, 0deg)) translateY(calc(-1 * var(--sparkle-distance, 80px))); opacity: 0; }
+}
+
+
 /* ── Phase transitions ── */
 
 .roulette-phase-fade-enter {
@@ -786,18 +918,22 @@
 }
 
 @keyframes ball-orbit-mobile {
-  0%   { transform: translate(-50%, -50%) rotate(0deg) translateY(-86px); }
-  30%  { transform: translate(-50%, -50%) rotate(-900deg) translateY(-82px); }
-  60%  { transform: translate(-50%, -50%) rotate(-1620deg) translateY(-76px); }
-  85%  { transform: translate(-50%, -50%) rotate(-2340deg) translateY(-72px); }
-  100% { transform: translate(-50%, -50%) rotate(-2520deg) translateY(-70px); }
+  0%   { transform: translate(-50%, -50%) rotate(0deg) translateY(-86px); opacity: 1; }
+  15%  { transform: translate(-50%, -50%) rotate(-720deg) translateY(-85px); }
+  35%  { transform: translate(-50%, -50%) rotate(-1440deg) translateY(-82px); }
+  55%  { transform: translate(-50%, -50%) rotate(-2160deg) translateY(-77px); }
+  75%  { transform: translate(-50%, -50%) rotate(-2700deg) translateY(-73px); }
+  90%  { transform: translate(-50%, -50%) rotate(-2970deg) translateY(-71px); }
+  100% { transform: translate(-50%, -50%) rotate(-3060deg) translateY(-70px); opacity: 1; }
 }
 
 @keyframes ball-settle-mobile {
   0%   { transform: translate(-50%, -50%) translateY(-76px); opacity: 0; }
-  25%  { transform: translate(-50%, -50%) translateY(-68px); opacity: 1; }
-  50%  { transform: translate(-50%, -50%) translateY(-72px); }
-  75%  { transform: translate(-50%, -50%) translateY(-69px); }
+  15%  { transform: translate(-50%, -50%) translateY(-67px); opacity: 1; }
+  35%  { transform: translate(-50%, -50%) translateY(-73px); }
+  50%  { transform: translate(-50%, -50%) translateY(-68px); }
+  70%  { transform: translate(-50%, -50%) translateY(-71px); }
+  85%  { transform: translate(-50%, -50%) translateY(-69px); }
   100% { transform: translate(-50%, -50%) translateY(-70px); opacity: 1; }
 }
 
@@ -883,18 +1019,22 @@
 }
 
 @keyframes ball-orbit-desktop {
-  0%   { transform: translate(-50%, -50%) rotate(0deg) translateY(-126px); }
-  30%  { transform: translate(-50%, -50%) rotate(-900deg) translateY(-122px); }
-  60%  { transform: translate(-50%, -50%) rotate(-1620deg) translateY(-114px); }
-  85%  { transform: translate(-50%, -50%) rotate(-2340deg) translateY(-110px); }
-  100% { transform: translate(-50%, -50%) rotate(-2520deg) translateY(-108px); }
+  0%   { transform: translate(-50%, -50%) rotate(0deg) translateY(-126px); opacity: 1; }
+  15%  { transform: translate(-50%, -50%) rotate(-720deg) translateY(-125px); }
+  35%  { transform: translate(-50%, -50%) rotate(-1440deg) translateY(-121px); }
+  55%  { transform: translate(-50%, -50%) rotate(-2160deg) translateY(-116px); }
+  75%  { transform: translate(-50%, -50%) rotate(-2700deg) translateY(-112px); }
+  90%  { transform: translate(-50%, -50%) rotate(-2970deg) translateY(-109px); }
+  100% { transform: translate(-50%, -50%) rotate(-3060deg) translateY(-108px); opacity: 1; }
 }
 
 @keyframes ball-settle-desktop {
   0%   { transform: translate(-50%, -50%) translateY(-114px); opacity: 0; }
-  25%  { transform: translate(-50%, -50%) translateY(-106px); opacity: 1; }
-  50%  { transform: translate(-50%, -50%) translateY(-110px); }
-  75%  { transform: translate(-50%, -50%) translateY(-107px); }
+  15%  { transform: translate(-50%, -50%) translateY(-105px); opacity: 1; }
+  35%  { transform: translate(-50%, -50%) translateY(-111px); }
+  50%  { transform: translate(-50%, -50%) translateY(-106px); }
+  70%  { transform: translate(-50%, -50%) translateY(-109px); }
+  85%  { transform: translate(-50%, -50%) translateY(-107px); }
   100% { transform: translate(-50%, -50%) translateY(-108px); opacity: 1; }
 }
 
@@ -938,5 +1078,25 @@
 
   .roulette-history__dot--latest {
     animation: none;
+  }
+
+  .roulette-table--spinning {
+    animation: none;
+  }
+
+  .roulette-table--result-win {
+    animation: none;
+  }
+
+  .roulette-wheel__ambient {
+    display: none;
+  }
+
+  .roulette-climax-flash {
+    display: none;
+  }
+
+  .roulette-win-burst {
+    display: none;
   }
 }
