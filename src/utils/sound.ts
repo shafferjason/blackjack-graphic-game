@@ -27,6 +27,7 @@ let eqHighShelf: BiquadFilterNode | null = null
 let muted = false
 let ambienceSource: AudioBufferSourceNode | null = null
 let ambienceGain: GainNode | null = null
+let unlockListenerInstalled = false
 
 // Default master volume (0-1)
 const DEFAULT_VOLUME = 0.55
@@ -50,6 +51,31 @@ try {
   }
 } catch {
   // ignore
+}
+
+// ── Global audio unlock on first user interaction ──
+// Modern browsers (especially iOS Safari) require a user gesture to resume
+// a suspended AudioContext. We install listeners once and resume eagerly.
+
+function unlockAudioContext(): void {
+  if (!audioCtx) return
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume().catch(() => { /* ignore */ })
+  }
+}
+
+function installUnlockListeners(): void {
+  if (unlockListenerInstalled) return
+  unlockListenerInstalled = true
+  const events = ['pointerdown', 'keydown', 'touchstart'] as const
+  const handler = () => {
+    unlockAudioContext()
+    // Keep listeners until context is actually running, then remove
+    if (audioCtx && audioCtx.state === 'running') {
+      events.forEach(e => document.removeEventListener(e, handler, true))
+    }
+  }
+  events.forEach(e => document.addEventListener(e, handler, { capture: true, passive: true }))
 }
 
 // ── Sample-based audio layer (Kenney CC0 casino sounds) ──
@@ -105,6 +131,8 @@ function playSample(name: string, gain = 0.5): void {
   const buf = sampleBuffers.get(name)
   if (!buf || muted) return
   const ctx = getCtx()
+  // Guard: skip playback if context couldn't resume (no user gesture yet)
+  if (ctx.state === 'suspended') return
   const src = ctx.createBufferSource()
   src.buffer = buf
   const gn = ctx.createGain()
@@ -146,9 +174,13 @@ function getCtx(): AudioContext {
     masterGain = audioCtx.createGain()
     masterGain.gain.value = muted ? 0 : masterVolume
     masterGain.connect(eqLowShelf)
+
+    // Install global unlock listeners for iOS Safari / autoplay-policy browsers
+    installUnlockListeners()
   }
+  // Resilient resume — always attempt before each play call
   if (audioCtx.state === 'suspended') {
-    audioCtx.resume()
+    audioCtx.resume().catch(() => { /* ignore */ })
   }
   // Lazy-load recorded samples on first context init
   if (!samplesLoaded && !samplesLoading) {
