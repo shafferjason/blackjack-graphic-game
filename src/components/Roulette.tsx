@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useRoulette, getNumberColor, WHEEL_NUMBERS } from '../hooks/useRoulette'
 import type { RouletteBetType } from '../hooks/useRoulette'
 
@@ -31,16 +31,21 @@ for (let row = 0; row < 12; row++) {
   BOARD_ROWS.push([row * 3 + 1, row * 3 + 2, row * 3 + 3])
 }
 
-/** Generate a 37-pocket conic-gradient from the European wheel number order */
+/** Generate a 37-pocket conic-gradient with gold fret separators */
 function buildWheelGradient(): string {
   const count = WHEEL_NUMBERS.length
   const sliceDeg = 360 / count
+  const fretWidth = 0.5
   const stops: string[] = []
   for (let i = 0; i < count; i++) {
     const color = POCKET_COLORS[getNumberColor(WHEEL_NUMBERS[i])]
-    const startDeg = (i * sliceDeg).toFixed(2)
-    const endDeg = ((i + 1) * sliceDeg).toFixed(2)
-    stops.push(`${color} ${startDeg}deg ${endDeg}deg`)
+    const startDeg = i * sliceDeg
+    const endDeg = (i + 1) * sliceDeg
+    // Gold fret line before each pocket
+    stops.push(`#8b6914 ${startDeg.toFixed(2)}deg`)
+    stops.push(`#a07818 ${(startDeg + fretWidth / 2).toFixed(2)}deg`)
+    stops.push(`${color} ${(startDeg + fretWidth).toFixed(2)}deg`)
+    stops.push(`${color} ${endDeg.toFixed(2)}deg`)
   }
   return `conic-gradient(from 0deg, ${stops.join(', ')})`
 }
@@ -62,6 +67,12 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
   const { state, placeBet, clearBets, spin, newRound } = useRoulette(chips, onChipsChange)
   const [selectedChip, setSelectedChip] = useState(10)
 
+  // ── Wheel rotation: result-synced landing ──
+  const [wheelDeg, setWheelDeg] = useState(0)
+  const wheelBaseRef = useRef(0)
+  const spinTargetRef = useRef(0)
+  const prevPhaseRef = useRef(state.phase)
+
   const handleNumberClick = useCallback((n: number) => {
     placeBet('straight', selectedChip, n)
   }, [placeBet, selectedChip])
@@ -74,7 +85,32 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
   const isSpinning = state.phase === 'spinning'
   const isResult = state.phase === 'result'
 
-  // Get the active bets for highlighting
+  // Spin: add fast rotation with deceleration
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current
+    prevPhaseRef.current = state.phase
+
+    if (state.phase === 'spinning' && prevPhase !== 'spinning') {
+      const spinAmount = 1800 + Math.random() * 360
+      spinTargetRef.current = wheelBaseRef.current + spinAmount
+      setWheelDeg(spinTargetRef.current)
+    }
+  }, [state.phase])
+
+  // Result: settle wheel to land winning number at pointer
+  useEffect(() => {
+    if (isResult && state.result !== null) {
+      const idx = WHEEL_NUMBERS.indexOf(state.result)
+      if (idx < 0) return
+      const pocketDeg = (idx / WHEEL_NUMBERS.length) * 360
+      const offset = (360 - pocketDeg) % 360 || 360
+      const target = spinTargetRef.current + offset
+      wheelBaseRef.current = target
+      setWheelDeg(target)
+    }
+  }, [isResult, state.result])
+
+  // Get active bets for highlighting
   const activeStraights = new Set(
     state.bets.filter(b => b.type === 'straight').map(b => b.number!)
   )
@@ -82,7 +118,7 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
     state.bets.filter(b => b.type !== 'straight').map(b => b.type)
   )
 
-  // 37-pocket wheel gradient (memoized — never changes)
+  // 37-pocket wheel gradient (memoized)
   const wheelGradient = useMemo(() => buildWheelGradient(), [])
 
   // Phase-based root class
@@ -92,7 +128,13 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
       ? state.winAmount > 0 ? 'roulette-table--result-win' : 'roulette-table--result-lose'
       : 'roulette-table--betting'
 
-  // Wheel number translateY based on wheel size (CSS handles sizing, use relative)
+  // Wheel inline rotation + transition
+  const wheelTransition = isSpinning
+    ? 'transform 2.5s cubic-bezier(0.12, 0.76, 0.3, 1)'
+    : isResult
+      ? 'transform 0.8s cubic-bezier(0.22, 1, 0.36, 1)'
+      : 'none'
+
   const wheelNumberOffset = -85
 
   return (
@@ -106,30 +148,44 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
 
       {/* Wheel visualization */}
       <div className="roulette-wheel-area">
-        <div
-          className={`roulette-wheel ${isSpinning ? 'roulette-wheel--spinning' : ''}`}
-          style={{ background: wheelGradient }}
-        >
-          <div className="roulette-wheel__inner">
-            {state.result !== null ? (
-              <div className={`roulette-wheel__result roulette-wheel__result--${getNumberColor(state.result)} ${isResult ? 'roulette-wheel__result--revealing' : ''}`}>
-                {state.result}
-              </div>
-            ) : (
-              <div className="roulette-wheel__logo">R</div>
-            )}
-          </div>
-          <div className="roulette-wheel__ring">
-            {WHEEL_NUMBERS.map((n, i) => (
-              <span
-                key={n}
-                className={`roulette-wheel__number roulette-wheel__number--${getNumberColor(n)} ${state.result === n ? 'roulette-wheel__number--hit' : ''}`}
-                style={{ transform: `rotate(${(i / WHEEL_NUMBERS.length) * 360}deg) translateY(${wheelNumberOffset}px)` }}
-                aria-hidden="true"
-              >
-                {n}
-              </span>
-            ))}
+        <div className="roulette-wheel-container">
+          {/* Ball — orbits during spin, settles at result */}
+          {isSpinning && (
+            <div className="roulette-ball roulette-ball--spinning" aria-hidden="true" />
+          )}
+          {isResult && state.result !== null && (
+            <div className="roulette-ball roulette-ball--settled" aria-hidden="true" />
+          )}
+
+          <div
+            className="roulette-wheel"
+            style={{
+              background: wheelGradient,
+              transform: `rotate(${wheelDeg}deg)`,
+              transition: wheelTransition,
+            }}
+          >
+            <div className="roulette-wheel__inner">
+              {state.result !== null ? (
+                <div className={`roulette-wheel__result roulette-wheel__result--${getNumberColor(state.result)} ${isResult ? 'roulette-wheel__result--revealing' : ''}`}>
+                  {state.result}
+                </div>
+              ) : (
+                <div className="roulette-wheel__logo">R</div>
+              )}
+            </div>
+            <div className="roulette-wheel__ring">
+              {WHEEL_NUMBERS.map((n, i) => (
+                <span
+                  key={n}
+                  className={`roulette-wheel__number roulette-wheel__number--${getNumberColor(n)} ${state.result === n ? 'roulette-wheel__number--hit' : ''}`}
+                  style={{ transform: `rotate(${(i / WHEEL_NUMBERS.length) * 360}deg) translateY(${wheelNumberOffset}px)` }}
+                  aria-hidden="true"
+                >
+                  {n}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -143,7 +199,7 @@ export default function Roulette({ chips, onChipsChange }: RouletteProps) {
       {state.lastResults.length > 0 && (
         <div className="roulette-history" aria-label="Recent results">
           {state.lastResults.map((n, i) => (
-            <span key={i} className={`roulette-history__dot roulette-history__dot--${getNumberColor(n)}`}>
+            <span key={i} className={`roulette-history__dot roulette-history__dot--${getNumberColor(n)} ${i === 0 ? 'roulette-history__dot--latest' : ''}`}>
               {n}
             </span>
           ))}
