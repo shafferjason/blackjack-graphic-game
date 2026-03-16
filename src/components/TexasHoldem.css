@@ -1,18 +1,117 @@
-/* ── Texas Hold'em Table ── */
+/* ── Texas Hold'em — Premium Casino Experience ── */
+/* Phase-reactive lighting, cinematic card reveals, glass morphism seats, premium typography */
 
+/* ── Token-mapped custom properties ── */
 .holdem-table {
+  --th-gold: #d4a644;
+  --th-gold-light: #f0d68a;
+  --th-gold-dark: #8b6914;
+  --th-gold-glow: rgba(212, 166, 68, 0.35);
+  --th-ink-heavy: #0a0a18;
+  --th-ink-dark: #141430;
+  --th-ink-mid: #36365c;
+  --th-ink-faint: #9a9ab0;
+  --th-text-primary: #f0ece4;
+  --th-text-secondary: #b0a890;
+  --th-text-muted: #6a6050;
+  --th-bg-dark: #0a0f1a;
+  --th-bg-mid: #141c2e;
+  --th-bg-surface: #243050;
+  --th-felt: #0b6623;
+  --th-felt-dark: #084a1a;
+  --th-felt-light: #0d7a2b;
+  --th-status-win: #27ae60;
+  --th-status-win-bright: #4ade80;
+  --th-status-lose: #e74c3c;
+  --th-status-lose-bright: #f87171;
+  --th-elevation-chip: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+  --th-easing-default: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --th-easing-ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --th-easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --th-easing-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   width: 100%;
   max-width: 700px;
   margin: 0 auto;
-  padding: 8px;
+  padding: 16px 10px;
   z-index: 1;
+  position: relative;
+
+  /* Table felt background with vignette */
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, rgba(0, 0, 0, 0.5) 100%),
+    radial-gradient(ellipse at 50% 50%, var(--th-felt) 0%, var(--th-felt-dark) 70%, #041a0c 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(212, 166, 68, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 0 60px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
-/* Info bar */
+
+/* ── Phase-based ambient lighting ── */
+
+.holdem-table--idle {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 0 60px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(212, 166, 68, 0.04);
+}
+
+.holdem-table--active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 60px rgba(0, 0, 0, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(212, 166, 68, 0.08);
+  transition: box-shadow 0.6s var(--th-easing-ease-out);
+}
+
+.holdem-table--showdown {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    inset 0 0 50px rgba(0, 0, 0, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(59, 130, 246, 0.12),
+    0 0 120px rgba(59, 130, 246, 0.05);
+  border-color: rgba(59, 130, 246, 0.2);
+  transition: box-shadow 0.6s var(--th-easing-ease-out), border-color 0.6s var(--th-easing-ease-out);
+}
+
+.holdem-table--win {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 60px rgba(0, 0, 0, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(212, 166, 68, 0.22),
+    0 0 160px rgba(212, 166, 68, 0.08);
+  border-color: rgba(212, 166, 68, 0.35);
+  transition: box-shadow 0.4s var(--th-easing-ease-out), border-color 0.4s var(--th-easing-ease-out);
+  animation: th-table-win-glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes th-table-win-glow {
+  from { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 80px rgba(212, 166, 68, 0.22), 0 0 160px rgba(212, 166, 68, 0.08); }
+  to   { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 100px rgba(212, 166, 68, 0.3), 0 0 200px rgba(212, 166, 68, 0.12); }
+}
+
+.holdem-table--lose {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    inset 0 0 80px rgba(0, 0, 0, 0.5),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.4s var(--th-easing-ease-out);
+}
+
+
+/* ── Info bar (pot + phase) ── */
+
 .holdem-info-bar {
   display: flex;
   align-items: center;
@@ -25,73 +124,157 @@
   align-items: center;
   gap: 8px;
   background: rgba(0, 0, 0, 0.55);
-  padding: 6px 18px;
+  padding: 7px 20px;
   border-radius: 24px;
   border: 1px solid rgba(212, 166, 68, 0.3);
-  backdrop-filter: blur(8px);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s var(--th-easing-ease-out);
+}
+
+.holdem-pot--growing {
+  border-color: rgba(212, 166, 68, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(212, 166, 68, 0.2);
 }
 
 .holdem-pot__label {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  color: rgba(240, 236, 228, 0.6);
+  color: var(--th-text-muted);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .holdem-pot__amount {
-  font-size: 1.3rem;
+  font-size: 1.35rem;
   font-weight: 700;
-  color: var(--gold-light, #f0d264);
+  color: var(--th-gold-light);
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 0 12px rgba(212, 166, 68, 0.3);
+  transition: transform 0.2s var(--th-easing-spring);
+}
+
+.holdem-pot--growing .holdem-pot__amount {
+  animation: th-pot-bump 0.3s var(--th-easing-spring);
+}
+
+@keyframes th-pot-bump {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.12); }
+  100% { transform: scale(1); }
 }
 
 .holdem-phase-pill {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 4px 12px;
+  letter-spacing: 1.2px;
+  padding: 4px 14px;
   border-radius: 12px;
-  background: rgba(74, 222, 128, 0.15);
-  color: #4ade80;
-  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: rgba(74, 222, 128, 0.12);
+  color: var(--th-status-win-bright);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  animation: th-phase-fade-in 0.35s var(--th-easing-ease-out) forwards;
 }
 
-/* Opponents row */
+@keyframes th-phase-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ── Opponents row ── */
+
 .holdem-opponents {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
   flex-wrap: wrap;
   z-index: 1;
 }
 
-/* Player seat */
+
+/* ── Player seat — glass morphism card ── */
+
 .holdem-seat {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 2px solid rgba(255, 255, 255, 0.08);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  min-width: 120px;
+  gap: 5px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background:
+    linear-gradient(145deg, rgba(20, 28, 46, 0.75) 0%, rgba(10, 15, 26, 0.65) 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 20px rgba(0, 0, 0, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s, box-shadow 0.3s, opacity 0.3s;
+  min-width: 125px;
 }
 
 .holdem-seat--active {
-  border-color: rgba(74, 222, 128, 0.6);
-  box-shadow: 0 0 12px rgba(74, 222, 128, 0.2);
+  border-color: rgba(74, 222, 128, 0.55);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 20px rgba(0, 0, 0, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 16px rgba(74, 222, 128, 0.2),
+    0 0 40px rgba(74, 222, 128, 0.06);
+  animation: th-seat-active-pulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes th-seat-active-pulse {
+  from { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), inset 0 0 20px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 16px rgba(74, 222, 128, 0.2), 0 0 40px rgba(74, 222, 128, 0.06); }
+  to   { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), inset 0 0 20px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 22px rgba(74, 222, 128, 0.3), 0 0 50px rgba(74, 222, 128, 0.1); }
 }
 
 .holdem-seat--folded {
-  opacity: 0.45;
+  opacity: 0.4;
+  filter: grayscale(0.3);
+}
+
+.holdem-seat--allin {
+  border-color: rgba(239, 68, 68, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 20px rgba(0, 0, 0, 0.15),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 14px rgba(239, 68, 68, 0.2);
 }
 
 .holdem-seat--allin .holdem-seat__chips {
   color: #f87171;
   font-weight: 800;
+  text-shadow: 0 0 8px rgba(248, 113, 113, 0.4);
 }
+
+.holdem-seat--winner {
+  border-color: rgba(212, 166, 68, 0.6);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 20px rgba(0, 0, 0, 0.1),
+    0 4px 16px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(212, 166, 68, 0.3),
+    0 0 50px rgba(212, 166, 68, 0.1);
+  animation: th-seat-win-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes th-seat-win-glow {
+  from { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 20px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 166, 68, 0.3), 0 0 50px rgba(212, 166, 68, 0.1); }
+  to   { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 20px rgba(0, 0, 0, 0.1), 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 28px rgba(212, 166, 68, 0.45), 0 0 70px rgba(212, 166, 68, 0.15); }
+}
+
+
+/* ── Seat info ── */
 
 .holdem-seat__info {
   display: flex;
@@ -102,32 +285,43 @@
 }
 
 .holdem-seat__name {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  color: rgba(240, 236, 228, 0.9);
+  color: var(--th-text-primary);
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 5px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .dealer-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--gold, #d4a644);
+  background: linear-gradient(145deg, var(--th-gold-light), var(--th-gold));
   color: #1a1a1a;
-  font-size: 0.65rem;
-  font-weight: 800;
+  font-size: 0.6rem;
+  font-weight: 900;
+  box-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.4),
+    inset 0 1px 2px rgba(255, 255, 255, 0.4),
+    0 0 8px rgba(212, 166, 68, 0.25);
+  letter-spacing: 0;
 }
 
 .holdem-seat__chips {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--gold-light, #f0d264);
+  color: var(--th-gold-light);
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 0 8px rgba(212, 166, 68, 0.2);
 }
+
+
+/* ── Seat cards ── */
 
 .holdem-seat__cards {
   display: flex;
@@ -148,55 +342,97 @@
   transform-origin: top center;
 }
 
+/* Card deal animation for community reveals */
+.holdem-card-wrapper--community.holdem-card--dealing {
+  animation: th-card-deal 0.5s var(--th-easing-cinematic) forwards;
+}
+
+@keyframes th-card-deal {
+  0%   { transform: scale(0.7) translateY(-20px) rotateY(90deg); opacity: 0; filter: blur(2px); }
+  40%  { transform: scale(0.7) translateY(-5px) rotateY(0deg); opacity: 1; filter: blur(0); }
+  65%  { transform: scale(0.73) translateY(2px); }
+  100% { transform: scale(0.7) translateY(0); }
+}
+
+
+/* ── Seat badges (action, bet, hand result, folded) ── */
+
 .holdem-seat__action {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 600;
   color: #60a5fa;
-  padding: 2px 8px;
+  padding: 2px 10px;
   border-radius: 8px;
   background: rgba(96, 165, 250, 0.12);
+  border: 1px solid rgba(96, 165, 250, 0.15);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  animation: th-action-pop 0.25s var(--th-easing-spring);
+}
+
+@keyframes th-action-pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .holdem-seat__bet {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: #4ade80;
-  padding: 2px 8px;
+  color: var(--th-status-win-bright);
+  padding: 2px 10px;
   border-radius: 8px;
-  background: rgba(74, 222, 128, 0.12);
+  background: rgba(74, 222, 128, 0.1);
+  border: 1px solid rgba(74, 222, 128, 0.15);
+  font-family: 'Playfair Display', serif;
 }
 
 .holdem-seat__hand-result {
   font-size: 0.7rem;
   font-weight: 700;
-  color: var(--gold-light, #f0d264);
-  padding: 2px 8px;
+  color: var(--th-gold-light);
+  padding: 3px 10px;
   border-radius: 8px;
-  background: rgba(212, 166, 68, 0.15);
+  background: linear-gradient(135deg, rgba(212, 166, 68, 0.18) 0%, rgba(212, 166, 68, 0.08) 100%);
+  border: 1px solid rgba(212, 166, 68, 0.25);
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 0 8px rgba(212, 166, 68, 0.3);
+  animation: th-result-reveal 0.4s var(--th-easing-spring) forwards;
+}
+
+@keyframes th-result-reveal {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .holdem-seat__folded-tag {
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  color: #f87171;
+  letter-spacing: 1.2px;
+  color: var(--th-status-lose-bright);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
-/* Community cards */
+
+/* ── Community cards ── */
+
 .holdem-community {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   z-index: 1;
+  position: relative;
 }
 
 .holdem-community__label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 2px;
-  color: rgba(240, 236, 228, 0.5);
+  letter-spacing: 2.5px;
+  color: var(--th-text-muted);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .holdem-community__cards {
@@ -204,53 +440,105 @@
   gap: 6px;
   justify-content: center;
   min-height: 70px;
+  padding: 8px 16px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .holdem-card-placeholder {
   width: 48px;
   height: 68px;
   border-radius: 8px;
-  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border: 1.5px dashed rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
-/* Banner */
+
+/* ── Banner — cinematic messaging ── */
+
 .holdem-banner {
   text-align: center;
-  padding: 6px 20px;
-  border-radius: 20px;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  min-height: 32px;
+  padding: 8px 24px;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  min-height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 2;
+  transition: all 0.3s var(--th-easing-ease-out);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .holdem-banner p {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  color: rgba(240, 236, 228, 0.9);
+  color: var(--th-text-secondary);
   margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .holdem-banner--win {
-  background: rgba(39, 174, 96, 0.3);
-  border-color: rgba(39, 174, 96, 0.5);
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.3) 0%, rgba(212, 166, 68, 0.15) 100%);
+  border-color: rgba(39, 174, 96, 0.55);
+  box-shadow:
+    0 0 24px rgba(39, 174, 96, 0.25),
+    0 0 60px rgba(39, 174, 96, 0.08),
+    0 0 80px rgba(212, 166, 68, 0.05);
+  animation: th-banner-win-pulse 0.7s var(--th-easing-spring) forwards;
+}
+
+@keyframes th-banner-win-pulse {
+  0%   { transform: scale(0.88); opacity: 0; }
+  40%  { transform: scale(1.06); opacity: 1; }
+  65%  { transform: scale(0.97); }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .holdem-banner--win p {
-  color: #4ade80;
+  color: var(--th-status-win-bright);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.5), 0 0 24px rgba(74, 222, 128, 0.2);
+  letter-spacing: 0.5px;
 }
 
-/* Player area */
+.holdem-banner--lose {
+  background: rgba(231, 76, 60, 0.12);
+  border-color: rgba(231, 76, 60, 0.25);
+  animation: th-banner-lose-shake 0.35s ease-out;
+}
+
+@keyframes th-banner-lose-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+}
+
+.holdem-banner--lose p {
+  color: var(--th-status-lose-bright);
+}
+
+
+/* ── Player area ── */
+
 .holdem-player-area {
   z-index: 1;
 }
 
 .holdem-player-area .holdem-seat {
-  min-width: 160px;
+  min-width: 165px;
+  background:
+    linear-gradient(145deg, rgba(20, 28, 46, 0.8) 0%, rgba(10, 15, 26, 0.7) 100%);
+  border-width: 2px;
 }
 
 .holdem-player-area .holdem-card-wrapper {
@@ -259,7 +547,9 @@
   transform: scale(0.75);
 }
 
-/* Controls */
+
+/* ── Controls — premium action bar ── */
+
 .holdem-controls {
   z-index: 15;
   width: 100%;
@@ -267,8 +557,8 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  padding: 8px 0;
+  gap: 10px;
+  padding: 10px 0;
 }
 
 .holdem-action-buttons {
@@ -277,7 +567,16 @@
   gap: 8px;
   justify-content: center;
   align-items: center;
+  animation: th-controls-fade-in 0.35s var(--th-easing-ease-out) forwards;
 }
+
+@keyframes th-controls-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ── Raise group ── */
 
 .holdem-raise-group {
   display: flex;
@@ -286,74 +585,335 @@
 }
 
 .holdem-raise-slider {
-  width: 100px;
-  accent-color: var(--gold, #d4a644);
+  width: 110px;
+  accent-color: var(--th-gold);
+  height: 4px;
 }
+
+/* Custom slider track & thumb */
+.holdem-raise-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--th-gold-dark) 0%, var(--th-gold) 50%, var(--th-gold-light) 100%);
+}
+
+.holdem-raise-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--th-gold-light), var(--th-gold));
+  border: 2px solid var(--th-gold-dark);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 8px rgba(212, 166, 68, 0.3);
+  margin-top: -7px;
+  cursor: pointer;
+  transition: transform 0.15s var(--th-easing-default);
+}
+
+.holdem-raise-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+
+/* ── Button variants (poker-specific overrides) ── */
+
+.holdem-controls .btn-lg {
+  padding: 12px 36px;
+  font-size: 1.1rem;
+  letter-spacing: 0.8px;
+}
+
+.holdem-controls .btn-danger {
+  background: linear-gradient(145deg, rgba(231, 76, 60, 0.25) 0%, rgba(185, 28, 28, 0.2) 100%);
+  border: 1px solid rgba(231, 76, 60, 0.35);
+  color: #f87171;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.holdem-controls .btn-danger:hover:not(:disabled) {
+  background: linear-gradient(145deg, rgba(231, 76, 60, 0.4) 0%, rgba(185, 28, 28, 0.35) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 12px rgba(231, 76, 60, 0.2);
+}
+
+.holdem-controls .btn-accent {
+  background: linear-gradient(145deg, rgba(212, 166, 68, 0.25) 0%, rgba(139, 105, 20, 0.2) 100%);
+  border: 1px solid rgba(212, 166, 68, 0.4);
+  color: var(--th-gold-light);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.holdem-controls .btn-accent:hover:not(:disabled) {
+  background: linear-gradient(145deg, rgba(212, 166, 68, 0.4) 0%, rgba(139, 105, 20, 0.35) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 12px rgba(212, 166, 68, 0.25);
+}
+
+
+/* ── Waiting state ── */
 
 .holdem-waiting {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.85rem;
-  color: rgba(240, 236, 228, 0.6);
+  gap: 10px;
+  font-size: 0.82rem;
+  color: var(--th-text-muted);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  padding: 6px 16px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .holdem-waiting__spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-top-color: var(--gold-light, #f0d264);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: var(--th-gold);
   border-radius: 50%;
-  animation: holdem-spin 0.8s linear infinite;
+  animation: th-spin 0.8s linear infinite;
 }
 
-@keyframes holdem-spin {
+@keyframes th-spin {
   to { transform: rotate(360deg); }
 }
 
-/* Button variants */
-.holdem-controls .btn-lg {
-  padding: 10px 32px;
-  font-size: 1.1rem;
+
+/* ── Win celebration sparkles ── */
+
+.holdem-win-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 20;
+  pointer-events: none;
 }
 
-.holdem-controls .btn-danger {
-  background: rgba(231, 76, 60, 0.2);
-  border: 1px solid rgba(231, 76, 60, 0.4);
-  color: #f87171;
+.holdem-win-burst__sparkle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--th-gold-light) 0%, var(--th-gold) 50%, transparent 100%);
+  box-shadow: 0 0 6px var(--th-gold-glow), 0 0 12px rgba(212, 166, 68, 0.2);
+  animation: th-sparkle-shoot 1.2s ease-out var(--sparkle-delay, 0ms) forwards;
+  transform: rotate(var(--sparkle-angle, 0deg)) translateY(0);
+  opacity: 0;
 }
 
-.holdem-controls .btn-danger:hover:not(:disabled) {
-  background: rgba(231, 76, 60, 0.35);
+@keyframes th-sparkle-shoot {
+  0%   { transform: rotate(var(--sparkle-angle, 0deg)) translateY(0); opacity: 0; }
+  15%  { opacity: 1; }
+  50%  { opacity: 0.8; }
+  100% { transform: rotate(var(--sparkle-angle, 0deg)) translateY(calc(-1 * var(--sparkle-distance, 80px))); opacity: 0; }
 }
 
-.holdem-controls .btn-accent {
-  background: rgba(212, 166, 68, 0.2);
-  border: 1px solid rgba(212, 166, 68, 0.4);
-  color: var(--gold-light, #f0d264);
+
+/* ── Community card label glow on phases ── */
+
+.holdem-community--flop .holdem-community__label,
+.holdem-community--turn .holdem-community__label,
+.holdem-community--river .holdem-community__label {
+  color: var(--th-gold-light);
+  text-shadow: 0 0 8px rgba(212, 166, 68, 0.3);
+  transition: color 0.3s, text-shadow 0.3s;
 }
 
-.holdem-controls .btn-accent:hover:not(:disabled) {
-  background: rgba(212, 166, 68, 0.35);
-}
 
-/* Responsive */
+/* ── Responsive ── */
+
 @media (max-width: 480px) {
+  .holdem-table {
+    padding: 10px 6px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
   .holdem-opponents {
     gap: 6px;
   }
+
   .holdem-seat {
-    min-width: 90px;
-    padding: 6px 8px;
+    min-width: 95px;
+    padding: 7px 8px;
   }
+
   .holdem-card-wrapper {
     width: 44px;
     height: 64px;
     transform: scale(0.5);
   }
+
   .holdem-card-wrapper--community {
     width: 52px;
     height: 74px;
     transform: scale(0.55);
+  }
+
+  .holdem-community__cards {
+    padding: 6px 10px;
+    gap: 4px;
+  }
+
+  .holdem-pot {
+    padding: 5px 14px;
+  }
+
+  .holdem-pot__amount {
+    font-size: 1.15rem;
+  }
+
+  .holdem-raise-slider {
+    width: 80px;
+  }
+
+  .holdem-player-area .holdem-seat {
+    min-width: 140px;
+  }
+
+  .holdem-player-area .holdem-card-wrapper {
+    width: 58px;
+    height: 84px;
+    transform: scale(0.65);
+  }
+}
+
+@media (max-width: 360px) {
+  .holdem-seat {
+    min-width: 82px;
+    padding: 5px 6px;
+  }
+
+  .holdem-seat__name {
+    font-size: 0.7rem;
+  }
+
+  .holdem-seat__chips {
+    font-size: 0.7rem;
+  }
+
+  .holdem-card-wrapper {
+    width: 38px;
+    height: 56px;
+    transform: scale(0.45);
+  }
+
+  .holdem-card-wrapper--community {
+    width: 46px;
+    height: 66px;
+    transform: scale(0.5);
+  }
+
+  .holdem-raise-slider {
+    width: 65px;
+  }
+}
+
+@media (min-width: 768px) {
+  .holdem-table {
+    padding: 24px 16px;
+    gap: 18px;
+  }
+
+  .holdem-seat {
+    min-width: 145px;
+    padding: 12px 16px;
+  }
+
+  .holdem-card-wrapper {
+    width: 62px;
+    height: 88px;
+    transform: scale(0.65);
+  }
+
+  .holdem-card-wrapper--community {
+    width: 72px;
+    height: 102px;
+    transform: scale(0.75);
+  }
+
+  .holdem-pot__amount {
+    font-size: 1.5rem;
+  }
+
+  .holdem-player-area .holdem-seat {
+    min-width: 190px;
+  }
+
+  .holdem-player-area .holdem-card-wrapper {
+    width: 80px;
+    height: 112px;
+    transform: scale(0.8);
+  }
+
+  .holdem-raise-slider {
+    width: 140px;
+  }
+}
+
+
+/* ── Reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .holdem-seat--active {
+    animation: none;
+  }
+
+  .holdem-seat--winner {
+    animation: none;
+  }
+
+  .holdem-table--win {
+    animation: none;
+  }
+
+  .holdem-banner--win {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .holdem-banner--lose {
+    animation: none;
+  }
+
+  .holdem-phase-pill {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .holdem-action-buttons {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .holdem-seat__action {
+    animation: none;
+  }
+
+  .holdem-seat__hand-result {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .holdem-card-wrapper--community.holdem-card--dealing {
+    animation: none;
+    transform: scale(0.7);
+    opacity: 1;
+  }
+
+  .holdem-pot--growing .holdem-pot__amount {
+    animation: none;
+  }
+
+  .holdem-win-burst {
+    display: none;
   }
 }
