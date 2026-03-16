@@ -1458,7 +1458,7 @@
 
 /* 3D Beveled bet buttons */
 .slots-bet-btn {
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid rgba(180, 77, 255, 0.15);
   border-top-color: rgba(180, 77, 255, 0.25);
@@ -1470,7 +1470,7 @@
       rgba(0, 0, 0, 0.15) 100%
     );
   color: var(--sv2-text-muted);
-  font-size: 0.7rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
@@ -1796,8 +1796,8 @@
   .slots-reels { gap: 7px; }
 
   .slots-bet-btn {
-    padding: 5px 10px;
-    font-size: 0.64rem;
+    padding: 6px 12px;
+    font-size: 0.72rem;
   }
 
   .slots-spin-btn {

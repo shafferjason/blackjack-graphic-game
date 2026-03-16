@@ -10,11 +10,11 @@
 /* ── Animated chip token — 3D depth with dome highlight ── */
 .chip-anim {
   position: absolute;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   font-weight: 700;
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   color: #fff;
   display: flex;
   align-items: center;
@@ -152,9 +152,9 @@
 /* ── Small phone adjustments ── */
 @media (max-width: 379px) {
   .chip-anim {
-    width: 36px;
-    height: 36px;
-    font-size: 0.55rem;
+    width: 42px;
+    height: 42px;
+    font-size: 0.65rem;
     border-width: 2px;
   }
 }
@@ -178,9 +178,9 @@
 /* ── Desktop ── */
 @media (min-width: 600px) {
   .chip-anim {
-    width: 52px;
-    height: 52px;
-    font-size: 0.75rem;
+    width: 60px;
+    height: 60px;
+    font-size: 0.85rem;
   }
 
   @keyframes chipToBet {

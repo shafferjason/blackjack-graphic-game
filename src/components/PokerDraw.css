@@ -415,15 +415,15 @@
 
 .pd-chip-row {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .pd-chip-btn {
-  padding: 6px 14px;
+  padding: 8px 16px;
   border-radius: 20px;
-  font-size: 0.78rem;
+  font-size: 0.88rem;
   font-weight: 700;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: linear-gradient(145deg, rgba(212, 166, 68, 0.2) 0%, rgba(139, 105, 20, 0.15) 100%);
@@ -486,7 +486,7 @@
 }
 
 .pd-chips-label {
-  font-size: 0.68rem;
+  font-size: 0.76rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--pd-text-muted);
@@ -494,7 +494,7 @@
 }
 
 .pd-chips-amount {
-  font-size: 1.1rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--pd-gold-light);
   font-family: 'Playfair Display', serif;
@@ -590,8 +590,8 @@
   }
 
   .pd-chip-btn {
-    padding: 5px 10px;
-    font-size: 0.72rem;
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
 }
 
