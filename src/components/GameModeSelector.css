@@ -56,8 +56,16 @@
 }
 
 .mode-selector__icon {
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: filter 0.2s ease;
+}
+
+.mode-selector__svg {
+  width: 1.3rem;
+  height: 1.3rem;
+  flex-shrink: 0;
 }
 
 .mode-selector__badge {
@@ -163,8 +171,9 @@
   .mode-selector__label {
     display: none;
   }
-  .mode-selector__icon {
-    font-size: 1rem;
+  .mode-selector__svg {
+    width: 1.5rem;
+    height: 1.5rem;
   }
   .mode-selector__btn--active .mode-selector__label {
     display: inline;
