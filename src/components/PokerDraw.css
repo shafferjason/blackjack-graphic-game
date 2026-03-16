@@ -1,0 +1,712 @@
+/* ── 5 Card Draw Poker — Premium Casino Experience ── */
+
+/* ── Token-mapped custom properties ── */
+.pd-table {
+  --pd-gold: #d4a644;
+  --pd-gold-light: #f0d68a;
+  --pd-gold-dark: #8b6914;
+  --pd-gold-glow: rgba(212, 166, 68, 0.35);
+  --pd-text-primary: #f0ece4;
+  --pd-text-secondary: #b0a890;
+  --pd-text-muted: #6a6050;
+  --pd-felt: #0b6623;
+  --pd-felt-dark: #084a1a;
+  --pd-status-win: #27ae60;
+  --pd-status-win-bright: #4ade80;
+  --pd-status-lose: #e74c3c;
+  --pd-status-lose-bright: #f87171;
+  --pd-easing-default: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pd-easing-ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --pd-easing-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --pd-easing-cinematic: cubic-bezier(0.16, 1, 0.3, 1);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 16px 10px;
+  z-index: 1;
+  position: relative;
+
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, transparent 0%, rgba(0, 0, 0, 0.5) 100%),
+    radial-gradient(ellipse at 50% 50%, var(--pd-felt) 0%, var(--pd-felt-dark) 70%, #041a0c 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(212, 166, 68, 0.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 0 60px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+
+/* ── Phase-based ambient lighting ── */
+
+.pd-table--idle {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 0 60px rgba(0, 0, 0, 0.3),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 60px rgba(212, 166, 68, 0.04);
+}
+
+.pd-table--active {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    inset 0 0 60px rgba(0, 0, 0, 0.25),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(212, 166, 68, 0.08);
+  transition: box-shadow 0.6s var(--pd-easing-ease-out);
+}
+
+.pd-table--win {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 60px rgba(0, 0, 0, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(212, 166, 68, 0.22),
+    0 0 160px rgba(212, 166, 68, 0.08);
+  border-color: rgba(212, 166, 68, 0.35);
+  transition: box-shadow 0.4s var(--pd-easing-ease-out), border-color 0.4s var(--pd-easing-ease-out);
+  animation: pd-table-win-glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pd-table-win-glow {
+  from { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 80px rgba(212, 166, 68, 0.22), 0 0 160px rgba(212, 166, 68, 0.08); }
+  to   { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), inset 0 0 60px rgba(0, 0, 0, 0.15), 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 100px rgba(212, 166, 68, 0.3), 0 0 200px rgba(212, 166, 68, 0.12); }
+}
+
+.pd-table--lose {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    inset 0 0 80px rgba(0, 0, 0, 0.5),
+    0 8px 32px rgba(0, 0, 0, 0.5);
+  transition: box-shadow 0.4s var(--pd-easing-ease-out);
+}
+
+
+/* ── Payout table ── */
+
+.pd-payout-table {
+  width: 100%;
+  max-width: 340px;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 12px;
+  border: 1px solid rgba(212, 166, 68, 0.2);
+  padding: 10px 14px;
+  backdrop-filter: blur(8px);
+}
+
+.pd-payout-table__title {
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--pd-gold-light);
+  margin-bottom: 6px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.pd-payout-table__grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pd-payout-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 4px;
+  transition: all 0.3s var(--pd-easing-ease-out);
+}
+
+.pd-payout-row--active {
+  background: linear-gradient(135deg, rgba(212, 166, 68, 0.25) 0%, rgba(212, 166, 68, 0.1) 100%);
+  border: 1px solid rgba(212, 166, 68, 0.4);
+  box-shadow: 0 0 12px rgba(212, 166, 68, 0.2);
+  animation: pd-payout-highlight 0.5s var(--pd-easing-spring) forwards;
+}
+
+@keyframes pd-payout-highlight {
+  0%   { transform: scale(0.95); opacity: 0.5; }
+  50%  { transform: scale(1.03); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pd-payout-row__hand {
+  font-size: 0.72rem;
+  color: var(--pd-text-secondary);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.pd-payout-row--active .pd-payout-row__hand {
+  color: var(--pd-gold-light);
+  font-weight: 700;
+}
+
+.pd-payout-row__mult {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--pd-gold);
+  font-family: 'Playfair Display', serif;
+}
+
+.pd-payout-row--active .pd-payout-row__mult {
+  color: var(--pd-gold-light);
+  text-shadow: 0 0 8px rgba(212, 166, 68, 0.4);
+}
+
+
+/* ── Cards area ── */
+
+.pd-cards-area {
+  z-index: 1;
+  min-height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-hand {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.pd-empty-hand {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.pd-card-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.pd-held-badge {
+  position: absolute;
+  top: -16px;
+  z-index: 10;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--pd-status-win-bright);
+  padding: 1px 8px;
+  border-radius: 6px;
+  background: rgba(74, 222, 128, 0.15);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  animation: pd-held-pop 0.25s var(--pd-easing-spring);
+}
+
+@keyframes pd-held-pop {
+  0%   { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pd-card-wrapper {
+  width: 75px;
+  height: 108px;
+  transform: scale(0.8);
+  transform-origin: center;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: default;
+  border-radius: 8px;
+  transition: transform 0.2s var(--pd-easing-spring), box-shadow 0.2s;
+}
+
+.pd-card-wrapper--interactive {
+  cursor: pointer;
+}
+
+.pd-card-wrapper--interactive:hover {
+  transform: scale(0.84) translateY(-4px);
+}
+
+.pd-card-wrapper--held {
+  transform: scale(0.84) translateY(-8px);
+  box-shadow: 0 4px 16px rgba(74, 222, 128, 0.2), 0 0 24px rgba(74, 222, 128, 0.08);
+}
+
+.pd-card-wrapper--interactive:focus-visible {
+  outline: 2px solid var(--pd-status-win-bright);
+  outline-offset: 2px;
+}
+
+/* Card replacement animation */
+.pd-card--replacing {
+  animation: pd-card-replace 0.45s var(--pd-easing-cinematic) forwards;
+}
+
+@keyframes pd-card-replace {
+  0%   { transform: scale(0.8) translateY(-24px) rotateY(90deg); opacity: 0; filter: blur(2px); }
+  40%  { transform: scale(0.8) translateY(-6px) rotateY(0deg); opacity: 1; filter: blur(0); }
+  65%  { transform: scale(0.83) translateY(2px); }
+  100% { transform: scale(0.8) translateY(0); }
+}
+
+.pd-card-placeholder {
+  width: 60px;
+  height: 86px;
+  border-radius: 8px;
+  border: 1.5px dashed rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+
+/* ── Banner ── */
+
+.pd-banner {
+  text-align: center;
+  padding: 8px 24px;
+  border-radius: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  min-height: 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  z-index: 2;
+  transition: all 0.3s var(--pd-easing-ease-out);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.pd-banner p {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--pd-text-secondary);
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.pd-banner--win {
+  background: linear-gradient(135deg, rgba(39, 174, 96, 0.3) 0%, rgba(212, 166, 68, 0.15) 100%);
+  border-color: rgba(39, 174, 96, 0.55);
+  box-shadow:
+    0 0 24px rgba(39, 174, 96, 0.25),
+    0 0 60px rgba(39, 174, 96, 0.08);
+  animation: pd-banner-win-pulse 0.7s var(--pd-easing-spring) forwards;
+}
+
+@keyframes pd-banner-win-pulse {
+  0%   { transform: scale(0.88); opacity: 0; }
+  40%  { transform: scale(1.06); opacity: 1; }
+  65%  { transform: scale(0.97); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.pd-banner--win p {
+  color: var(--pd-status-win-bright);
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(74, 222, 128, 0.5);
+}
+
+.pd-banner--lose {
+  background: rgba(231, 76, 60, 0.12);
+  border-color: rgba(231, 76, 60, 0.25);
+  animation: pd-banner-lose-shake 0.35s ease-out;
+}
+
+@keyframes pd-banner-lose-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-2px); }
+  40% { transform: translateX(2px); }
+  60% { transform: translateX(-1px); }
+  80% { transform: translateX(1px); }
+}
+
+.pd-banner--lose p {
+  color: var(--pd-status-lose-bright);
+}
+
+.pd-result-detail {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pd-result-payout {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--pd-gold-light);
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 0 12px rgba(212, 166, 68, 0.4);
+  animation: pd-payout-pop 0.4s var(--pd-easing-spring) forwards;
+}
+
+@keyframes pd-payout-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  50%  { transform: scale(1.2); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+
+/* ── Controls ── */
+
+.pd-controls {
+  z-index: 15;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.pd-betting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: pd-controls-fade-in 0.35s var(--pd-easing-ease-out) forwards;
+}
+
+@keyframes pd-controls-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pd-bet-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.55);
+  padding: 6px 18px;
+  border-radius: 24px;
+  border: 1px solid rgba(212, 166, 68, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.pd-bet-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--pd-text-muted);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.pd-bet-amount {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--pd-gold-light);
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 0 10px rgba(212, 166, 68, 0.3);
+}
+
+.pd-chip-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.pd-chip-btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(145deg, rgba(212, 166, 68, 0.2) 0%, rgba(139, 105, 20, 0.15) 100%);
+  border: 1px solid rgba(212, 166, 68, 0.35);
+  color: var(--pd-gold-light);
+  cursor: pointer;
+  transition: all 0.15s var(--pd-easing-default);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.pd-chip-btn:hover:not(:disabled) {
+  background: linear-gradient(145deg, rgba(212, 166, 68, 0.35) 0%, rgba(139, 105, 20, 0.25) 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 10px rgba(212, 166, 68, 0.2);
+  transform: translateY(-1px);
+}
+
+.pd-chip-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.97);
+}
+
+.pd-chip-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.pd-bet-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pd-hold-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  animation: pd-controls-fade-in 0.35s var(--pd-easing-ease-out) forwards;
+}
+
+.pd-hold-hint {
+  font-size: 0.8rem;
+  color: var(--pd-text-muted);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+}
+
+
+/* ── Chips display ── */
+
+.pd-chips-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 5px 16px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.pd-chips-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--pd-text-muted);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.pd-chips-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--pd-gold-light);
+  font-family: 'Playfair Display', serif;
+  text-shadow: 0 0 8px rgba(212, 166, 68, 0.2);
+}
+
+
+/* ── Win sparkles ── */
+
+.pd-win-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.pd-win-burst__sparkle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--pd-gold-light) 0%, var(--pd-gold) 50%, transparent 100%);
+  box-shadow: 0 0 6px var(--pd-gold-glow), 0 0 12px rgba(212, 166, 68, 0.2);
+  animation: pd-sparkle-shoot 1.2s ease-out var(--sparkle-delay, 0ms) forwards;
+  transform: rotate(var(--sparkle-angle, 0deg)) translateY(0);
+  opacity: 0;
+}
+
+@keyframes pd-sparkle-shoot {
+  0%   { transform: rotate(var(--sparkle-angle, 0deg)) translateY(0); opacity: 0; }
+  15%  { opacity: 1; }
+  50%  { opacity: 0.8; }
+  100% { transform: rotate(var(--sparkle-angle, 0deg)) translateY(calc(-1 * var(--sparkle-distance, 80px))); opacity: 0; }
+}
+
+
+/* ── Button overrides for poker draw context ── */
+
+.pd-controls .btn-lg {
+  padding: 12px 36px;
+  font-size: 1.1rem;
+  letter-spacing: 0.8px;
+}
+
+
+/* ── Responsive ── */
+
+@media (max-width: 480px) {
+  .pd-table {
+    padding: 10px 6px;
+    gap: 10px;
+    border-radius: 12px;
+  }
+
+  .pd-card-wrapper {
+    width: 60px;
+    height: 86px;
+    transform: scale(0.65);
+  }
+
+  .pd-card-wrapper--held {
+    transform: scale(0.69) translateY(-8px);
+  }
+
+  .pd-card-wrapper--interactive:hover {
+    transform: scale(0.69) translateY(-4px);
+  }
+
+  .pd-card-placeholder {
+    width: 48px;
+    height: 70px;
+  }
+
+  .pd-hand {
+    gap: 4px;
+  }
+
+  .pd-empty-hand {
+    gap: 4px;
+  }
+
+  .pd-payout-table {
+    max-width: 280px;
+    padding: 8px 10px;
+  }
+
+  .pd-payout-row__hand,
+  .pd-payout-row__mult {
+    font-size: 0.65rem;
+  }
+
+  .pd-chip-btn {
+    padding: 5px 10px;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .pd-card-wrapper {
+    width: 50px;
+    height: 72px;
+    transform: scale(0.55);
+  }
+
+  .pd-card-wrapper--held {
+    transform: scale(0.59) translateY(-8px);
+  }
+
+  .pd-card-wrapper--interactive:hover {
+    transform: scale(0.59) translateY(-4px);
+  }
+
+  .pd-card-placeholder {
+    width: 42px;
+    height: 60px;
+  }
+}
+
+@media (min-width: 768px) {
+  .pd-table {
+    padding: 24px 16px;
+    gap: 18px;
+  }
+
+  .pd-card-wrapper {
+    width: 88px;
+    height: 124px;
+    transform: scale(0.9);
+  }
+
+  .pd-card-wrapper--held {
+    transform: scale(0.94) translateY(-10px);
+  }
+
+  .pd-card-wrapper--interactive:hover {
+    transform: scale(0.94) translateY(-5px);
+  }
+
+  .pd-hand {
+    gap: 12px;
+  }
+
+  .pd-empty-hand {
+    gap: 12px;
+  }
+
+  .pd-card-placeholder {
+    width: 72px;
+    height: 100px;
+  }
+
+  .pd-payout-table {
+    max-width: 380px;
+  }
+}
+
+
+/* ── Reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .pd-table--win {
+    animation: none;
+  }
+
+  .pd-banner--win {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .pd-banner--lose {
+    animation: none;
+  }
+
+  .pd-payout-row--active {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .pd-result-payout {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+
+  .pd-held-badge {
+    animation: none;
+  }
+
+  .pd-card--replacing {
+    animation: none;
+    transform: scale(0.8);
+    opacity: 1;
+  }
+
+  .pd-betting {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .pd-hold-controls {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .pd-win-burst {
+    display: none;
+  }
+}

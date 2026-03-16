@@ -1,4 +1,4 @@
-export type GameMode = 'blackjack' | 'texas_holdem' | 'roulette' | 'slots' | 'coin_flip'
+export type GameMode = 'blackjack' | 'poker_draw' | 'texas_holdem' | 'roulette' | 'slots' | 'coin_flip'
 
 interface GameModeSelectorProps {
   currentMode: GameMode
@@ -7,7 +7,8 @@ interface GameModeSelectorProps {
 
 const MODES: { id: GameMode; label: string; icon: string; disabled: boolean; comingSoon: boolean }[] = [
   { id: 'blackjack', label: 'Blackjack', icon: '\u2660', disabled: false, comingSoon: false },
-  { id: 'texas_holdem', label: 'Texas Hold\'em', icon: '\u2663', disabled: false, comingSoon: false },
+  { id: 'poker_draw', label: 'Poker Draw', icon: '\u2662', disabled: false, comingSoon: false },
+  { id: 'texas_holdem', label: 'Texas Holdem', icon: '\u2663', disabled: false, comingSoon: false },
   { id: 'roulette', label: 'Roulette', icon: '\u25CE', disabled: false, comingSoon: false },
   { id: 'slots', label: 'Slots', icon: '\u2731', disabled: false, comingSoon: false },
   { id: 'coin_flip', label: 'Coin Flip', icon: '\u{1FA99}', disabled: false, comingSoon: false },
