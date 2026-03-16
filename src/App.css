@@ -4899,112 +4899,166 @@
   padding-top: 8px;
 }
 
-/* ── Floating HUD overlay ── */
-.fullscreen-hud {
+/* ── Fullscreen settings FAB ── */
+.fullscreen-fab {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 9000;
-  pointer-events: none;
-  opacity: 0;
-  transform: translateY(-100%);
-  transition: opacity 0.35s var(--ease-smooth), transform 0.35s var(--ease-smooth);
-}
-
-.fullscreen-hud--visible {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.fullscreen-hud__bar {
+  bottom: 20px;
+  right: 20px;
+  z-index: 9001;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(212, 166, 68, 0.25);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
+    rgba(8, 12, 22, 0.85);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 8px 16px;
-  margin: 8px auto;
-  max-width: 780px;
-  width: fit-content;
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
-    rgba(8, 12, 22, 0.88);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
-  border: 1px solid rgba(212, 166, 68, 0.18);
-  border-radius: 16px;
   box-shadow:
-    0 4px 24px rgba(0, 0, 0, 0.4),
-    0 1px 0 rgba(212, 166, 68, 0.08) inset;
+    0 2px 12px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(212, 166, 68, 0.08) inset;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  will-change: transform;
 }
 
-.fullscreen-hud__actions {
+.fullscreen-fab:hover {
+  transform: scale(1.08);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+    rgba(8, 12, 22, 0.92);
+  box-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(212, 166, 68, 0.2) inset;
+  color: rgba(255, 255, 255, 1);
+}
+
+.fullscreen-fab:active {
+  transform: scale(0.95);
+}
+
+/* ── Fullscreen slide-out panel ── */
+.fullscreen-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 72px;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(12px) scale(0.96);
+  transform-origin: right bottom;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.fullscreen-panel--open {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  pointer-events: auto;
+}
+
+.fullscreen-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, transparent 50%),
+    rgba(8, 12, 22, 0.92);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(212, 166, 68, 0.18);
+  border-radius: 14px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(212, 166, 68, 0.08) inset;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+}
+
+.fullscreen-panel__divider {
+  height: 1px;
+  background: rgba(212, 166, 68, 0.12);
+  margin: 2px 0;
+}
+
+.fullscreen-panel__actions {
   display: flex;
   align-items: center;
   gap: 4px;
+  flex-wrap: wrap;
 }
 
-.fullscreen-toggle--exit {
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
+.fullscreen-panel__exit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background 0.15s ease, color 0.15s ease;
+  width: 100%;
+  justify-content: center;
 }
 
-/* Compact mode-selector inside HUD */
-.fullscreen-hud .mode-selector {
+.fullscreen-panel__exit:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 1);
+}
+
+/* Compact mode-selector inside panel */
+.fullscreen-panel .mode-selector {
   gap: 2px;
 }
 
-.fullscreen-hud .mode-selector__btn {
+.fullscreen-panel .mode-selector__btn {
   padding: 4px 8px;
   font-size: 0.7rem;
 }
 
-.fullscreen-hud .mode-selector__icon {
+.fullscreen-panel .mode-selector__icon {
   width: 1.2rem;
   height: 1.2rem;
 }
 
-/* ── Safe-area hover zone at top of screen to reveal HUD ── */
-.fullscreen-hud::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 24px;
-  pointer-events: auto;
-}
-
 /* ── Fullscreen mobile adjustments ── */
 @media (max-width: 599px) {
-  .fullscreen-hud__bar {
-    margin: 4px 8px;
-    padding: 6px 10px;
-    gap: 6px;
-    max-width: none;
-    width: auto;
-    border-radius: 12px;
-    flex-wrap: wrap;
-    justify-content: center;
+  .fullscreen-fab {
+    bottom: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
   }
 
-  .fullscreen-hud .mode-selector__label {
+  .fullscreen-panel {
+    right: 60px;
+    bottom: 12px;
+    left: 12px;
+  }
+
+  .fullscreen-panel__content {
+    padding: 10px;
+    gap: 6px;
+  }
+
+  .fullscreen-panel .mode-selector__label {
     display: none;
   }
 
-  .fullscreen-hud .mode-selector__btn {
+  .fullscreen-panel .mode-selector__btn {
     padding: 4px 6px;
   }
 
-  .fullscreen-hud .mode-selector__icon {
+  .fullscreen-panel .mode-selector__icon {
     width: 1.1rem;
     height: 1.1rem;
-  }
-
-  .fullscreen-hud__actions {
-    gap: 2px;
   }
 }
 
@@ -5054,7 +5108,8 @@
 
 /* ── Respect reduced motion ── */
 @media (prefers-reduced-motion: reduce) {
-  .fullscreen-hud {
+  .fullscreen-fab,
+  .fullscreen-panel {
     transition: none;
   }
 }

@@ -1,15 +1,14 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 
 export function useFullscreen() {
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [hudVisible, setHudVisible] = useState(true)
-  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [hudVisible, setHudVisible] = useState(false)
 
   const enterFullscreen = useCallback(async () => {
     try {
       await document.documentElement.requestFullscreen()
     } catch {
-      // Fallscreen API not supported — toggle CSS-only fullscreen
+      // Fullscreen API not supported — toggle CSS-only fullscreen
       setIsFullscreen(true)
     }
   }, [])
@@ -43,52 +42,21 @@ export function useFullscreen() {
     return () => document.removeEventListener('fullscreenchange', onChange)
   }, [])
 
-  // Auto-hide HUD after inactivity in fullscreen
-  const scheduleHide = useCallback(() => {
-    if (hideTimer.current) clearTimeout(hideTimer.current)
-    hideTimer.current = setTimeout(() => {
-      setHudVisible(false)
-    }, 3000)
+  const toggleHud = useCallback(() => {
+    setHudVisible(prev => !prev)
   }, [])
 
-  const showHud = useCallback(() => {
-    setHudVisible(true)
-    scheduleHide()
-  }, [scheduleHide])
-
-  // When entering fullscreen, show HUD briefly then auto-hide
+  // Close HUD when leaving fullscreen
   useEffect(() => {
-    if (isFullscreen) {
-      setHudVisible(true)
-      scheduleHide()
-    } else {
-      setHudVisible(true)
-      if (hideTimer.current) clearTimeout(hideTimer.current)
+    if (!isFullscreen) {
+      setHudVisible(false)
     }
-    return () => {
-      if (hideTimer.current) clearTimeout(hideTimer.current)
-    }
-  }, [isFullscreen, scheduleHide])
-
-  // Track mouse/touch movement in fullscreen to reveal HUD
-  useEffect(() => {
-    if (!isFullscreen) return
-
-    const handleMove = () => showHud()
-    const handleTouch = () => showHud()
-
-    document.addEventListener('mousemove', handleMove)
-    document.addEventListener('touchstart', handleTouch)
-    return () => {
-      document.removeEventListener('mousemove', handleMove)
-      document.removeEventListener('touchstart', handleTouch)
-    }
-  }, [isFullscreen, showHud])
+  }, [isFullscreen])
 
   return {
     isFullscreen,
     hudVisible,
     toggleFullscreen,
-    showHud,
+    toggleHud,
   }
 }
