@@ -4853,3 +4853,208 @@
     background: none;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   FULLSCREEN MODE
+   ══════════════════════════════════════════════════════════ */
+
+/* Fullscreen toggle button in header */
+.fullscreen-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(240, 236, 228, 0.7);
+  cursor: pointer;
+  transition: all 0.2s var(--ease-smooth);
+}
+
+.fullscreen-toggle:hover {
+  background: rgba(212, 166, 68, 0.15);
+  border-color: rgba(212, 166, 68, 0.3);
+  color: var(--gold-light);
+  transform: scale(1.05);
+}
+
+.fullscreen-toggle:active {
+  transform: scale(0.95);
+}
+
+/* Hide header, footer, scoreboard in fullscreen */
+.app--fullscreen > .header {
+  display: none;
+}
+
+.app--fullscreen > .footer {
+  display: none;
+}
+
+/* Table fills entire viewport in fullscreen */
+.app--fullscreen > .table {
+  min-height: 100vh;
+  padding-top: 8px;
+}
+
+/* ── Floating HUD overlay ── */
+.fullscreen-hud {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.35s var(--ease-smooth), transform 0.35s var(--ease-smooth);
+}
+
+.fullscreen-hud--visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.fullscreen-hud__bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 16px;
+  margin: 8px auto;
+  max-width: 780px;
+  width: fit-content;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, transparent 50%),
+    rgba(8, 12, 22, 0.88);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  border: 1px solid rgba(212, 166, 68, 0.18);
+  border-radius: 16px;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(212, 166, 68, 0.08) inset;
+}
+
+.fullscreen-hud__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fullscreen-toggle--exit {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+}
+
+/* Compact mode-selector inside HUD */
+.fullscreen-hud .mode-selector {
+  gap: 2px;
+}
+
+.fullscreen-hud .mode-selector__btn {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+}
+
+.fullscreen-hud .mode-selector__icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+/* ── Safe-area hover zone at top of screen to reveal HUD ── */
+.fullscreen-hud::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: auto;
+}
+
+/* ── Fullscreen mobile adjustments ── */
+@media (max-width: 599px) {
+  .fullscreen-hud__bar {
+    margin: 4px 8px;
+    padding: 6px 10px;
+    gap: 6px;
+    max-width: none;
+    width: auto;
+    border-radius: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .fullscreen-hud .mode-selector__label {
+    display: none;
+  }
+
+  .fullscreen-hud .mode-selector__btn {
+    padding: 4px 6px;
+  }
+
+  .fullscreen-hud .mode-selector__icon {
+    width: 1.1rem;
+    height: 1.1rem;
+  }
+
+  .fullscreen-hud__actions {
+    gap: 2px;
+  }
+}
+
+/* ── Fullscreen desktop: more room for cards ── */
+@media (min-width: 768px) {
+  .app--fullscreen > .table {
+    padding: 16px 24px;
+    gap: 12px;
+  }
+
+  .app--fullscreen .cards-row {
+    min-height: 180px;
+  }
+
+  .app--fullscreen .card-slot {
+    width: 120px;
+    height: 175px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app--fullscreen > .table {
+    padding: 20px 40px;
+    gap: 16px;
+  }
+
+  .app--fullscreen .cards-row {
+    min-height: 220px;
+  }
+
+  .app--fullscreen .card-slot {
+    width: 140px;
+    height: 200px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .app--fullscreen .cards-row {
+    min-height: 260px;
+  }
+
+  .app--fullscreen .card-slot {
+    width: 160px;
+    height: 230px;
+  }
+}
+
+/* ── Respect reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .fullscreen-hud {
+    transition: none;
+  }
+}

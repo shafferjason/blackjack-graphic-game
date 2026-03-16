@@ -6,6 +6,7 @@ import { useGameSettings } from './config/GameSettingsContext'
 import type { TableFeltTheme } from './types'
 import { useSoundEffects } from './hooks/useSoundEffects'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { useFullscreen } from './hooks/useFullscreen'
 import { getOptimalAction, actionLabel } from './utils/basicStrategy'
 import type { ResolvedAction } from './utils/basicStrategy'
 import { getHiLoValue, calculateTrueCount, getDecksRemaining } from './utils/counting'
@@ -461,6 +462,8 @@ function App() {
     }, 50)
   }, [mpActive, mpActiveIndex, mpPlayers, state.chips, actions])
 
+  const { isFullscreen, hudVisible, toggleFullscreen, showHud } = useFullscreen()
+
   const { muted, volume, soundProfile, toggleMute, setVolume, setSoundProfile, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
     result: state.result,
@@ -595,7 +598,7 @@ function App() {
   const deckLabel = NUM_DECKS === 1 ? 'Single deck' : `${NUM_DECKS}-deck shoe`
 
   return (
-    <div className="app">
+    <div className={`app${isFullscreen ? ' app--fullscreen' : ''}`}>
       <header className="header">
         <h1>
           <span className="suit-icon" aria-hidden="true">&#9824;</span>
@@ -611,8 +614,53 @@ function App() {
           <CardSkinShop chips={state.chips} onDeductChips={(amount: number) => actions.adjustChips(-amount)} />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} onAdjustChips={actions.adjustChips} />
           <AudioPanel muted={muted} volume={volume} soundProfile={soundProfile} onToggleMute={toggleMute} onSetVolume={setVolume} onSetSoundProfile={setSoundProfile} />
+          <button
+            className="fullscreen-toggle"
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen mode'}
+          >
+            {isFullscreen ? (
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3m0 8v3a2 2 0 0 0 2 2h3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+          </button>
         </nav>
       </header>
+
+      {/* Floating HUD — visible in fullscreen on hover/tap */}
+      {isFullscreen && (
+        <div
+          className={`fullscreen-hud${hudVisible ? ' fullscreen-hud--visible' : ''}`}
+          onMouseEnter={showHud}
+        >
+          <div className="fullscreen-hud__bar">
+            <GameModeSelector currentMode={gameMode} onModeChange={handleModeChange} />
+            <div className="fullscreen-hud__actions">
+              <HandHistory history={state.handHistory} />
+              <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
+              <CardSkinShop chips={state.chips} onDeductChips={(amount: number) => actions.adjustChips(-amount)} />
+              <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} onAdjustChips={actions.adjustChips} />
+              <AudioPanel muted={muted} volume={volume} soundProfile={soundProfile} onToggleMute={toggleMute} onSetVolume={setVolume} onSetSoundProfile={setSoundProfile} />
+              <button
+                className="fullscreen-toggle fullscreen-toggle--exit"
+                onClick={toggleFullscreen}
+                aria-label="Exit fullscreen"
+                title="Exit fullscreen"
+              >
+                <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+                  <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {mpActive && (
         <MultiplayerBar
