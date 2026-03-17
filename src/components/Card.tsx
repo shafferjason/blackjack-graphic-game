@@ -1528,8 +1528,11 @@ function CardFace({ card }: { card: CardType }) {
     return <AssetCardFace card={card} />
   }
 
-  // Pilot: Neon Nights uses Standard SVG base with themed overlays
+  // Neon Nights: Queen uses Canvas 2D character art; J/K/number cards use themed SVG base
   if (skin.id === 'neon-nights') {
+    if (card.rank === 'Q') {
+      return <CanvasArtCardFace card={card} />
+    }
     return <ThemedAssetCardFace card={card} />
   }
 

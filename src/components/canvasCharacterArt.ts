@@ -82,6 +82,8 @@ const SKIN_DRAW_MAP: Record<string, DrawFunction> = {
   'emerald-fortune': drawEmeraldFortune,
   'diamond-dynasty': drawDiamondDynasty,
   'animal-kingdom': drawAnimalKingdom,
+  'solar-pharaoh': drawSolarPharaoh,
+  'celestial': drawCelestial,
 }
 
 // ── Fallback ──
@@ -1547,228 +1549,683 @@ function drawNeonJack(ctx: CanvasRenderingContext2D) {
 }
 
 function drawNeonQueen(ctx: CanvasRenderingContext2D) {
-  drawNeonCityBackground(ctx)
+  // ── BACKGROUND: Tech-lit corridor with depth ──
+  const bg = ctx.createLinearGradient(0, 0, 600, 840)
+  bg.addColorStop(0, '#04080F')
+  bg.addColorStop(0.25, '#081420')
+  bg.addColorStop(0.5, '#0A1A2E')
+  bg.addColorStop(0.75, '#081420')
+  bg.addColorStop(1, '#04080F')
+  ctx.fillStyle = bg
+  ctx.fillRect(0, 0, 600, 840)
 
-  // Tech-lit corridor background
-  ctx.fillStyle = '#0A1420'
-  ctx.fillRect(80, 100, 440, 600)
-
-  // Corridor walls with holographic panels
-  ctx.strokeStyle = '#00E5FF'
-  ctx.lineWidth = 1
-  ctx.globalAlpha = 0.1
-  for (let y = 120; y < 680; y += 40) {
-    ctx.strokeRect(90, y, 100, 30)
-    ctx.strokeRect(410, y, 100, 30)
-  }
-  ctx.globalAlpha = 1
-
-  // Holographic displays in background
-  ctx.fillStyle = '#00E5FF'
-  ctx.globalAlpha = 0.06
-  ctx.fillRect(100, 150, 80, 50)
-  ctx.fillRect(420, 200, 80, 40)
-  ctx.globalAlpha = 1
-
-  // ── The Fixer — calm, smart tech-fabric trench coat ──
-
-  // BODY — tech trench coat
-  const coat = ctx.createLinearGradient(190, 340, 410, 680)
-  coat.addColorStop(0, '#1A2030')
-  coat.addColorStop(0.5, '#151A28')
-  coat.addColorStop(1, '#0D1218')
-  ctx.fillStyle = coat
+  // Corridor walls converging for depth perspective
+  const wallL = ctx.createLinearGradient(0, 0, 160, 0)
+  wallL.addColorStop(0, '#060D18')
+  wallL.addColorStop(1, '#0A1628')
+  ctx.fillStyle = wallL
   ctx.beginPath()
-  ctx.moveTo(210, 350)
-  ctx.quadraticCurveTo(300, 320, 390, 350)
-  ctx.lineTo(410, 680)
-  ctx.quadraticCurveTo(300, 710, 190, 680)
+  ctx.moveTo(0, 0)
+  ctx.lineTo(100, 60)
+  ctx.lineTo(100, 780)
+  ctx.lineTo(0, 840)
   ctx.closePath()
   ctx.fill()
 
-  // Coat lapels
-  ctx.strokeStyle = '#00E5FF'
-  ctx.lineWidth = 1
-  ctx.globalAlpha = 0.3
+  const wallR = ctx.createLinearGradient(600, 0, 440, 0)
+  wallR.addColorStop(0, '#060D18')
+  wallR.addColorStop(1, '#0A1628')
+  ctx.fillStyle = wallR
   ctx.beginPath()
-  ctx.moveTo(250, 355)
-  ctx.lineTo(300, 400)
-  ctx.lineTo(350, 355)
+  ctx.moveTo(600, 0)
+  ctx.lineTo(500, 60)
+  ctx.lineTo(500, 780)
+  ctx.lineTo(600, 840)
+  ctx.closePath()
+  ctx.fill()
+
+  // Holographic wall panels — left wall
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 0.8
+  ctx.globalAlpha = 0.08
+  for (let y = 80; y < 750; y += 55) {
+    ctx.strokeRect(15, y, 70, 38)
+  }
+  for (let y = 100; y < 750; y += 55) {
+    ctx.strokeRect(515, y, 70, 38)
+  }
+  ctx.globalAlpha = 1
+
+  // Holographic displays — glowing rectangles on walls
+  const holoPositions = [
+    { x: 20, y: 100, w: 60, h: 40, color: '#00E5FF' },
+    { x: 520, y: 160, w: 65, h: 35, color: '#3B82F6' },
+    { x: 18, y: 320, w: 65, h: 28, color: '#FF006E' },
+    { x: 525, y: 380, w: 55, h: 36, color: '#00E5FF' },
+    { x: 22, y: 530, w: 58, h: 32, color: '#3B82F6' },
+    { x: 518, y: 600, w: 62, h: 30, color: '#FF006E' },
+  ]
+  for (const h of holoPositions) {
+    ctx.fillStyle = h.color
+    ctx.globalAlpha = 0.05
+    ctx.fillRect(h.x, h.y, h.w, h.h)
+    ctx.globalAlpha = 0.15
+    ctx.strokeStyle = h.color
+    ctx.lineWidth = 0.5
+    ctx.strokeRect(h.x, h.y, h.w, h.h)
+  }
+  ctx.globalAlpha = 1
+
+  // Floor — reflective dark surface with character reflection
+  const floor = ctx.createLinearGradient(0, 700, 0, 840)
+  floor.addColorStop(0, '#081420')
+  floor.addColorStop(0.4, '#060E1A')
+  floor.addColorStop(1, '#030810')
+  ctx.fillStyle = floor
+  ctx.fillRect(0, 700, 600, 140)
+
+  const floorReflect = ctx.createRadialGradient(300, 800, 10, 300, 800, 200)
+  floorReflect.addColorStop(0, 'rgba(0, 229, 255, 0.07)')
+  floorReflect.addColorStop(0.4, 'rgba(255, 0, 110, 0.03)')
+  floorReflect.addColorStop(1, 'transparent')
+  ctx.fillStyle = floorReflect
+  ctx.fillRect(50, 720, 500, 120)
+
+  // Ambient corridor lighting
+  const ambientLight = ctx.createRadialGradient(300, 300, 50, 300, 300, 400)
+  ambientLight.addColorStop(0, 'rgba(59, 130, 246, 0.04)')
+  ambientLight.addColorStop(1, 'transparent')
+  ctx.fillStyle = ambientLight
+  ctx.fillRect(0, 0, 600, 840)
+
+  // ── THE FIXER — Woman, 30s, medium build, elegant but dangerous ──
+  // Character centered, filling canvas from ~y=100 to y=840
+
+  // SHOULDERS — broad, structured (coat has padded shoulders)
+  const shoulderGrad = ctx.createLinearGradient(120, 280, 480, 320)
+  shoulderGrad.addColorStop(0, '#151D2C')
+  shoulderGrad.addColorStop(0.3, '#1C2840')
+  shoulderGrad.addColorStop(0.5, '#1E2A40')
+  shoulderGrad.addColorStop(0.7, '#1C2840')
+  shoulderGrad.addColorStop(1, '#151D2C')
+  ctx.fillStyle = shoulderGrad
+  ctx.beginPath()
+  ctx.moveTo(140, 310)
+  ctx.quadraticCurveTo(300, 275, 460, 310)
+  ctx.lineTo(445, 360)
+  ctx.quadraticCurveTo(300, 330, 155, 360)
+  ctx.closePath()
+  ctx.fill()
+
+  // BODY — tech trench coat, wider and fills more canvas
+  const coatShadow = ctx.createLinearGradient(130, 310, 470, 840)
+  coatShadow.addColorStop(0, '#0D1218')
+  coatShadow.addColorStop(1, '#080C12')
+  ctx.fillStyle = coatShadow
+  ctx.beginPath()
+  ctx.moveTo(148, 360)
+  ctx.quadraticCurveTo(300, 325, 452, 360)
+  ctx.lineTo(490, 840)
+  ctx.lineTo(110, 840)
+  ctx.closePath()
+  ctx.fill()
+
+  // Main coat body
+  const coat = ctx.createLinearGradient(140, 310, 460, 840)
+  coat.addColorStop(0, '#1E2A40')
+  coat.addColorStop(0.2, '#1A2438')
+  coat.addColorStop(0.5, '#162030')
+  coat.addColorStop(0.8, '#121A28')
+  coat.addColorStop(1, '#0E1620')
+  ctx.fillStyle = coat
+  ctx.beginPath()
+  ctx.moveTo(155, 355)
+  ctx.quadraticCurveTo(300, 320, 445, 355)
+  ctx.lineTo(480, 840)
+  ctx.lineTo(120, 840)
+  ctx.closePath()
+  ctx.fill()
+
+  // Coat lapel — deep V showing inner shirt
+  // Inner shirt/top visible at neckline
+  ctx.fillStyle = '#101820'
+  ctx.beginPath()
+  ctx.moveTo(250, 315)
+  ctx.lineTo(300, 410)
+  ctx.lineTo(350, 315)
+  ctx.closePath()
+  ctx.fill()
+
+  // Left lapel
+  const lapelL = ctx.createLinearGradient(200, 315, 290, 410)
+  lapelL.addColorStop(0, '#222E45')
+  lapelL.addColorStop(1, '#1A2438')
+  ctx.fillStyle = lapelL
+  ctx.beginPath()
+  ctx.moveTo(210, 320)
+  ctx.lineTo(295, 410)
+  ctx.lineTo(260, 410)
+  ctx.lineTo(180, 350)
+  ctx.closePath()
+  ctx.fill()
+
+  // Right lapel
+  const lapelR = ctx.createLinearGradient(310, 315, 400, 410)
+  lapelR.addColorStop(0, '#222E45')
+  lapelR.addColorStop(1, '#1A2438')
+  ctx.fillStyle = lapelR
+  ctx.beginPath()
+  ctx.moveTo(390, 320)
+  ctx.lineTo(305, 410)
+  ctx.lineTo(340, 410)
+  ctx.lineTo(420, 350)
+  ctx.closePath()
+  ctx.fill()
+
+  // Lapel cyan edge highlights
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 1.2
+  ctx.globalAlpha = 0.4
+  ctx.beginPath()
+  ctx.moveTo(210, 320)
+  ctx.lineTo(295, 410)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(390, 320)
+  ctx.lineTo(305, 410)
   ctx.stroke()
   ctx.globalAlpha = 1
 
-  // Coat edge highlights (tech fabric shimmer)
+  // Coat collar — high, structured
+  ctx.fillStyle = '#252E45'
+  ctx.beginPath()
+  ctx.moveTo(200, 300)
+  ctx.quadraticCurveTo(300, 280, 400, 300)
+  ctx.quadraticCurveTo(400, 315, 385, 320)
+  ctx.quadraticCurveTo(300, 300, 215, 320)
+  ctx.quadraticCurveTo(200, 315, 200, 300)
+  ctx.closePath()
+  ctx.fill()
+
+  // Coat vertical seam (center front closure)
   ctx.strokeStyle = '#00E5FF'
   ctx.lineWidth = 0.5
-  ctx.globalAlpha = 0.15
+  ctx.globalAlpha = 0.12
   ctx.beginPath()
-  ctx.moveTo(195, 380)
-  ctx.lineTo(190, 680)
-  ctx.stroke()
-  ctx.beginPath()
-  ctx.moveTo(405, 380)
-  ctx.lineTo(410, 680)
+  ctx.moveTo(300, 410)
+  ctx.lineTo(300, 840)
   ctx.stroke()
   ctx.globalAlpha = 1
 
-  // Neck
-  ctx.fillStyle = '#D4A574'
-  ctx.fillRect(280, 300, 40, 50)
+  // Coat edge highlights — left and right
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 0.8
+  ctx.globalAlpha = 0.2
+  ctx.beginPath()
+  ctx.moveTo(145, 370)
+  ctx.quadraticCurveTo(125, 600, 120, 840)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(455, 370)
+  ctx.quadraticCurveTo(475, 600, 480, 840)
+  ctx.stroke()
+  ctx.globalAlpha = 1
 
-  // HEAD — woman 30s, calm
-  ctx.fillStyle = '#D4A574'
+  // Belt / waist accent
+  ctx.fillStyle = '#0C1320'
   ctx.beginPath()
-  ctx.ellipse(300, 250, 48, 56, 0, 0, Math.PI * 2)
+  ctx.moveTo(145, 520)
+  ctx.quadraticCurveTo(300, 505, 455, 520)
+  ctx.quadraticCurveTo(300, 535, 145, 520)
+  ctx.closePath()
+  ctx.fill()
+  // Belt buckle
+  ctx.fillStyle = '#00E5FF'
+  ctx.globalAlpha = 0.55
+  ctx.fillRect(293, 518, 14, 8)
+  ctx.globalAlpha = 1
+
+  // Coat fold/drape lines below belt
+  ctx.strokeStyle = '#0A1118'
+  ctx.lineWidth = 1.5
+  ctx.globalAlpha = 0.25
+  ctx.beginPath()
+  ctx.moveTo(220, 540)
+  ctx.quadraticCurveTo(200, 680, 170, 840)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(380, 540)
+  ctx.quadraticCurveTo(400, 680, 430, 840)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(300, 540)
+  ctx.quadraticCurveTo(295, 700, 290, 840)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+
+  // ── NECK ──
+  const neckGrad = ctx.createLinearGradient(270, 260, 330, 310)
+  neckGrad.addColorStop(0, '#C68B5B')
+  neckGrad.addColorStop(1, '#B07D52')
+  ctx.fillStyle = neckGrad
+  ctx.beginPath()
+  ctx.moveTo(270, 270)
+  ctx.lineTo(330, 270)
+  ctx.lineTo(325, 315)
+  ctx.lineTo(275, 315)
+  ctx.closePath()
   ctx.fill()
 
-  // Hair — short styled
-  ctx.fillStyle = '#1A1A2A'
+  // Neck shadow
+  const neckShadow = ctx.createLinearGradient(275, 260, 325, 280)
+  neckShadow.addColorStop(0, 'rgba(0, 0, 0, 0.15)')
+  neckShadow.addColorStop(1, 'transparent')
+  ctx.fillStyle = neckShadow
+  ctx.fillRect(270, 265, 60, 18)
+
+  // ── HEAD — woman 30s, angular jaw, fills upper canvas ──
+  const skinBase = ctx.createRadialGradient(300, 200, 10, 300, 200, 75)
+  skinBase.addColorStop(0, '#D4A574')
+  skinBase.addColorStop(0.6, '#C68B5B')
+  skinBase.addColorStop(1, '#B07D52')
+  ctx.fillStyle = skinBase
   ctx.beginPath()
-  ctx.ellipse(300, 215, 52, 32, 0, Math.PI, 0)
-  ctx.fill()
-  // Styled asymmetric
-  ctx.beginPath()
-  ctx.moveTo(252, 218)
-  ctx.quadraticCurveTo(260, 200, 285, 210)
-  ctx.fill()
-  ctx.beginPath()
-  ctx.moveTo(310, 208)
-  ctx.quadraticCurveTo(340, 195, 352, 218)
+  ctx.moveTo(248, 170)
+  ctx.quadraticCurveTo(242, 205, 252, 235)
+  ctx.quadraticCurveTo(264, 268, 300, 278)
+  ctx.quadraticCurveTo(336, 268, 348, 235)
+  ctx.quadraticCurveTo(358, 205, 352, 170)
+  ctx.quadraticCurveTo(345, 145, 300, 138)
+  ctx.quadraticCurveTo(255, 145, 248, 170)
+  ctx.closePath()
   ctx.fill()
 
-  // EYES — one normal, one cybernetic
-  // Left eye (normal)
+  // Cheekbone highlight — left
+  const cheekHL = ctx.createRadialGradient(272, 218, 2, 272, 218, 22)
+  cheekHL.addColorStop(0, 'rgba(220, 180, 140, 0.35)')
+  cheekHL.addColorStop(1, 'transparent')
+  ctx.fillStyle = cheekHL
+  ctx.fillRect(255, 205, 35, 30)
+
+  // Jaw shadow
+  const jawShadow = ctx.createLinearGradient(280, 255, 320, 278)
+  jawShadow.addColorStop(0, 'rgba(0, 0, 0, 0.06)')
+  jawShadow.addColorStop(1, 'transparent')
+  ctx.fillStyle = jawShadow
+  ctx.fillRect(265, 250, 70, 30)
+
+  // ── HAIR — short styled, dark with blue-black sheen ──
+  const hairGrad = ctx.createLinearGradient(240, 120, 360, 175)
+  hairGrad.addColorStop(0, '#0A0A1A')
+  hairGrad.addColorStop(0.5, '#14142A')
+  hairGrad.addColorStop(1, '#0A0A1A')
+  ctx.fillStyle = hairGrad
+  // Main hair volume — bigger, fills top of canvas
+  ctx.beginPath()
+  ctx.moveTo(243, 175)
+  ctx.quadraticCurveTo(240, 148, 258, 135)
+  ctx.quadraticCurveTo(275, 125, 300, 122)
+  ctx.quadraticCurveTo(325, 125, 345, 136)
+  ctx.quadraticCurveTo(362, 150, 357, 175)
+  ctx.closePath()
+  ctx.fill()
+
+  // Styled sweep to the right — asymmetric
+  ctx.fillStyle = '#10102A'
+  ctx.beginPath()
+  ctx.moveTo(340, 138)
+  ctx.quadraticCurveTo(372, 132, 378, 160)
+  ctx.quadraticCurveTo(370, 180, 356, 185)
+  ctx.quadraticCurveTo(360, 160, 340, 148)
+  ctx.closePath()
+  ctx.fill()
+
+  // Left side fringe
+  ctx.fillStyle = '#0E0E22'
+  ctx.beginPath()
+  ctx.moveTo(246, 172)
+  ctx.quadraticCurveTo(238, 150, 255, 140)
+  ctx.quadraticCurveTo(268, 135, 280, 140)
+  ctx.quadraticCurveTo(260, 158, 250, 170)
+  ctx.closePath()
+  ctx.fill()
+
+  // Hair blue sheen highlights
+  ctx.strokeStyle = '#3B82F6'
+  ctx.lineWidth = 1
+  ctx.globalAlpha = 0.15
+  ctx.beginPath()
+  ctx.moveTo(265, 132)
+  ctx.quadraticCurveTo(300, 124, 335, 133)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(275, 138)
+  ctx.quadraticCurveTo(310, 130, 345, 140)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+
+  // ── EYES — LEFT eye (normal), RIGHT eye (CYBERNETIC) ──
+
+  // Left eye — natural, warm brown
   ctx.fillStyle = '#FFFFFF'
   ctx.beginPath()
-  ctx.ellipse(280, 252, 7, 4.5, 0, 0, Math.PI * 2)
+  ctx.ellipse(278, 204, 10, 6, -0.05, 0, Math.PI * 2)
   ctx.fill()
   ctx.fillStyle = '#5A3D2A'
   ctx.beginPath()
-  ctx.arc(281, 252, 3.5, 0, Math.PI * 2)
+  ctx.arc(279, 204, 5, 0, Math.PI * 2)
   ctx.fill()
-  ctx.fillStyle = '#111'
+  ctx.fillStyle = '#1A0F08'
   ctx.beginPath()
-  ctx.arc(282, 252, 1.8, 0, Math.PI * 2)
+  ctx.arc(280, 204, 2.5, 0, Math.PI * 2)
   ctx.fill()
-
-  // Right eye (CYBERNETIC — glowing cyan)
-  ctx.fillStyle = '#001A20'
+  ctx.fillStyle = '#FFFFFF'
   ctx.beginPath()
-  ctx.ellipse(320, 252, 8, 5, 0, 0, Math.PI * 2)
+  ctx.arc(277, 202, 1.5, 0, Math.PI * 2)
   ctx.fill()
-  ctx.fillStyle = '#00E5FF'
-  ctx.beginPath()
-  ctx.arc(321, 252, 4, 0, Math.PI * 2)
-  ctx.fill()
-  // Cyber iris detail
-  ctx.strokeStyle = '#00B0D0'
-  ctx.lineWidth = 0.5
-  ctx.beginPath()
-  ctx.arc(321, 252, 3, 0, Math.PI * 2)
-  ctx.stroke()
-  ctx.fillStyle = '#00FFFF'
-  ctx.beginPath()
-  ctx.arc(321, 252, 1.5, 0, Math.PI * 2)
-  ctx.fill()
-  // Eye glow
-  const eyeGlow = ctx.createRadialGradient(321, 252, 3, 321, 252, 30)
-  eyeGlow.addColorStop(0, 'rgba(0, 229, 255, 0.15)')
-  eyeGlow.addColorStop(1, 'transparent')
-  ctx.fillStyle = eyeGlow
-  ctx.fillRect(290, 230, 60, 45)
-
-  // Catchlights
-  ctx.fillStyle = '#FFF'
-  ctx.beginPath()
-  ctx.arc(279, 251, 1, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Eyebrows
-  ctx.strokeStyle = '#1A1A2A'
-  ctx.lineWidth = 2
-  ctx.beginPath()
-  ctx.moveTo(270, 244)
-  ctx.quadraticCurveTo(280, 240, 290, 244)
-  ctx.stroke()
-  ctx.beginPath()
-  ctx.moveTo(310, 244)
-  ctx.quadraticCurveTo(320, 240, 330, 244)
-  ctx.stroke()
-
-  // Nose
-  ctx.strokeStyle = '#A0714E'
+  // Upper eyelid
+  ctx.strokeStyle = '#5A3D20'
   ctx.lineWidth = 1.2
   ctx.beginPath()
-  ctx.moveTo(300, 252)
-  ctx.lineTo(297, 268)
+  ctx.ellipse(278, 203, 11, 6.5, -0.05, Math.PI + 0.3, -0.3)
   ctx.stroke()
 
-  // Mouth — small confident smile
-  ctx.fillStyle = '#C06870'
+  // Right eye — CYBERNETIC with glowing cyan iris
+  // Dark socket/implant housing
+  ctx.fillStyle = '#001820'
   ctx.beginPath()
-  ctx.moveTo(286, 278)
-  ctx.quadraticCurveTo(300, 285, 314, 278)
-  ctx.quadraticCurveTo(300, 282, 286, 278)
+  ctx.ellipse(322, 204, 11, 7, 0.05, 0, Math.PI * 2)
   ctx.fill()
+  // Outer implant ring
+  ctx.strokeStyle = '#005060'
+  ctx.lineWidth = 1.8
+  ctx.beginPath()
+  ctx.arc(323, 204, 6.5, 0, Math.PI * 2)
+  ctx.stroke()
+  // Glowing cyan iris
+  const irisGlow = ctx.createRadialGradient(323, 204, 0, 323, 204, 6.5)
+  irisGlow.addColorStop(0, '#00FFFF')
+  irisGlow.addColorStop(0.35, '#00E5FF')
+  irisGlow.addColorStop(0.7, '#00B0D0')
+  irisGlow.addColorStop(1, '#006070')
+  ctx.fillStyle = irisGlow
+  ctx.beginPath()
+  ctx.arc(323, 204, 5.5, 0, Math.PI * 2)
+  ctx.fill()
+  // Inner tech ring
+  ctx.strokeStyle = '#00FFFF'
+  ctx.lineWidth = 0.6
+  ctx.beginPath()
+  ctx.arc(323, 204, 3, 0, Math.PI * 2)
+  ctx.stroke()
+  // Bright core
+  ctx.fillStyle = '#B0FFFF'
+  ctx.beginPath()
+  ctx.arc(323, 204, 1.5, 0, Math.PI * 2)
+  ctx.fill()
+  // Crosshair lines
+  ctx.strokeStyle = '#00FFFF'
+  ctx.lineWidth = 0.4
+  ctx.globalAlpha = 0.5
+  ctx.beginPath()
+  ctx.moveTo(316, 204)
+  ctx.lineTo(330, 204)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(323, 197)
+  ctx.lineTo(323, 211)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+  // Implant housing upper edge
+  ctx.strokeStyle = '#003040'
+  ctx.lineWidth = 1.4
+  ctx.beginPath()
+  ctx.ellipse(322, 203, 12, 7.5, 0.05, Math.PI + 0.3, -0.3)
+  ctx.stroke()
 
-  // Cybernetic eye glow on face
-  const cyberFaceGlow = ctx.createRadialGradient(330, 252, 5, 330, 252, 40)
-  cyberFaceGlow.addColorStop(0, 'rgba(0, 229, 255, 0.08)')
-  cyberFaceGlow.addColorStop(1, 'transparent')
-  ctx.fillStyle = cyberFaceGlow
-  ctx.fillRect(300, 230, 60, 60)
+  // Eye glow — bright radial from cybernetic eye
+  const eyeGlow = ctx.createRadialGradient(323, 204, 4, 323, 204, 60)
+  eyeGlow.addColorStop(0, 'rgba(0, 229, 255, 0.25)')
+  eyeGlow.addColorStop(0.2, 'rgba(0, 229, 255, 0.12)')
+  eyeGlow.addColorStop(0.5, 'rgba(0, 229, 255, 0.04)')
+  eyeGlow.addColorStop(1, 'transparent')
+  ctx.fillStyle = eyeGlow
+  ctx.fillRect(265, 155, 115, 100)
 
-  // ── Arms ──
-  // Right arm — holding translucent data tablet
-  ctx.strokeStyle = '#1A2030'
-  ctx.lineWidth = 20
+  // Cyan glow cast on right cheek
+  const cyberCheek = ctx.createRadialGradient(340, 215, 3, 340, 220, 30)
+  cyberCheek.addColorStop(0, 'rgba(0, 229, 255, 0.12)')
+  cyberCheek.addColorStop(1, 'transparent')
+  ctx.fillStyle = cyberCheek
+  ctx.fillRect(315, 195, 40, 50)
+
+  // ── EYEBROWS ──
+  ctx.strokeStyle = '#1A1422'
+  ctx.lineWidth = 2.5
   ctx.lineCap = 'round'
   ctx.beginPath()
-  ctx.moveTo(380, 380)
-  ctx.quadraticCurveTo(420, 430, 410, 490)
+  ctx.moveTo(264, 192)
+  ctx.quadraticCurveTo(278, 186, 293, 191)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(310, 190)
+  ctx.quadraticCurveTo(323, 184, 338, 190)
   ctx.stroke()
 
-  ctx.fillStyle = '#D4A574'
+  // ── NOSE ──
+  ctx.strokeStyle = '#A07050'
+  ctx.lineWidth = 1.2
   ctx.beginPath()
-  ctx.arc(408, 495, 12, 0, Math.PI * 2)
+  ctx.moveTo(300, 208)
+  ctx.quadraticCurveTo(297, 224, 295, 232)
+  ctx.stroke()
+  ctx.fillStyle = '#906040'
+  ctx.globalAlpha = 0.3
+  ctx.beginPath()
+  ctx.ellipse(293, 233, 3.5, 1.8, 0, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalAlpha = 1
+  // Nose bridge highlight
+  ctx.strokeStyle = 'rgba(220, 190, 160, 0.18)'
+  ctx.lineWidth = 0.8
+  ctx.beginPath()
+  ctx.moveTo(301, 210)
+  ctx.lineTo(299, 226)
+  ctx.stroke()
+
+  // ── MOUTH — small confident smile ──
+  ctx.fillStyle = '#B85860'
+  ctx.beginPath()
+  ctx.moveTo(284, 248)
+  ctx.quadraticCurveTo(292, 244, 300, 245)
+  ctx.quadraticCurveTo(308, 244, 316, 248)
+  ctx.quadraticCurveTo(300, 256, 284, 248)
+  ctx.closePath()
+  ctx.fill()
+  ctx.strokeStyle = '#904048'
+  ctx.lineWidth = 0.9
+  ctx.beginPath()
+  ctx.moveTo(284, 248)
+  ctx.quadraticCurveTo(292, 244, 300, 245)
+  ctx.quadraticCurveTo(308, 244, 316, 248)
+  ctx.stroke()
+  // Smile corners
+  ctx.strokeStyle = '#A06858'
+  ctx.lineWidth = 0.7
+  ctx.beginPath()
+  ctx.moveTo(282, 248)
+  ctx.quadraticCurveTo(280, 245, 279, 243)
+  ctx.stroke()
+  ctx.beginPath()
+  ctx.moveTo(318, 248)
+  ctx.quadraticCurveTo(320, 245, 321, 243)
+  ctx.stroke()
+
+  // ── LEFT ARM — relaxed at side ──
+  ctx.fillStyle = '#1A2538'
+  ctx.beginPath()
+  ctx.moveTo(160, 340)
+  ctx.quadraticCurveTo(130, 380, 118, 460)
+  ctx.quadraticCurveTo(112, 520, 120, 580)
+  ctx.lineTo(155, 580)
+  ctx.quadraticCurveTo(150, 520, 158, 460)
+  ctx.quadraticCurveTo(170, 395, 190, 355)
+  ctx.closePath()
   ctx.fill()
 
-  // Data tablet
-  ctx.save()
-  ctx.translate(420, 460)
-  ctx.rotate(0.15)
-  ctx.fillStyle = 'rgba(0, 229, 255, 0.08)'
+  // Sleeve edge highlight
   ctx.strokeStyle = '#00E5FF'
-  ctx.lineWidth = 1.5
+  ctx.lineWidth = 0.6
+  ctx.globalAlpha = 0.15
   ctx.beginPath()
-  ctx.roundRect(-25, -35, 50, 70, 4)
-  ctx.fill()
+  ctx.moveTo(118, 460)
+  ctx.quadraticCurveTo(112, 520, 120, 580)
   ctx.stroke()
-  // Data lines on tablet
-  ctx.strokeStyle = '#00E5FF'
-  ctx.lineWidth = 0.5
-  ctx.globalAlpha = 0.4
-  for (let y = -25; y < 25; y += 8) {
+  ctx.globalAlpha = 1
+
+  // Left hand
+  ctx.fillStyle = '#C68B5B'
+  ctx.beginPath()
+  ctx.ellipse(135, 592, 14, 12, -0.15, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.fillStyle = '#BA8050'
+  const fingerOffsetsL = [0, 6, 12, 18]
+  for (const dx of fingerOffsetsL) {
     ctx.beginPath()
-    ctx.moveTo(-18, y)
-    ctx.lineTo(-18 + Math.random() * 30, y)
+    ctx.ellipse(125 + dx, 602, 3, 6, -0.1, 0, Math.PI * 2)
+    ctx.fill()
+  }
+
+  // ── RIGHT ARM — holding translucent data tablet ──
+  ctx.fillStyle = '#1A2538'
+  ctx.beginPath()
+  ctx.moveTo(440, 340)
+  ctx.quadraticCurveTo(470, 380, 480, 440)
+  ctx.quadraticCurveTo(488, 480, 478, 540)
+  ctx.lineTo(448, 540)
+  ctx.quadraticCurveTo(455, 480, 448, 440)
+  ctx.quadraticCurveTo(440, 395, 420, 355)
+  ctx.closePath()
+  ctx.fill()
+
+  // Sleeve edge highlight
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 0.6
+  ctx.globalAlpha = 0.15
+  ctx.beginPath()
+  ctx.moveTo(480, 440)
+  ctx.quadraticCurveTo(488, 480, 478, 540)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+
+  // Right hand holding tablet
+  ctx.fillStyle = '#C68B5B'
+  ctx.beginPath()
+  ctx.ellipse(468, 550, 15, 12, 0.15, 0, Math.PI * 2)
+  ctx.fill()
+
+  // ── DATA TABLET — translucent with holographic data ──
+  ctx.save()
+  ctx.translate(485, 500)
+  ctx.rotate(0.12)
+  // Tablet body
+  ctx.fillStyle = 'rgba(0, 20, 40, 0.65)'
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 1.8
+  ctx.beginPath()
+  ctx.roundRect(-35, -50, 70, 100, 6)
+  ctx.fill()
+  ctx.globalAlpha = 0.65
+  ctx.stroke()
+  ctx.globalAlpha = 1
+  // Inner screen glow
+  const screenGlow = ctx.createLinearGradient(-30, -46, -30, 46)
+  screenGlow.addColorStop(0, 'rgba(0, 229, 255, 0.1)')
+  screenGlow.addColorStop(0.5, 'rgba(0, 229, 255, 0.04)')
+  screenGlow.addColorStop(1, 'rgba(59, 130, 246, 0.07)')
+  ctx.fillStyle = screenGlow
+  ctx.fillRect(-30, -46, 60, 92)
+  // Data lines (deterministic)
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 0.7
+  ctx.globalAlpha = 0.5
+  const dataLineLengths = [28, 20, 35, 15, 30, 22, 32, 18, 25, 28, 14, 26]
+  for (let i = 0; i < dataLineLengths.length; i++) {
+    const y = -40 + i * 7
+    ctx.beginPath()
+    ctx.moveTo(-24, y)
+    ctx.lineTo(-24 + dataLineLengths[i], y)
     ctx.stroke()
   }
+  // Chart element
+  ctx.strokeStyle = '#FF006E'
+  ctx.lineWidth = 1
+  ctx.globalAlpha = 0.4
+  ctx.beginPath()
+  ctx.moveTo(-22, 24)
+  ctx.lineTo(-12, 14)
+  ctx.lineTo(-2, 22)
+  ctx.lineTo(8, 6)
+  ctx.lineTo(18, 12)
+  ctx.lineTo(28, 0)
+  ctx.stroke()
   ctx.globalAlpha = 1
   ctx.restore()
 
-  // Left arm
-  ctx.strokeStyle = '#1A2030'
-  ctx.lineWidth = 18
-  ctx.beginPath()
-  ctx.moveTo(220, 380)
-  ctx.quadraticCurveTo(190, 440, 200, 510)
-  ctx.stroke()
+  // Tablet glow
+  const tabletGlow = ctx.createRadialGradient(485, 500, 10, 485, 500, 90)
+  tabletGlow.addColorStop(0, 'rgba(0, 229, 255, 0.08)')
+  tabletGlow.addColorStop(1, 'transparent')
+  ctx.fillStyle = tabletGlow
+  ctx.fillRect(395, 410, 180, 180)
 
-  ctx.fillStyle = '#D4A574'
-  ctx.beginPath()
-  ctx.arc(198, 515, 11, 0, Math.PI * 2)
-  ctx.fill()
+  // ── CYBER EYE GLOW on face and upper coat ──
+  const cyberFaceGlow = ctx.createRadialGradient(335, 210, 5, 335, 280, 100)
+  cyberFaceGlow.addColorStop(0, 'rgba(0, 229, 255, 0.12)')
+  cyberFaceGlow.addColorStop(0.4, 'rgba(0, 229, 255, 0.05)')
+  cyberFaceGlow.addColorStop(1, 'transparent')
+  ctx.fillStyle = cyberFaceGlow
+  ctx.fillRect(270, 170, 120, 200)
+
+  // ── TECH DETAILS on coat — subtle hexagonal pattern ──
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 0.3
+  ctx.globalAlpha = 0.05
+  for (let y = 360; y < 520; y += 20) {
+    for (let x = 170; x < 430; x += 22) {
+      ctx.beginPath()
+      ctx.arc(x, y, 5, 0, Math.PI * 2)
+      ctx.stroke()
+    }
+  }
+  ctx.globalAlpha = 1
+
+  // ── FINAL LIGHTING POLISH ──
+  // Cool top-down ambient
+  const topLight = ctx.createLinearGradient(0, 0, 0, 250)
+  topLight.addColorStop(0, 'rgba(59, 130, 246, 0.04)')
+  topLight.addColorStop(1, 'transparent')
+  ctx.fillStyle = topLight
+  ctx.fillRect(0, 0, 600, 250)
+
+  // Vignette
+  const vigL = ctx.createLinearGradient(0, 0, 80, 0)
+  vigL.addColorStop(0, 'rgba(0, 0, 0, 0.3)')
+  vigL.addColorStop(1, 'transparent')
+  ctx.fillStyle = vigL
+  ctx.fillRect(0, 0, 80, 840)
+
+  const vigR = ctx.createLinearGradient(600, 0, 520, 0)
+  vigR.addColorStop(0, 'rgba(0, 0, 0, 0.3)')
+  vigR.addColorStop(1, 'transparent')
+  ctx.fillStyle = vigR
+  ctx.fillRect(520, 0, 80, 840)
+
+  const vigT = ctx.createLinearGradient(0, 0, 0, 60)
+  vigT.addColorStop(0, 'rgba(0, 0, 0, 0.2)')
+  vigT.addColorStop(1, 'transparent')
+  ctx.fillStyle = vigT
+  ctx.fillRect(0, 0, 600, 60)
 }
 
 function drawNeonKing(ctx: CanvasRenderingContext2D) {
@@ -3133,19 +3590,34 @@ function drawShadowDynasty(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit:
 function drawShadowScreen(ctx: CanvasRenderingContext2D) {
   const bg = ctx.createRadialGradient(300, 420, 50, 300, 420, 500)
   bg.addColorStop(0, '#F5A623')
-  bg.addColorStop(0.3, '#E8932B')
+  bg.addColorStop(0.2, '#EDAA30')
+  bg.addColorStop(0.4, '#E8932B')
   bg.addColorStop(0.6, '#D4801A')
   bg.addColorStop(0.85, '#A05A10')
   bg.addColorStop(1, '#3A2005')
   ctx.fillStyle = bg
   ctx.fillRect(0, 0, 600, 840)
 
+  // Wooden theater frame — bamboo/lacquered
   ctx.fillStyle = '#1A0A00'
-  ctx.fillRect(0, 0, 20, 840)
-  ctx.fillRect(580, 0, 20, 840)
-  ctx.fillRect(0, 0, 600, 15)
-  ctx.fillRect(0, 825, 600, 15)
+  ctx.fillRect(0, 0, 22, 840)
+  ctx.fillRect(578, 0, 22, 840)
+  ctx.fillRect(0, 0, 600, 17)
+  ctx.fillRect(0, 823, 600, 17)
+  // Frame wood grain texture
+  ctx.strokeStyle = '#2A1500'; ctx.lineWidth = 0.5; ctx.globalAlpha = 0.3
+  for (let y = 20; y < 820; y += 12) {
+    ctx.beginPath(); ctx.moveTo(2, y); ctx.quadraticCurveTo(11, y + 2, 20, y); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(580, y); ctx.quadraticCurveTo(589, y + 2, 598, y); ctx.stroke()
+  }
+  // Frame corner ornaments
+  ctx.fillStyle = '#3A2005'
+  for (const [cx, cy] of [[22, 17], [578, 17], [22, 823], [578, 823]]) {
+    ctx.beginPath(); ctx.arc(cx, cy, 6, 0, Math.PI * 2); ctx.fill()
+  }
+  ctx.globalAlpha = 1
 
+  // Screen fabric grain lines
   ctx.globalAlpha = 0.04
   for (let y = 20; y < 820; y += 6) {
     ctx.strokeStyle = '#000000'
@@ -3155,14 +3627,29 @@ function drawShadowScreen(ctx: CanvasRenderingContext2D) {
     ctx.lineTo(575, y)
     ctx.stroke()
   }
+  // Vertical grain for woven effect
+  for (let x = 25; x < 575; x += 8) {
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 0.3
+    ctx.beginPath()
+    ctx.moveTo(x, 20)
+    ctx.lineTo(x, 820)
+    ctx.stroke()
+  }
   ctx.globalAlpha = 1
 
-  const candle = ctx.createRadialGradient(300, 800, 5, 300, 800, 120)
-  candle.addColorStop(0, 'rgba(255, 200, 80, 0.15)')
-  candle.addColorStop(0.5, 'rgba(255, 160, 40, 0.06)')
+  // Candle glow from below
+  const candle = ctx.createRadialGradient(300, 800, 5, 300, 800, 150)
+  candle.addColorStop(0, 'rgba(255, 200, 80, 0.18)')
+  candle.addColorStop(0.4, 'rgba(255, 160, 40, 0.08)')
   candle.addColorStop(1, 'transparent')
   ctx.fillStyle = candle
-  ctx.fillRect(100, 700, 400, 140)
+  ctx.fillRect(80, 680, 440, 160)
+
+  // Secondary warm wash from behind screen
+  const warmCenter = ctx.createRadialGradient(300, 400, 30, 300, 420, 350)
+  warmCenter.addColorStop(0, 'rgba(255, 220, 120, 0.06)'); warmCenter.addColorStop(1, 'transparent')
+  ctx.fillStyle = warmCenter; ctx.fillRect(50, 100, 500, 650)
 }
 
 function drawPuppetJoint(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
@@ -3205,7 +3692,7 @@ function drawShadowDynastyJack(ctx: CanvasRenderingContext2D) {
   drawPuppetJoint(ctx, 252, 270, 6)
   drawPuppetJoint(ctx, 348, 270, 6)
 
-  // Torso — lean, dynamic mid-leap
+  // Torso — lean, dynamic mid-leap with armor plates
   ctx.beginPath()
   ctx.moveTo(260, 255)
   ctx.lineTo(250, 390)
@@ -3213,6 +3700,11 @@ function drawShadowDynastyJack(ctx: CanvasRenderingContext2D) {
   ctx.lineTo(340, 255)
   ctx.quadraticCurveTo(300, 240, 260, 255)
   ctx.fill()
+  // Armor plate lines (visible as silhouette detail)
+  ctx.strokeStyle = 'rgba(245, 166, 35, 0.06)'; ctx.lineWidth = 1
+  ctx.beginPath(); ctx.moveTo(265, 300); ctx.lineTo(335, 300); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(260, 340); ctx.lineTo(340, 340); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(255, 370); ctx.lineTo(345, 370); ctx.stroke()
 
   // Left arm raised cutting a string
   ctx.lineWidth = 18
@@ -3553,24 +4045,32 @@ function drawSolarPharaoh(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit: 
 }
 
 function drawDesertTempleBackground(ctx: CanvasRenderingContext2D) {
-  // Sky — amber to deep blue
+  // Sky — amber to deep blue transitioning at horizon
   const sky = ctx.createLinearGradient(0, 0, 0, 500)
   sky.addColorStop(0, '#1A237E')
-  sky.addColorStop(0.3, '#283593')
-  sky.addColorStop(0.6, '#F57F17')
+  sky.addColorStop(0.2, '#283593')
+  sky.addColorStop(0.5, '#F57F17')
+  sky.addColorStop(0.7, '#F5A623')
   sky.addColorStop(1, '#D4A574')
   ctx.fillStyle = sky
   ctx.fillRect(0, 0, 600, 500)
 
+  // Sun disk low on horizon
+  const sunDisk = ctx.createRadialGradient(450, 350, 10, 450, 350, 80)
+  sunDisk.addColorStop(0, 'rgba(255,215,0,0.3)'); sunDisk.addColorStop(0.5, 'rgba(245,127,23,0.12)')
+  sunDisk.addColorStop(1, 'transparent')
+  ctx.fillStyle = sunDisk; ctx.fillRect(350, 270, 200, 160)
+
   // Desert sand
   const sand = ctx.createLinearGradient(0, 500, 0, 840)
   sand.addColorStop(0, '#D4A574')
-  sand.addColorStop(0.5, '#C49464')
+  sand.addColorStop(0.3, '#C49464')
+  sand.addColorStop(0.7, '#B88A5A')
   sand.addColorStop(1, '#A07850')
   ctx.fillStyle = sand
   ctx.fillRect(0, 500, 600, 340)
 
-  // Sand dune curves
+  // Sand dune curves — layered for depth
   ctx.fillStyle = '#C49464'
   ctx.beginPath()
   ctx.moveTo(0, 520)
@@ -3580,6 +4080,17 @@ function drawDesertTempleBackground(ctx: CanvasRenderingContext2D) {
   ctx.lineTo(0, 540)
   ctx.closePath()
   ctx.fill()
+  // Distant dune silhouette
+  ctx.fillStyle = '#B88A5A'; ctx.globalAlpha = 0.4
+  ctx.beginPath()
+  ctx.moveTo(0, 490); ctx.quadraticCurveTo(200, 470, 350, 485)
+  ctx.quadraticCurveTo(500, 500, 600, 480); ctx.lineTo(600, 510); ctx.lineTo(0, 510)
+  ctx.closePath(); ctx.fill()
+  ctx.globalAlpha = 1
+  // Heat shimmer haze
+  const haze = ctx.createLinearGradient(0, 480, 0, 520)
+  haze.addColorStop(0, 'rgba(245,230,200,0.08)'); haze.addColorStop(1, 'transparent')
+  ctx.fillStyle = haze; ctx.fillRect(0, 480, 600, 40)
 }
 
 function drawSolarPharaohJack(ctx: CanvasRenderingContext2D) {
@@ -5062,20 +5573,34 @@ function drawDeepSpaceBackground(ctx: CanvasRenderingContext2D) {
     ctx.fill()
   }
 
-  // Nebula tints
-  ctx.globalAlpha = 0.06
+  // Nebula tints — richer multi-layered
+  ctx.globalAlpha = 0.07
   const nebula1 = ctx.createRadialGradient(150, 200, 30, 150, 200, 200)
   nebula1.addColorStop(0, '#CE93D8')
+  nebula1.addColorStop(0.5, '#7B1FA2')
   nebula1.addColorStop(1, 'transparent')
   ctx.fillStyle = nebula1
   ctx.fillRect(0, 0, 400, 400)
 
   const nebula2 = ctx.createRadialGradient(450, 600, 30, 450, 600, 200)
   nebula2.addColorStop(0, '#283593')
+  nebula2.addColorStop(0.6, '#1A237E')
   nebula2.addColorStop(1, 'transparent')
   ctx.fillStyle = nebula2
   ctx.fillRect(200, 400, 400, 400)
+
+  // Additional warm nebula accent
+  ctx.globalAlpha = 0.04
+  const nebula3 = ctx.createRadialGradient(400, 300, 20, 400, 300, 150)
+  nebula3.addColorStop(0, '#FFD700')
+  nebula3.addColorStop(1, 'transparent')
+  ctx.fillStyle = nebula3
+  ctx.fillRect(250, 150, 300, 300)
   ctx.globalAlpha = 1
+
+  // Distant galaxy streak
+  ctx.strokeStyle = 'rgba(206,147,216,0.04)'; ctx.lineWidth = 12
+  ctx.beginPath(); ctx.moveTo(50, 700); ctx.quadraticCurveTo(200, 650, 350, 680); ctx.stroke()
 }
 
 function drawConstellationStar(ctx: CanvasRenderingContext2D, x: number, y: number, r: number) {
@@ -7350,21 +7875,39 @@ function drawRoyalGold(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit: str
 
 function drawMughalBg(ctx: CanvasRenderingContext2D) {
   const bg = ctx.createLinearGradient(0, 0, 600, 840)
-  bg.addColorStop(0, '#D4A574'); bg.addColorStop(0.4, '#C49464')
-  bg.addColorStop(0.7, '#B88A5A'); bg.addColorStop(1, '#A07848')
+  bg.addColorStop(0, '#D4A574'); bg.addColorStop(0.3, '#C49464')
+  bg.addColorStop(0.5, '#B88A5A'); bg.addColorStop(0.7, '#C49464'); bg.addColorStop(1, '#A07848')
   ctx.fillStyle = bg; ctx.fillRect(0, 0, 600, 840)
+  // Geometric Islamic star pattern overlay
   ctx.globalAlpha = 0.06; ctx.strokeStyle = '#D4A017'; ctx.lineWidth = 0.5
   for (let x = 0; x < 600; x += 40) {
     for (let y = 0; y < 840; y += 40) {
       ctx.beginPath()
       ctx.moveTo(x + 20, y); ctx.lineTo(x + 40, y + 20)
       ctx.lineTo(x + 20, y + 40); ctx.lineTo(x, y + 20); ctx.closePath(); ctx.stroke()
+      // Inner star detail
+      ctx.beginPath()
+      ctx.moveTo(x + 20, y + 10); ctx.lineTo(x + 30, y + 20)
+      ctx.lineTo(x + 20, y + 30); ctx.lineTo(x + 10, y + 20); ctx.closePath(); ctx.stroke()
     }
   }
   ctx.globalAlpha = 1
+  // Arched lattice border at top
+  ctx.strokeStyle = '#D4A017'; ctx.lineWidth = 1.5; ctx.globalAlpha = 0.08
+  for (let x = 30; x < 580; x += 60) {
+    ctx.beginPath(); ctx.arc(x + 30, 30, 30, Math.PI, 0); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(x, 30); ctx.lineTo(x, 60); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(x + 60, 30); ctx.lineTo(x + 60, 60); ctx.stroke()
+  }
+  ctx.globalAlpha = 1
+  // Warm golden ambient light
   const glow = ctx.createRadialGradient(300, 300, 50, 300, 400, 400)
   glow.addColorStop(0, 'rgba(212,160,23,0.12)'); glow.addColorStop(1, 'transparent')
   ctx.fillStyle = glow; ctx.fillRect(0, 0, 600, 840)
+  // Secondary warm wash
+  const warmWash = ctx.createRadialGradient(300, 200, 30, 300, 400, 500)
+  warmWash.addColorStop(0, 'rgba(245,230,200,0.06)'); warmWash.addColorStop(1, 'transparent')
+  ctx.fillStyle = warmWash; ctx.fillRect(0, 0, 600, 840)
 }
 
 function drawRoyalGoldJack(ctx: CanvasRenderingContext2D) {
@@ -9424,10 +9967,10 @@ function drawMidnightPurple(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit
 
 function drawJazzClubBg(ctx: CanvasRenderingContext2D) {
   const bg = ctx.createLinearGradient(0, 0, 600, 840)
-  bg.addColorStop(0, '#1E1040'); bg.addColorStop(0.3, '#2D1B4E')
-  bg.addColorStop(0.7, '#1E1040'); bg.addColorStop(1, '#0E0820')
+  bg.addColorStop(0, '#1E1040'); bg.addColorStop(0.2, '#251548')
+  bg.addColorStop(0.5, '#2D1B4E'); bg.addColorStop(0.7, '#1E1040'); bg.addColorStop(1, '#0E0820')
   ctx.fillStyle = bg; ctx.fillRect(0, 0, 600, 840)
-  // Smoky haze
+  // Smoky haze layers
   ctx.globalAlpha = 0.04; ctx.fillStyle = '#A855F7'
   for (let y = 100; y < 700; y += 80) {
     const haze = ctx.createRadialGradient(200 + (y % 200), y, 20, 300, y, 250)
@@ -9435,6 +9978,19 @@ function drawJazzClubBg(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = haze; ctx.fillRect(0, y - 100, 600, 200)
   }
   ctx.globalAlpha = 1
+  // Art Deco wall molding accents
+  ctx.strokeStyle = '#FFD700'; ctx.lineWidth = 1; ctx.globalAlpha = 0.06
+  for (let y = 80; y < 500; y += 100) {
+    ctx.beginPath(); ctx.moveTo(20, y); ctx.lineTo(50, y - 25); ctx.lineTo(80, y); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(520, y); ctx.lineTo(550, y - 25); ctx.lineTo(580, y); ctx.stroke()
+  }
+  // Thin baseboard line
+  ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, 580); ctx.lineTo(600, 580); ctx.stroke()
+  ctx.globalAlpha = 1
+  // Warm amber wash from stage lights
+  const stageLights = ctx.createRadialGradient(300, 400, 30, 300, 400, 350)
+  stageLights.addColorStop(0, 'rgba(180,140,60,0.04)'); stageLights.addColorStop(1, 'transparent')
+  ctx.fillStyle = stageLights; ctx.fillRect(0, 50, 600, 700)
 }
 
 function drawMidnightPurpleJack(ctx: CanvasRenderingContext2D) {
@@ -9773,29 +10329,47 @@ function drawArcticFrost(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit: s
 
 function drawAuroraSky(ctx: CanvasRenderingContext2D) {
   const bg = ctx.createLinearGradient(0, 0, 600, 840)
-  bg.addColorStop(0, '#0D47A1'); bg.addColorStop(0.3, '#1A237E'); bg.addColorStop(0.7, '#0D47A1'); bg.addColorStop(1, '#0A1A3A')
+  bg.addColorStop(0, '#0A1628'); bg.addColorStop(0.15, '#0D47A1')
+  bg.addColorStop(0.35, '#1A237E'); bg.addColorStop(0.6, '#0D47A1'); bg.addColorStop(1, '#0A1A3A')
   ctx.fillStyle = bg; ctx.fillRect(0, 0, 600, 840)
-  // Aurora ribbons
-  ctx.globalAlpha = 0.12
+  // Aurora ribbon 1 — green/cyan
+  ctx.globalAlpha = 0.14
   const auroraGreen = ctx.createLinearGradient(0, 50, 600, 200)
-  auroraGreen.addColorStop(0, '#A8E6CF'); auroraGreen.addColorStop(0.5, '#81D4FA'); auroraGreen.addColorStop(1, '#CE93D8')
+  auroraGreen.addColorStop(0, '#A8E6CF'); auroraGreen.addColorStop(0.3, '#66BB6A')
+  auroraGreen.addColorStop(0.6, '#81D4FA'); auroraGreen.addColorStop(1, '#CE93D8')
   ctx.fillStyle = auroraGreen
   ctx.beginPath(); ctx.moveTo(0, 80); ctx.quadraticCurveTo(150, 40, 300, 90)
   ctx.quadraticCurveTo(450, 140, 600, 70); ctx.lineTo(600, 130)
   ctx.quadraticCurveTo(450, 200, 300, 150); ctx.quadraticCurveTo(150, 100, 0, 140); ctx.closePath(); ctx.fill()
+  // Aurora ribbon 2 — purple/pink
   const auroraPurple = ctx.createLinearGradient(0, 120, 600, 250)
-  auroraPurple.addColorStop(0, '#CE93D8'); auroraPurple.addColorStop(0.5, '#A8E6CF'); auroraPurple.addColorStop(1, '#81D4FA')
+  auroraPurple.addColorStop(0, '#CE93D8'); auroraPurple.addColorStop(0.3, '#BA68C8')
+  auroraPurple.addColorStop(0.6, '#A8E6CF'); auroraPurple.addColorStop(1, '#81D4FA')
   ctx.fillStyle = auroraPurple
   ctx.beginPath(); ctx.moveTo(0, 150); ctx.quadraticCurveTo(200, 100, 400, 160)
   ctx.quadraticCurveTo(500, 190, 600, 140); ctx.lineTo(600, 190)
   ctx.quadraticCurveTo(500, 240, 400, 210); ctx.quadraticCurveTo(200, 150, 0, 200); ctx.closePath(); ctx.fill()
+  // Aurora ribbon 3 — faint upper band
+  ctx.globalAlpha = 0.06
+  ctx.fillStyle = '#A8E6CF'
+  ctx.beginPath(); ctx.moveTo(0, 30); ctx.quadraticCurveTo(300, 10, 600, 40)
+  ctx.lineTo(600, 65); ctx.quadraticCurveTo(300, 35, 0, 55); ctx.closePath(); ctx.fill()
   ctx.globalAlpha = 1
-  // Stars
+  // Stars — varied brightness and size
   ctx.fillStyle = '#FFFFFF'
-  for (let i = 0; i < 40; i++) {
+  for (let i = 0; i < 50; i++) {
     const sx = (i * 97 + 13) % 600, sy = (i * 41 + 7) % 300
-    ctx.globalAlpha = 0.2 + (i % 5) * 0.1
-    ctx.beginPath(); ctx.arc(sx, sy, 0.5 + (i % 3) * 0.5, 0, Math.PI * 2); ctx.fill()
+    ctx.globalAlpha = 0.15 + (i % 6) * 0.08
+    const sr = 0.4 + (i % 4) * 0.4
+    ctx.beginPath(); ctx.arc(sx, sy, sr, 0, Math.PI * 2); ctx.fill()
+  }
+  // A few brighter stars with cross-hairs
+  for (const [bx, by] of [[120, 45], [350, 25], [500, 70], [60, 130]]) {
+    ctx.globalAlpha = 0.4; ctx.fillStyle = '#FFFFFF'
+    ctx.beginPath(); ctx.arc(bx, by, 1.5, 0, Math.PI * 2); ctx.fill()
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)'; ctx.lineWidth = 0.5
+    ctx.beginPath(); ctx.moveTo(bx - 6, by); ctx.lineTo(bx + 6, by); ctx.stroke()
+    ctx.beginPath(); ctx.moveTo(bx, by - 6); ctx.lineTo(bx, by + 6); ctx.stroke()
   }
   ctx.globalAlpha = 1
 }
@@ -9996,11 +10570,21 @@ function drawArcticFrostKing(ctx: CanvasRenderingContext2D) {
     ctx.quadraticCurveTo(500, wy - 40, 600, wy + 10); ctx.stroke()
   }
   // ── The North Wind — massive face IN the blizzard ──
-  // Face emerging from storm
+  // Face emerging from storm — layered depth
+  const faceOuter = ctx.createRadialGradient(300, 350, 100, 300, 380, 350)
+  faceOuter.addColorStop(0, 'rgba(179,229,252,0.12)'); faceOuter.addColorStop(1, 'transparent')
+  ctx.fillStyle = faceOuter
+  ctx.beginPath(); ctx.ellipse(300, 350, 250, 300, 0, 0, Math.PI * 2); ctx.fill()
+  // Inner face definition
   const faceGrad = ctx.createRadialGradient(300, 350, 50, 300, 380, 300)
-  faceGrad.addColorStop(0, 'rgba(179,229,252,0.5)'); faceGrad.addColorStop(0.5, 'rgba(129,212,250,0.2)'); faceGrad.addColorStop(1, 'transparent')
+  faceGrad.addColorStop(0, 'rgba(179,229,252,0.5)'); faceGrad.addColorStop(0.4, 'rgba(179,229,252,0.3)')
+  faceGrad.addColorStop(0.7, 'rgba(129,212,250,0.15)'); faceGrad.addColorStop(1, 'transparent')
   ctx.fillStyle = faceGrad
   ctx.beginPath(); ctx.ellipse(300, 350, 200, 250, 0, 0, Math.PI * 2); ctx.fill()
+  // Cheekbone definition
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 6
+  ctx.beginPath(); ctx.moveTo(200, 350); ctx.quadraticCurveTo(240, 370, 260, 400); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(400, 345); ctx.quadraticCurveTo(370, 365, 350, 395); ctx.stroke()
   // Beard IS wind — flowing streams
   ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 8; ctx.lineCap = 'round'
   for (let b = 0; b < 7; b++) {
@@ -10114,8 +10698,8 @@ function drawEmeraldFortune(ctx: CanvasRenderingContext2D, rank: FaceRank, _suit
 
 function drawCasinoBg(ctx: CanvasRenderingContext2D) {
   const bg = ctx.createLinearGradient(0, 0, 600, 840)
-  bg.addColorStop(0, '#1B5E20'); bg.addColorStop(0.4, '#046A38')
-  bg.addColorStop(0.7, '#1B5E20'); bg.addColorStop(1, '#0D3318')
+  bg.addColorStop(0, '#1B5E20'); bg.addColorStop(0.3, '#046A38')
+  bg.addColorStop(0.5, '#1B5E20'); bg.addColorStop(0.7, '#046A38'); bg.addColorStop(1, '#0D3318')
   ctx.fillStyle = bg; ctx.fillRect(0, 0, 600, 840)
   // Casino felt texture
   ctx.globalAlpha = 0.03; ctx.fillStyle = '#046A38'
@@ -10125,10 +10709,29 @@ function drawCasinoBg(ctx: CanvasRenderingContext2D) {
     }
   }
   ctx.globalAlpha = 1
+  // Art Deco wallpaper pattern on upper walls
+  ctx.strokeStyle = '#D4A017'; ctx.lineWidth = 0.8; ctx.globalAlpha = 0.05
+  for (let x = 0; x < 600; x += 50) {
+    for (let y = 0; y < 400; y += 50) {
+      // Fan motif
+      ctx.beginPath(); ctx.arc(x + 25, y + 40, 20, Math.PI, 0); ctx.stroke()
+      ctx.beginPath(); ctx.arc(x + 25, y + 40, 14, Math.PI, 0); ctx.stroke()
+      ctx.beginPath(); ctx.arc(x + 25, y + 40, 8, Math.PI, 0); ctx.stroke()
+    }
+  }
+  ctx.globalAlpha = 1
   // Warm gold overhead chandelier light
-  const chandelier = ctx.createRadialGradient(300, 80, 20, 300, 300, 400)
-  chandelier.addColorStop(0, 'rgba(212,160,23,0.15)'); chandelier.addColorStop(0.5, 'rgba(212,160,23,0.05)'); chandelier.addColorStop(1, 'transparent')
-  ctx.fillStyle = chandelier; ctx.fillRect(0, 0, 600, 700)
+  const chandelier = ctx.createRadialGradient(300, 60, 15, 300, 280, 380)
+  chandelier.addColorStop(0, 'rgba(255,255,255,0.08)'); chandelier.addColorStop(0.3, 'rgba(212,160,23,0.1)')
+  chandelier.addColorStop(0.6, 'rgba(212,160,23,0.04)'); chandelier.addColorStop(1, 'transparent')
+  ctx.fillStyle = chandelier; ctx.fillRect(0, 0, 600, 650)
+  // Chandelier crystal suggestion at top
+  ctx.fillStyle = '#FFD700'; ctx.globalAlpha = 0.06
+  for (let i = 0; i < 7; i++) {
+    const cx = 260 + i * 12
+    ctx.beginPath(); ctx.moveTo(cx, 30); ctx.lineTo(cx - 3, 50); ctx.lineTo(cx + 3, 50); ctx.closePath(); ctx.fill()
+  }
+  ctx.globalAlpha = 1
 }
 
 function drawEmeraldFortuneJack(ctx: CanvasRenderingContext2D) {
@@ -10544,6 +11147,12 @@ function drawDyingStarBackground(ctx: CanvasRenderingContext2D) {
   haze.addColorStop(1, 'transparent')
   ctx.fillStyle = haze
   ctx.fillRect(0, 0, 600, 840)
+  // Solar flare arcs — subtle curves suggesting the dying star
+  ctx.strokeStyle = 'rgba(255,107,53,0.04)'; ctx.lineWidth = 3
+  ctx.beginPath(); ctx.moveTo(0, 200); ctx.quadraticCurveTo(300, 100, 600, 250); ctx.stroke()
+  ctx.beginPath(); ctx.moveTo(0, 600); ctx.quadraticCurveTo(200, 500, 600, 550); ctx.stroke()
+  ctx.strokeStyle = 'rgba(255,248,225,0.03)'; ctx.lineWidth = 2
+  ctx.beginPath(); ctx.moveTo(100, 0); ctx.quadraticCurveTo(250, 150, 500, 80); ctx.stroke()
 }
 
 function drawCrimsonJack(ctx: CanvasRenderingContext2D) {

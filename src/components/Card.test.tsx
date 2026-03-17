@@ -110,10 +110,11 @@ describe('Custom skin rendering on face cards', () => {
   it('renders face card with neon-nights skin active', () => {
     saveCardSkinState({ unlockedSkins: ['classic', 'neon-nights'], activeSkinId: 'neon-nights' })
     const { container } = render(<Card card={{ suit: 'hearts', rank: 'K', id: 1 }} index={0} />)
-    // Neon nights uses canvas art — check for canvas-art-card
+    // Neon nights J/K use themed asset; Q uses canvas art
     const canvasCard = container.querySelector('.canvas-art-card')
     const faceSvg = container.querySelector('.face-svg')
-    expect(canvasCard || faceSvg, 'Neon King should render').toBeInTheDocument()
+    const themedCard = container.querySelector('.themed-asset-card')
+    expect(canvasCard || faceSvg || themedCard, 'Neon King should render').toBeInTheDocument()
   })
 
   it('renders face card with diamond-dynasty skin active', () => {
@@ -154,10 +155,11 @@ describe('Custom skin rendering on face cards', () => {
       for (const rank of ['J', 'Q', 'K'] as const) {
         for (const suit of ['hearts', 'spades'] as const) {
           const { container } = render(<Card card={{ suit, rank, id: 1 }} index={0} />)
-          // Canvas art skins render canvas-art-card; SVG skins render face-svg
+          // Canvas art skins render canvas-art-card; SVG skins render face-svg; themed skins render themed-asset-card
           const canvasCard = container.querySelector('.canvas-art-card')
           const faceSvg = container.querySelector('.face-svg')
-          expect(canvasCard || faceSvg, `${skinId} ${rank} of ${suit}`).toBeInTheDocument()
+          const themedCard = container.querySelector('.themed-asset-card')
+          expect(canvasCard || faceSvg || themedCard, `${skinId} ${rank} of ${suit}`).toBeInTheDocument()
         }
       }
     }
