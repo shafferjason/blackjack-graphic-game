@@ -160,6 +160,26 @@ export const CARD_SKINS: CardSkin[] = [
     cardMaterial: 'linen',
     celebrationStyle: 'gold',
   },
+  {
+    id: 'standard',
+    name: 'Standard',
+    description: 'Traditional illustrated playing cards',
+    flavorText: 'Public domain classics, beautifully rendered.',
+    price: 0,
+    tier: 'common',
+    sortOrder: 1,
+    faceFilter: 'none',
+    backFilter: 'none',
+    borderColor: 'transparent',
+    glowColor: 'transparent',
+    previewGradient: 'linear-gradient(135deg, #ffffff, #e8e8e8)',
+    previewAccent: '#1a1a8e',
+    faceCardPalette: { red: CLASSIC_RED_PALETTE, black: CLASSIC_BLACK_PALETTE },
+    environment: { felt: '#0b6623', feltDark: '#084a1a', feltLight: '#0d7a2b', accent: '#4ade80' },
+    cardBackDesign: { bg1: '#1a3a5c', bg2: '#0f2444', border: '#2a5a8c', borderInner: '#3a6a9c', pattern: 'rgba(255,255,255,0.06)', patternAlt: 'rgba(255,255,255,0.03)', accent: '#4a8abe', accentLight: '#6aacde', diamond: '#3a7ab8', logoFill: '#d4a644', logoStroke: '#a07828', patternStyle: 'scroll', centerLogo: 'spade' },
+    cardMaterial: 'linen',
+    celebrationStyle: 'gold',
+  },
   // ── RARE ──
   {
     id: 'neon-nights',
@@ -849,7 +869,7 @@ export interface CardSkinState {
 }
 
 const DEFAULT_STATE: CardSkinState = {
-  unlockedSkins: ['classic'],
+  unlockedSkins: ['classic', 'standard'],
   activeSkinId: 'classic',
 }
 
@@ -859,9 +879,12 @@ export function loadCardSkinState(): CardSkinState {
     if (stored) {
       const parsed = JSON.parse(stored)
       if (Array.isArray(parsed.unlockedSkins) && typeof parsed.activeSkinId === 'string') {
-        // Ensure 'classic' is always unlocked
+        // Ensure 'classic' and 'standard' are always unlocked
         if (!parsed.unlockedSkins.includes('classic')) {
           parsed.unlockedSkins.unshift('classic')
+        }
+        if (!parsed.unlockedSkins.includes('standard')) {
+          parsed.unlockedSkins.push('standard')
         }
         return parsed
       }

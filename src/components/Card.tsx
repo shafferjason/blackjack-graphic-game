@@ -1,12 +1,25 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import './Card.css'
-import type { Card as CardType, Suit } from '../types'
+import type { Card as CardType, Suit, Rank } from '../types'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette, type CardBackDesign } from '../utils/cardSkinShop'
 import { MATERIALS, type CardMaterial, NUMBER_CARD_TREATMENTS, NUMBER_CARD_DEFAULTS, getEffectiveFilterCaps, type NumberCardTreatment } from '../config/designTokens'
 import { getFaceCardVariantOverlays } from './faceCardVariants'
 import { getCharacterOverlays } from './faceCardCharacters'
 import { generateCharacterArt, hasCanvasArt, type FaceRank } from './canvasCharacterArt'
+
+/** Map a card's rank to the filename prefix used in public/cards/ SVG assets */
+const RANK_TO_FILENAME: Record<Rank, string> = {
+  'A': 'ace', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6',
+  '7': '7', '8': '8', '9': '9', '10': '10',
+  'J': 'jack', 'Q': 'queen', 'K': 'king',
+}
+
+/** Get the public SVG asset URL for a given card */
+function getCardAssetUrl(card: CardType): string {
+  const rank = RANK_TO_FILENAME[card.rank]
+  return `/cards/${rank}_of_${card.suit}.svg`
+}
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -1448,6 +1461,21 @@ function CrimsonFlameFrame() {
   )
 }
 
+/** Asset-based card face — renders the full card as a public domain SVG image */
+function AssetCardFace({ card }: { card: CardType }) {
+  const assetUrl = getCardAssetUrl(card)
+  return (
+    <div className="card card-face asset-card-face" aria-label={`${card.rank} of ${card.suit}`}>
+      <img
+        className="asset-card-img"
+        src={assetUrl}
+        alt={`${card.rank} of ${card.suit}`}
+        draggable={false}
+      />
+    </div>
+  )
+}
+
 function CardFace({ card }: { card: CardType }) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const color = SUIT_COLORS[card.suit]
@@ -1458,6 +1486,11 @@ function CardFace({ card }: { card: CardType }) {
   const skin = useActiveSkin()
   const material = skin.cardMaterial ? MATERIALS[skin.cardMaterial] : MATERIALS.linen
   const filterCaps = getEffectiveFilterCaps(skin.tier)
+
+  // Use public domain SVG card assets for the 'standard' skin
+  if (skin.id === 'standard') {
+    return <AssetCardFace card={card} />
+  }
 
   // Use Canvas 2D art for skins that support it (face cards + aces only)
   const useCanvasArt = (isFace || isAce) && hasCanvasArt(skin.id)
