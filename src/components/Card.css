@@ -842,6 +842,85 @@
 }
 
 /* ═══════════════════════════════════════════════════════════
+   Themed Asset Cards — Standard SVG base with skin overlays
+   Uses the same detailed illustrations as the Standard deck
+   but applies skin-specific color treatment and effects.
+   ═══════════════════════════════════════════════════════════ */
+
+.themed-asset-card {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  background: #0A1628;
+}
+
+.themed-asset-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+  z-index: 1;
+}
+
+.themed-asset-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.themed-asset-card .card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.themed-asset-card .card__frame {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+.themed-asset-card .card__fx {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ── Neon Nights themed asset treatment ── */
+.themed-asset-card.skin--neon-nights {
+  background: #060A14;
+  border: 1.5px solid rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.2), 0 0 4px rgba(0, 229, 255, 0.1);
+}
+
+.themed-asset-card.skin--neon-nights .themed-asset-img {
+  /* Invert white→dark so reds become cyans (matching #00E5FF primary),
+     boost saturation for neon pop, sharpen contrast for line clarity */
+  filter: invert(0.88) saturate(2.2) brightness(0.85) contrast(1.2);
+}
+
+.themed-asset-card.skin--neon-nights .themed-asset-tint {
+  /* Dark navy atmosphere tint with subtle cyan gradient */
+  background: linear-gradient(
+    180deg,
+    rgba(10, 22, 40, 0.25) 0%,
+    rgba(0, 229, 255, 0.04) 40%,
+    rgba(255, 0, 110, 0.03) 70%,
+    rgba(10, 22, 40, 0.3) 100%
+  );
+  mix-blend-mode: multiply;
+}
+
+/* ═══════════════════════════════════════════════════════════
    Canvas 2D Character Art — Layered card rendering
    ═══════════════════════════════════════════════════════════ */
 

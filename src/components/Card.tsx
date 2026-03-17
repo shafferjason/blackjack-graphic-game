@@ -1476,6 +1476,42 @@ function AssetCardFace({ card }: { card: CardType }) {
   )
 }
 
+/**
+ * Themed Asset Card Face — uses Standard deck SVGs as base art with
+ * skin-specific CSS filter treatment and SVG overlays on top.
+ * This gives themed skins the same line quality and illustration detail
+ * as the Standard deck while preserving each skin's unique identity.
+ */
+function ThemedAssetCardFace({ card }: { card: CardType }) {
+  const assetUrl = getCardAssetUrl(card)
+  const skin = useActiveSkin()
+  const skinId = skin.id
+  const isFace = ['J', 'Q', 'K'].includes(card.rank)
+  const rank = card.rank as FaceRank
+
+  return (
+    <div className={`card card-face themed-asset-card skin--${skinId}`} aria-label={`${card.rank} of ${card.suit}`}>
+      {/* z-1: Standard SVG card art with CSS filter color treatment */}
+      <img
+        className="themed-asset-img"
+        src={assetUrl}
+        alt={`${card.rank} of ${card.suit}`}
+        draggable={false}
+      />
+      {/* z-2: Color tint overlay for atmosphere */}
+      <div className="themed-asset-tint" />
+      {/* z-3: SVG overlay (skin-specific animations) — only for face cards */}
+      {isFace && <CanvasOverlay skinId={skinId} rank={rank} />}
+      {/* z-4: Card frame (skin-specific border) */}
+      <svg className="card__frame" viewBox="0 0 300 420">
+        <CanvasFrame skinId={skinId} />
+      </svg>
+      {/* z-5: Animation FX layer */}
+      <div className="card__fx" />
+    </div>
+  )
+}
+
 function CardFace({ card }: { card: CardType }) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const color = SUIT_COLORS[card.suit]
@@ -1490,6 +1526,11 @@ function CardFace({ card }: { card: CardType }) {
   // Use public domain SVG card assets for the 'standard' skin
   if (skin.id === 'standard') {
     return <AssetCardFace card={card} />
+  }
+
+  // Pilot: Neon Nights uses Standard SVG base with themed overlays
+  if (skin.id === 'neon-nights') {
+    return <ThemedAssetCardFace card={card} />
   }
 
   // Use Canvas 2D art for skins that support it (face cards + aces only)
