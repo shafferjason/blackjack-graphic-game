@@ -1,12 +1,25 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import './Card.css'
-import type { Card as CardType, Suit } from '../types'
+import type { Card as CardType, Suit, Rank } from '../types'
 import { FACE_CARD_TEXTURES } from './faceCardTextures'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type FaceCardPalette, type CardBackDesign } from '../utils/cardSkinShop'
 import { MATERIALS, type CardMaterial, NUMBER_CARD_TREATMENTS, NUMBER_CARD_DEFAULTS, getEffectiveFilterCaps, type NumberCardTreatment } from '../config/designTokens'
 import { getFaceCardVariantOverlays } from './faceCardVariants'
 import { getCharacterOverlays } from './faceCardCharacters'
 import { generateCharacterArt, hasCanvasArt, type FaceRank } from './canvasCharacterArt'
+
+/** Map a card's rank to the filename prefix used in public/cards/ SVG assets */
+const RANK_TO_FILENAME: Record<Rank, string> = {
+  'A': 'ace', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6',
+  '7': '7', '8': '8', '9': '9', '10': '10',
+  'J': 'jack', 'Q': 'queen', 'K': 'king',
+}
+
+/** Get the public SVG asset URL for a given card */
+function getCardAssetUrl(card: CardType): string {
+  const rank = RANK_TO_FILENAME[card.rank]
+  return `/cards/${rank}_of_${card.suit}.svg`
+}
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
   hearts: '\u2665',
@@ -87,40 +100,51 @@ function FaceCardFrame({ suit, label, children }: { suit: Suit; label: string; c
         <pattern id={`${pid}-tex-brush`} patternUnits="userSpaceOnUse" width="96" height="96">
           <image href={FACE_CARD_TEXTURES.BRUSH_OVERLAY} width="96" height="96" />
         </pattern>
-        {/* Warm radial vignette — deeper to match approved French portrait tone */}
-        <radialGradient id={`${pid}-vignette`} cx="50%" cy="50%" r="55%">
-          <stop offset="0%" stopColor="#fffdf5" stopOpacity="0.18" />
-          <stop offset="50%" stopColor="#faf5e8" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="#d8d0c0" stopOpacity="0.18" />
+        {/* Warm radial vignette — rich portrait framing with deeper edges */}
+        <radialGradient id={`${pid}-vignette`} cx="50%" cy="48%" r="55%">
+          <stop offset="0%" stopColor="#fffdf5" stopOpacity="0.22" />
+          <stop offset="40%" stopColor="#faf5e8" stopOpacity="0.1" />
+          <stop offset="75%" stopColor="#e8dcc8" stopOpacity="0.14" />
+          <stop offset="100%" stopColor="#d0c4aa" stopOpacity="0.22" />
         </radialGradient>
-        {/* Warm inner glow — brighter center for portrait focus */}
-        <radialGradient id={`${pid}-glow`} cx="50%" cy="45%" r="50%">
-          <stop offset="0%" stopColor="#fffdf5" stopOpacity="0.35" />
-          <stop offset="50%" stopColor="#faf5e8" stopOpacity="0.12" />
+        {/* Warm inner glow — concentrated portrait spotlight */}
+        <radialGradient id={`${pid}-glow`} cx="50%" cy="42%" r="48%">
+          <stop offset="0%" stopColor="#fffdf5" stopOpacity="0.4" />
+          <stop offset="35%" stopColor="#faf5e8" stopOpacity="0.18" />
+          <stop offset="65%" stopColor="#faf5e8" stopOpacity="0.06" />
           <stop offset="100%" stopColor="#fffdf5" stopOpacity="0" />
         </radialGradient>
-        {/* Gold gradient for premium gilding */}
+        {/* Gold gradient for premium gilding — richer stops */}
         <linearGradient id={`${pid}-goldGrad`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor={goldBright} />
-          <stop offset="50%" stopColor={gold} />
-          <stop offset="100%" stopColor={goldDark} />
+          <stop offset="35%" stopColor={gold} />
+          <stop offset="65%" stopColor={goldDark} />
+          <stop offset="100%" stopColor={gold} />
         </linearGradient>
-        {/* Aged parchment overlay gradient */}
-        <linearGradient id={`${pid}-aged`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#e8dcc8" stopOpacity="0.06" />
-          <stop offset="50%" stopColor="#f0e8d8" stopOpacity="0.02" />
-          <stop offset="100%" stopColor="#d8ceb8" stopOpacity="0.08" />
+        {/* Aged parchment overlay — deeper patina for premium card stock */}
+        <linearGradient id={`${pid}-aged`} x1="0" y1="0" x2="0.3" y2="1">
+          <stop offset="0%" stopColor="#e8dcc8" stopOpacity="0.08" />
+          <stop offset="40%" stopColor="#f0e8d8" stopOpacity="0.03" />
+          <stop offset="70%" stopColor="#ede5d4" stopOpacity="0.04" />
+          <stop offset="100%" stopColor="#d8ceb8" stopOpacity="0.1" />
+        </linearGradient>
+        {/* Subtle light source gradient — top-down ambient */}
+        <linearGradient id={`${pid}-ambient`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#ffffff" stopOpacity="0.06" />
+          <stop offset="40%" stopColor="#ffffff" stopOpacity="0" />
+          <stop offset="100%" stopColor="#000000" stopOpacity="0.03" />
         </linearGradient>
       </defs>
-      {/* Background — vignette base + canvas grain texture (stronger for painted card stock) */}
+      {/* Background — layered depth: vignette + grain + glow + patina + ambient light */}
       <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-vignette)`} />
       <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-tex-canvas)`} opacity="0.65" />
       <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-glow)`} />
       <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-aged)`} />
-      {/* Decorative triple inner border — engraved frame */}
-      <rect x="2" y="2" width="76" height="116" rx="3.5" fill="none" stroke={c.primary} strokeWidth="0.45" opacity="0.18" />
-      <rect x="3.5" y="3.5" width="73" height="113" rx="3" fill="none" stroke={`url(#${pid}-goldGrad)`} strokeWidth="0.4" opacity="0.28" />
-      <rect x="5" y="5" width="70" height="110" rx="2.5" fill="none" stroke={goldBright} strokeWidth="0.18" opacity="0.15" />
+      <rect x="1" y="1" width="78" height="118" rx="4" fill={`url(#${pid}-ambient)`} />
+      {/* Decorative triple inner border — engraved gilded frame */}
+      <rect x="2" y="2" width="76" height="116" rx="3.5" fill="none" stroke={c.primary} strokeWidth="0.5" opacity="0.2" />
+      <rect x="3.5" y="3.5" width="73" height="113" rx="3" fill="none" stroke={`url(#${pid}-goldGrad)`} strokeWidth="0.45" opacity="0.32" />
+      <rect x="5" y="5" width="70" height="110" rx="2.5" fill="none" stroke={goldBright} strokeWidth="0.22" opacity="0.18" />
       {/* Corner flourishes — refined scroll ornaments */}
       {[[6, 6, ''], [74, 6, 'scale(-1,1) translate(-80,0)'], [6, 114, 'scale(1,-1) translate(0,-120)'], [74, 114, 'scale(-1,-1) translate(-80,-120)']].map(([_x, _y, t], i) => (
         <g key={i} transform={t as string}>
@@ -1437,6 +1461,21 @@ function CrimsonFlameFrame() {
   )
 }
 
+/** Asset-based card face — renders the full card as a public domain SVG image */
+function AssetCardFace({ card }: { card: CardType }) {
+  const assetUrl = getCardAssetUrl(card)
+  return (
+    <div className="card card-face asset-card-face" aria-label={`${card.rank} of ${card.suit}`}>
+      <img
+        className="asset-card-img"
+        src={assetUrl}
+        alt={`${card.rank} of ${card.suit}`}
+        draggable={false}
+      />
+    </div>
+  )
+}
+
 function CardFace({ card }: { card: CardType }) {
   const symbol = SUIT_SYMBOLS[card.suit]
   const color = SUIT_COLORS[card.suit]
@@ -1447,6 +1486,11 @@ function CardFace({ card }: { card: CardType }) {
   const skin = useActiveSkin()
   const material = skin.cardMaterial ? MATERIALS[skin.cardMaterial] : MATERIALS.linen
   const filterCaps = getEffectiveFilterCaps(skin.tier)
+
+  // Use public domain SVG card assets for the 'standard' skin
+  if (skin.id === 'standard') {
+    return <AssetCardFace card={card} />
+  }
 
   // Use Canvas 2D art for skins that support it (face cards + aces only)
   const useCanvasArt = (isFace || isAce) && hasCanvasArt(skin.id)

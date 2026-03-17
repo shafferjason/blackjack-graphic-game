@@ -6,6 +6,7 @@ import { useGameSettings } from './config/GameSettingsContext'
 import type { TableFeltTheme } from './types'
 import { useSoundEffects } from './hooks/useSoundEffects'
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts'
+import { useFullscreen } from './hooks/useFullscreen'
 import { getOptimalAction, actionLabel } from './utils/basicStrategy'
 import type { ResolvedAction } from './utils/basicStrategy'
 import { getHiLoValue, calculateTrueCount, getDecksRemaining } from './utils/counting'
@@ -41,12 +42,16 @@ import type { MultiplayerState } from './components/MultiplayerBar'
 import GameModeSelector from './components/GameModeSelector'
 import type { GameMode } from './components/GameModeSelector'
 import TexasHoldem from './components/TexasHoldem'
+import PokerDraw from './components/PokerDraw'
 import Roulette from './components/Roulette'
 import Slots from './components/Slots'
 import CoinFlip from './components/CoinFlip'
+import AmbientParticles from './components/AmbientParticles'
 import './App.css'
+import './components/AmbientParticles.css'
 import './components/GameModeSelector.css'
 import './components/TexasHoldem.css'
+import './components/PokerDraw.css'
 import './components/Roulette.css'
 import './components/Slots.css'
 import './components/CoinFlip.css'
@@ -84,6 +89,13 @@ function App() {
 
   // Callback for other game modes to sync chip changes back to blackjack engine
   const handleHoldemChipsChange = useCallback((newChips: number) => {
+    const diff = newChips - state.chips
+    if (diff !== 0) {
+      actions.adjustChips(diff)
+    }
+  }, [state.chips, actions])
+
+  const handlePokerDrawChipsChange = useCallback((newChips: number) => {
     const diff = newChips - state.chips
     if (diff !== 0) {
       actions.adjustChips(diff)
@@ -450,6 +462,8 @@ function App() {
     }, 50)
   }, [mpActive, mpActiveIndex, mpPlayers, state.chips, actions])
 
+  const { isFullscreen, hudVisible, toggleFullscreen, toggleHud } = useFullscreen()
+
   const { muted, volume, soundProfile, toggleMute, setVolume, setSoundProfile, playButtonClick } = useSoundEffects({
     gameState: state.gameState,
     result: state.result,
@@ -584,11 +598,11 @@ function App() {
   const deckLabel = NUM_DECKS === 1 ? 'Single deck' : `${NUM_DECKS}-deck shoe`
 
   return (
-    <div className="app">
+    <div className={`app${isFullscreen ? ' app--fullscreen' : ''}`}>
       <header className="header">
         <h1>
           <span className="suit-icon" aria-hidden="true">&#9824;</span>
-          {gameMode === 'blackjack' ? ' Blackjack ' : gameMode === 'texas_holdem' ? " Hold'em " : gameMode === 'roulette' ? ' Roulette ' : gameMode === 'slots' ? ' Slots ' : ' Coin Flip '}
+          {gameMode === 'blackjack' ? ' Blackjack ' : gameMode === 'poker_draw' ? ' Poker Draw ' : gameMode === 'texas_holdem' ? " Hold'em " : gameMode === 'roulette' ? ' Roulette ' : gameMode === 'slots' ? ' Slots ' : ' Coin Flip '}
           <span className="suit-icon red" aria-hidden="true">&#9829;</span>
         </h1>
         <GameModeSelector currentMode={gameMode} onModeChange={handleModeChange} />
@@ -600,8 +614,70 @@ function App() {
           <CardSkinShop chips={state.chips} onDeductChips={(amount: number) => actions.adjustChips(-amount)} />
           <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} onAdjustChips={actions.adjustChips} />
           <AudioPanel muted={muted} volume={volume} soundProfile={soundProfile} onToggleMute={toggleMute} onSetVolume={setVolume} onSetSoundProfile={setSoundProfile} />
+          <button
+            className="fullscreen-toggle"
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
+            title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen mode'}
+          >
+            {isFullscreen ? (
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+                <path d="M8 3H5a2 2 0 0 0-2 2v3m18-5h-3a2 2 0 0 0-2 2v3m0 8v3a2 2 0 0 0 2 2h3M3 16v3a2 2 0 0 0 2 2h3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            )}
+          </button>
         </nav>
       </header>
+
+      {/* Fullscreen: settings fab + slide-out panel */}
+      {isFullscreen && (
+        <>
+          <button
+            className="fullscreen-fab"
+            onClick={toggleHud}
+            aria-label={hudVisible ? 'Close settings' : 'Open settings'}
+            title={hudVisible ? 'Close settings' : 'Settings'}
+          >
+            <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+              {hudVisible ? (
+                <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              ) : (
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              )}
+              {!hudVisible && <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.5"/>}
+            </svg>
+          </button>
+          <div className={`fullscreen-panel${hudVisible ? ' fullscreen-panel--open' : ''}`}>
+            <div className="fullscreen-panel__content">
+              <GameModeSelector currentMode={gameMode} onModeChange={handleModeChange} />
+              <div className="fullscreen-panel__divider" />
+              <div className="fullscreen-panel__actions">
+                <HandHistory history={state.handHistory} />
+                <StatsDashboard stats={state.stats} detailedStats={state.detailedStats} chips={state.chips} achievements={state.achievements} />
+                <CardSkinShop chips={state.chips} onDeductChips={(amount: number) => actions.adjustChips(-amount)} />
+                <SettingsPanel isPlaying={isPlaying} onResetEverything={actions.resetEverything} onAdjustChips={actions.adjustChips} />
+                <AudioPanel muted={muted} volume={volume} soundProfile={soundProfile} onToggleMute={toggleMute} onSetVolume={setVolume} onSetSoundProfile={setSoundProfile} />
+              </div>
+              <div className="fullscreen-panel__divider" />
+              <button
+                className="fullscreen-panel__exit"
+                onClick={toggleFullscreen}
+                aria-label="Exit fullscreen"
+                title="Exit fullscreen"
+              >
+                <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+                  <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                <span>Exit fullscreen</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
 
       {mpActive && (
         <MultiplayerBar
@@ -611,7 +687,8 @@ function App() {
         />
       )}
 
-      <main className="table" style={feltStyle} aria-label={`${gameMode === 'blackjack' ? 'Blackjack' : gameMode === 'texas_holdem' ? "Texas Hold'em" : gameMode === 'roulette' ? 'Roulette' : gameMode === 'slots' ? 'Slots' : 'Coin Flip'} table`}>
+      <main className="table" style={feltStyle} aria-label={`${gameMode === 'blackjack' ? 'Blackjack' : gameMode === 'poker_draw' ? 'Poker Draw' : gameMode === 'texas_holdem' ? "Texas Hold'em" : gameMode === 'roulette' ? 'Roulette' : gameMode === 'slots' ? 'Slots' : 'Coin Flip'} table`}>
+        <AmbientParticles />
         {gameMode === 'blackjack' ? (
           <>
             <ChipAnimation
@@ -750,6 +827,8 @@ function App() {
               )}
             </div>
           </>
+        ) : gameMode === 'poker_draw' ? (
+          <PokerDraw chips={state.chips} onChipsChange={handlePokerDrawChipsChange} />
         ) : gameMode === 'texas_holdem' ? (
           <TexasHoldem chips={state.chips} onChipsChange={handleHoldemChipsChange} />
         ) : gameMode === 'roulette' ? (
@@ -764,6 +843,8 @@ function App() {
       <footer className="footer">
         {gameMode === 'blackjack' ? (
           <span>Blackjack pays {payoutLabel} &middot; {soft17Label} &middot; {deckLabel}</span>
+        ) : gameMode === 'poker_draw' ? (
+          <span>5 Card Draw &middot; Jacks or Better &middot; Hold &amp; Draw</span>
         ) : gameMode === 'texas_holdem' ? (
           <span>Texas Hold&apos;em &middot; Blinds $5/$10 &middot; 4 Players</span>
         ) : gameMode === 'roulette' ? (

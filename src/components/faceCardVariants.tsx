@@ -28,7 +28,7 @@ type FaceCardRole = 'jack' | 'queen' | 'king'
 // 'flame' = Crimson Flame fire
 // 'shadow' = Shadow Dynasty dark
 // 'serpent' = Gilded Serpent mythic
-export type SkinVariant = 'classic' | 'neon' | 'royal' | 'sakura' | 'pharaoh' | 'frost' | 'flame' | 'shadow' | 'serpent' | 'celestial' | 'blood-moon' | 'midnight' | 'emerald' | 'velvet' | 'diamond' | 'dragon'
+export type SkinVariant = 'classic' | 'neon' | 'royal' | 'sakura' | 'pharaoh' | 'frost' | 'flame' | 'shadow' | 'serpent' | 'celestial' | 'blood-moon' | 'midnight' | 'emerald' | 'velvet' | 'diamond' | 'dragon' | 'beast'
 
 const SKIN_TO_VARIANT: Record<string, SkinVariant> = {
   'classic': 'classic',
@@ -47,6 +47,7 @@ const SKIN_TO_VARIANT: Record<string, SkinVariant> = {
   'velvet-noir': 'velvet',
   'diamond-dynasty': 'diamond',
   'dragons-hoard': 'dragon',
+  'animal-kingdom': 'beast',
 }
 
 export function getSkinVariant(skinId: string): SkinVariant {
@@ -204,6 +205,18 @@ export function JackHeadwearVariant({ variant, p }: { variant: SkinVariant; p: V
           ))}
         </g>
       )
+    case 'beast':
+      return (
+        <g opacity="0.85">
+          {/* Cobra hood headpiece */}
+          <path d="M34,18 Q32,12 30,8 Q34,6 40,4 Q46,6 50,8 Q48,12 46,18" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.4" />
+          <circle cx="40" cy="8" r="1.5" fill={p.accent} opacity="0.4" stroke={p.goldDk} strokeWidth="0.2" />
+          {/* Scale texture */}
+          {[34, 37, 40, 43, 46].map((x, i) => (
+            <path key={i} d={`M${x},14 Q${x + 1.5},12 ${x + 3},14`} fill="none" stroke={p.goldDk} strokeWidth="0.2" opacity="0.3" />
+          ))}
+        </g>
+      )
     default:
       return null
   }
@@ -253,6 +266,16 @@ export function JackPropVariant({ variant, p }: { variant: SkinVariant; p: Varia
           <path d="M59,24 L60,18 L61,24" fill={p.gold} stroke={p.goldDk} strokeWidth="0.3" />
           {/* Dragon wing hint on shoulder */}
           <path d="M54,36 Q58,30 64,28 Q60,34 56,38" fill={p.gold} opacity="0.2" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    case 'beast':
+      return (
+        <g>
+          {/* Serpent fang dagger */}
+          <line x1="60" y1="24" x2="62" y2="50" stroke="#e8d0a0" strokeWidth="1" strokeLinecap="round" />
+          <path d="M59,24 L60,18 L61,24" fill="#f0dcc0" stroke={p.goldDk} strokeWidth="0.3" />
+          {/* Coiled snake on arm */}
+          <path d="M56,34 Q54,30 56,28 Q58,30 56,34" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
         </g>
       )
     default:
@@ -407,6 +430,17 @@ export function QueenCrownVariant({ variant, p }: { variant: SkinVariant; p: Var
           ))}
         </g>
       )
+    case 'beast':
+      return (
+        <g opacity="0.85">
+          {/* Serpent queen crown with spread hood */}
+          <path d="M30,18 Q28,10 32,6 Q36,2 40,0 Q44,2 48,6 Q52,10 50,18" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.4" />
+          {/* Twin serpent eyes */}
+          <circle cx="36" cy="8" r="1" fill={p.accent} opacity="0.4" />
+          <circle cx="44" cy="8" r="1" fill={p.accent} opacity="0.4" />
+          <circle cx="40" cy="4" r="1.5" fill={p.gold} opacity="0.35" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
     default:
       return null
   }
@@ -465,6 +499,15 @@ export function QueenPropVariant({ variant, p }: { variant: SkinVariant; p: Vari
           ))}
           {/* Inner glow */}
           <ellipse cx="0" cy="1" rx="1.5" ry="2" fill="#ef4444" opacity="0.25" />
+        </g>
+      )
+    case 'beast':
+      return (
+        <g transform="translate(62,38)">
+          {/* Mirror held face-down */}
+          <ellipse cx="0" cy="2" rx="3" ry="4" fill={p.gold} stroke={p.goldDk} strokeWidth="0.5" opacity="0.5" />
+          <ellipse cx="0" cy="2" rx="2" ry="3" fill="#c0c8d0" opacity="0.3" />
+          <line x1="0" y1="6" x2="0" y2="14" stroke={p.goldDk} strokeWidth="0.8" strokeLinecap="round" />
         </g>
       )
     default:
@@ -617,6 +660,19 @@ export function KingCrownVariant({ variant, p }: { variant: SkinVariant; p: Vari
           <path d="M38,-2 L40,-8 L42,-2 L40,0 Z" fill={p.goldLt} opacity="0.3" stroke={p.goldDk} strokeWidth="0.2" />
         </g>
       )
+    case 'beast':
+      return (
+        <g opacity="0.85">
+          {/* Grand cobra hood crown — living serpent throne */}
+          <path d="M24,22 Q22,12 28,6 Q34,0 40,-2 Q46,0 52,6 Q58,12 56,22" fill="none" stroke={p.gold} strokeWidth="0.6" opacity="0.35" />
+          <path d="M28,14 Q34,8 40,4 Q46,8 52,14" fill={p.gold} opacity="0.15" />
+          {/* Crown cobra eyes */}
+          <circle cx="36" cy="6" r="1.2" fill={p.accent} opacity="0.45" />
+          <circle cx="44" cy="6" r="1.2" fill={p.accent} opacity="0.45" />
+          {/* Central jewel */}
+          <circle cx="40" cy="2" r="2" fill={p.accent} opacity="0.4" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
     default:
       return null
   }
@@ -671,6 +727,20 @@ export function KingPropVariant({ variant, p }: { variant: SkinVariant; p: Varia
           <path d="M14.5,26 Q14,22 15,18 Q16,22 15.5,26" fill="#fbbf24" opacity="0.35" />
           {/* Staff dragon coil */}
           <path d="M13.5,35 Q12,33 13.5,31 Q15,33 13.5,35" fill={p.gold} opacity="0.3" stroke={p.goldDk} strokeWidth="0.3" />
+        </g>
+      )
+    case 'beast':
+      return (
+        <g>
+          {/* Serpent staff with coiled snake */}
+          <line x1="15" y1="28" x2="14" y2="57" stroke={p.goldDk} strokeWidth="1.2" strokeLinecap="round" />
+          {/* Coiled snake around staff */}
+          {[32, 38, 44, 50].map((y, i) => (
+            <path key={i} d={`M${13 - (i % 2)},${y} Q${12 + (i % 2) * 4},${y - 2} ${15 + (i % 2)},${y}`} fill="none" stroke={p.gold} strokeWidth="0.5" opacity="0.35" />
+          ))}
+          {/* Snake head at top */}
+          <path d="M15,28 Q13,24 14,20 Q15,22 16,20 Q17,24 15,28" fill={p.gold} opacity="0.5" stroke={p.goldDk} strokeWidth="0.3" />
+          <circle cx="14.5" cy="22" r="0.5" fill={p.accent} opacity="0.5" />
         </g>
       )
     default:

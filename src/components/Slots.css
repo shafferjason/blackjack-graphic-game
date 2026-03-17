@@ -1458,7 +1458,7 @@
 
 /* 3D Beveled bet buttons */
 .slots-bet-btn {
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 8px;
   border: 1px solid rgba(180, 77, 255, 0.15);
   border-top-color: rgba(180, 77, 255, 0.25);
@@ -1470,7 +1470,7 @@
       rgba(0, 0, 0, 0.15) 100%
     );
   color: var(--sv2-text-muted);
-  font-size: 0.7rem;
+  font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.15s;
@@ -1796,8 +1796,8 @@
   .slots-reels { gap: 7px; }
 
   .slots-bet-btn {
-    padding: 5px 10px;
-    font-size: 0.64rem;
+    padding: 6px 12px;
+    font-size: 0.72rem;
   }
 
   .slots-spin-btn {
@@ -2002,5 +2002,78 @@
 
   .slots-spin-btn:not(:disabled):not(:hover):not(:active) {
     animation: none !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PHASE 4 — SLOTS LUXURY FINISH
+   Cohesive glass refinement, typography polish, interaction depth
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Cabinet — refined shadow depth ── */
+.slots-machine {
+  box-shadow:
+    0 28px 56px -10px rgba(0, 0, 0, 0.96),
+    0 48px 96px -20px rgba(0, 0, 0, 0.65),
+    8px 8px 0 0 var(--sv2-cabinet-side),
+    8px 12px 28px 0 rgba(0, 0, 0, 0.75),
+    0 0 36px rgba(180, 77, 255, 0.07),
+    0 0 72px rgba(0, 240, 255, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+/* ── Title — refined typography ── */
+.slots-title {
+  font-size: clamp(1.3rem, 4vw, 1.7rem);
+  letter-spacing: 7px;
+  filter: drop-shadow(0 0 10px rgba(180, 77, 255, 0.45)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.85));
+}
+
+/* ── Paytable toggle — refined glass ── */
+.slots-paytable-toggle {
+  transition: all 0.2s var(--ease-silk, ease);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Payout bar — cohesive glass treatment ── */
+.slots-payout-bar {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* ── Win states — refined glow intensity ── */
+.slots-machine--win {
+  box-shadow:
+    0 0 36px rgba(57, 255, 142, 0.12),
+    0 0 72px rgba(57, 255, 142, 0.05),
+    0 28px 56px -10px rgba(0, 0, 0, 0.96),
+    8px 8px 0 0 var(--sv2-cabinet-side),
+    inset 0 0 24px rgba(57, 255, 142, 0.025);
+}
+
+.slots-machine--jackpot {
+  box-shadow:
+    0 0 56px rgba(255, 215, 0, 0.35),
+    0 0 112px rgba(255, 215, 0, 0.12),
+    0 0 36px rgba(255, 45, 120, 0.1),
+    0 28px 56px -10px rgba(0, 0, 0, 0.96),
+    8px 8px 0 0 var(--sv2-cabinet-side),
+    inset 0 0 36px rgba(255, 215, 0, 0.05);
+}
+
+/* ── LED bulbs — refined glow ── */
+.slots-marquee__bulb {
+  box-shadow:
+    0 0 5px currentColor,
+    0 0 10px currentColor;
+}
+
+/* ── Phase 4 slots reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .slots-machine,
+  .slots-machine--win,
+  .slots-machine--jackpot {
+    transition: none;
   }
 }

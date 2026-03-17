@@ -1,6 +1,13 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { useCoinFlip, COIN_SKINS, loadCoinSkinState, saveCoinSkinState, getCoinSkinById } from '../hooks/useCoinFlip'
 import type { CoinSide, CoinSkin, CoinSkinState } from '../hooks/useCoinFlip'
+import {
+  playChipPlace,
+  playChipCollect,
+  playWinFanfare,
+  playLossThud,
+  playButtonClick,
+} from '../utils/sound'
 
 interface CoinFlipProps {
   chips: number
@@ -21,6 +28,37 @@ export default function CoinFlip({ chips, onChipsChange }: CoinFlipProps) {
   const isFlipping = state.phase === 'flipping'
   const isResult = state.phase === 'result'
   const isWin = isResult && state.winAmount > 0
+
+  // ── Audio: flip start ──
+  const prevPhaseRef = useRef(state.phase)
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current
+    prevPhaseRef.current = state.phase
+
+    if (state.phase === 'flipping' && prevPhase !== 'flipping') {
+      playChipPlace()
+    }
+  }, [state.phase])
+
+  // ── Audio: result sounds ──
+  const audioPlayedRef = useRef(false)
+  useEffect(() => {
+    if (state.phase === 'flipping') {
+      audioPlayedRef.current = false
+    }
+    if (state.phase === 'result' && !audioPlayedRef.current) {
+      audioPlayedRef.current = true
+      const timer = setTimeout(() => {
+        if (state.winAmount > 0) {
+          playWinFanfare()
+          setTimeout(() => playChipCollect(), 350)
+        } else {
+          playLossThud()
+        }
+      }, 200)
+      return () => clearTimeout(timer)
+    }
+  }, [state.phase, state.winAmount])
 
   const betError = isIdle ? validateBet() : null
   const canFlip = isIdle && !betError

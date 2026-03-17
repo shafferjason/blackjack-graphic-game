@@ -1,27 +1,28 @@
-/* ── Game Mode Selector ── */
+/* ── Game Mode Selector — premium tab bar ── */
 
 .mode-selector {
   display: flex;
-  gap: 4px;
+  gap: 3px;
   padding: 3px;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.45);
   border-radius: 10px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .mode-selector__btn {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
+  gap: 6px;
+  padding: 8px 16px;
   border: 1px solid transparent;
   border-radius: 8px;
   background: transparent;
-  color: rgba(240, 236, 228, 0.55);
-  font-size: 0.75rem;
+  color: rgba(240, 236, 228, 0.5);
+  font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.2s var(--ease-smooth, ease);
   white-space: nowrap;
   position: relative;
 }
@@ -31,15 +32,22 @@
   color: rgba(240, 236, 228, 0.85);
 }
 
+/* ── Active state — gold pill with glow ── */
 .mode-selector__btn--active {
-  background: rgba(212, 166, 68, 0.15);
+  background: rgba(212, 166, 68, 0.18);
   border-color: rgba(212, 166, 68, 0.35);
   color: var(--gold-light, #f0d264);
-  box-shadow: 0 1px 6px rgba(212, 166, 68, 0.12);
+  box-shadow:
+    0 1px 10px rgba(212, 166, 68, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.mode-selector__btn--active .mode-selector__icon {
+  filter: drop-shadow(0 0 3px rgba(212, 166, 68, 0.5));
 }
 
 .mode-selector__btn--active:hover {
-  background: rgba(212, 166, 68, 0.2);
+  background: rgba(212, 166, 68, 0.24);
 }
 
 .mode-selector__btn--disabled {
@@ -48,7 +56,16 @@
 }
 
 .mode-selector__icon {
-  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.2s ease;
+}
+
+.mode-selector__svg {
+  width: 1.55rem;
+  height: 1.55rem;
+  flex-shrink: 0;
 }
 
 .mode-selector__badge {
@@ -66,19 +83,110 @@
   border: 1px solid rgba(168, 85, 247, 0.5);
 }
 
-/* Responsive */
+/* ── Tooltip ── */
+.mode-selector__tooltip {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 180px;
+  max-width: 220px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(15, 15, 25, 0.95);
+  border: 1px solid rgba(212, 166, 68, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  color: rgba(240, 236, 228, 0.9);
+  font-size: 0.78rem;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: center;
+  z-index: 100;
+  pointer-events: none;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mode-selector__tooltip strong {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--gold-light, #f0d264);
+  margin-bottom: 2px;
+}
+
+.mode-selector__tooltip::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-bottom-color: rgba(212, 166, 68, 0.2);
+}
+
+.mode-selector__tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-bottom-color: rgba(15, 15, 25, 0.95);
+}
+
+/* Show tooltip on hover (non-active buttons only — active is already obvious) */
+.mode-selector__btn:hover:not(:disabled) .mode-selector__tooltip {
+  display: flex;
+}
+
+/* Keep tooltips within viewport for edge buttons */
+.mode-selector__btn:first-child .mode-selector__tooltip {
+  left: 0;
+  transform: translateX(0);
+}
+.mode-selector__btn:first-child .mode-selector__tooltip::before,
+.mode-selector__btn:first-child .mode-selector__tooltip::after {
+  left: 20px;
+}
+.mode-selector__btn:last-child .mode-selector__tooltip {
+  left: auto;
+  right: 0;
+  transform: translateX(0);
+}
+.mode-selector__btn:last-child .mode-selector__tooltip::before,
+.mode-selector__btn:last-child .mode-selector__tooltip::after {
+  left: auto;
+  right: 20px;
+}
+
+/* ── Responsive ── */
 @media (max-width: 480px) {
   .mode-selector__btn {
-    padding: 4px 8px;
-    font-size: 0.7rem;
+    padding: 6px 10px;
+    font-size: 0.8rem;
   }
   .mode-selector__label {
     display: none;
   }
-  .mode-selector__icon {
-    font-size: 1rem;
+  .mode-selector__svg {
+    width: 1.7rem;
+    height: 1.7rem;
   }
   .mode-selector__btn--active .mode-selector__label {
     display: inline;
+  }
+  /* Always show tooltips on mobile for non-active (tap = hover) */
+  .mode-selector__tooltip {
+    min-width: 160px;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mode-selector__btn {
+    transition: none;
   }
 }
