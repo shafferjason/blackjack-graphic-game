@@ -289,12 +289,12 @@ export function QueenCrownVariant({ variant, p }: { variant: SkinVariant; p: Var
     case 'neon':
       return (
         <g opacity="0.85">
-          {/* Holographic crown */}
-          <path d="M30,20 L28,10 L33,14 L36,6 L40,12 L44,6 L47,14 L52,10 L50,20 Z" fill="none" stroke={p.accent} strokeWidth="0.8" opacity="0.6" />
-          {/* Glow dots on crown points */}
-          {[36, 40, 44].map((x, i) => (
-            <circle key={i} cx={x} cy={6 + i * 0.5} r="1.2" fill={p.accent} opacity="0.4" />
-          ))}
+          {/* Tech visor headband — matches character head overlay */}
+          <rect x="29" y="19" width="22" height="2.5" rx="1" fill="none" stroke={p.accent} strokeWidth="0.6" opacity="0.5" />
+          {/* Visor scan line */}
+          <line x1="31" y1="20.2" x2="38" y2="20.2" stroke={p.accent} strokeWidth="0.35" opacity="0.4" />
+          {/* Status indicator */}
+          <circle cx="49" cy="20.2" r="0.7" fill={p.accent} opacity="0.5" />
         </g>
       )
     case 'sakura':
@@ -451,14 +451,13 @@ export function QueenPropVariant({ variant, p }: { variant: SkinVariant; p: Vari
   switch (variant) {
     case 'neon':
       return (
-        <g transform="translate(62,38)">
-          {/* Floating data rose / holographic flower */}
-          <circle r="3" fill={p.accent} opacity="0.25" />
-          <circle r="2" fill={p.accent} opacity="0.15" />
-          {[0, 60, 120, 180, 240, 300].map((angle, i) => (
-            <line key={i} x1="0" y1="-1.5" x2="0" y2="-3.5" stroke={p.accent} strokeWidth="0.4" opacity="0.5" transform={`rotate(${angle})`} />
-          ))}
-          <circle r="0.8" fill={p.accent} opacity="0.5" />
+        <g transform="translate(60,36)">
+          {/* Data tablet glow accent — reinforces character prop */}
+          <rect x="-5.5" y="-2.5" width="11" height="15" rx="1.5"
+            fill="none" stroke={p.accent} strokeWidth="0.4" opacity="0.3" />
+          {/* Screen shimmer highlight */}
+          <rect x="-4" y="0" width="8" height="1" rx="0.3"
+            fill={p.accent} opacity="0.12" />
         </g>
       )
     case 'sakura':

@@ -1854,53 +1854,127 @@ function drawNeonQueen(ctx: CanvasRenderingContext2D) {
   ctx.fillStyle = jawShadow
   ctx.fillRect(265, 250, 70, 30)
 
-  // ── HAIR — short styled, dark with blue-black sheen ──
+  // ── HAIR — asymmetric undercut: shaved left, swept volume right ──
   const hairGrad = ctx.createLinearGradient(240, 120, 360, 175)
   hairGrad.addColorStop(0, '#0A0A1A')
   hairGrad.addColorStop(0.5, '#14142A')
   hairGrad.addColorStop(1, '#0A0A1A')
   ctx.fillStyle = hairGrad
-  // Main hair volume — bigger, fills top of canvas
+  // Main hair volume — concentrated right for asymmetry
   ctx.beginPath()
-  ctx.moveTo(243, 175)
-  ctx.quadraticCurveTo(240, 148, 258, 135)
-  ctx.quadraticCurveTo(275, 125, 300, 122)
-  ctx.quadraticCurveTo(325, 125, 345, 136)
-  ctx.quadraticCurveTo(362, 150, 357, 175)
+  ctx.moveTo(260, 175)
+  ctx.quadraticCurveTo(262, 148, 275, 135)
+  ctx.quadraticCurveTo(295, 122, 315, 120)
+  ctx.quadraticCurveTo(340, 122, 350, 136)
+  ctx.quadraticCurveTo(365, 150, 358, 178)
   ctx.closePath()
   ctx.fill()
 
-  // Styled sweep to the right — asymmetric
+  // Big swept volume to the right — stronger asymmetric silhouette
   ctx.fillStyle = '#10102A'
   ctx.beginPath()
-  ctx.moveTo(340, 138)
-  ctx.quadraticCurveTo(372, 132, 378, 160)
-  ctx.quadraticCurveTo(370, 180, 356, 185)
-  ctx.quadraticCurveTo(360, 160, 340, 148)
+  ctx.moveTo(340, 135)
+  ctx.quadraticCurveTo(378, 128, 385, 158)
+  ctx.quadraticCurveTo(380, 185, 360, 192)
+  ctx.quadraticCurveTo(362, 160, 342, 148)
   ctx.closePath()
   ctx.fill()
 
-  // Left side fringe
-  ctx.fillStyle = '#0E0E22'
+  // Shaved undercut on left — exposed scalp with buzzed texture
+  ctx.fillStyle = '#1A1A2A'
   ctx.beginPath()
-  ctx.moveTo(246, 172)
-  ctx.quadraticCurveTo(238, 150, 255, 140)
-  ctx.quadraticCurveTo(268, 135, 280, 140)
-  ctx.quadraticCurveTo(260, 158, 250, 170)
+  ctx.moveTo(244, 175)
+  ctx.quadraticCurveTo(238, 158, 252, 142)
+  ctx.quadraticCurveTo(265, 135, 270, 140)
+  ctx.quadraticCurveTo(258, 155, 252, 172)
   ctx.closePath()
   ctx.fill()
+  // Buzzed texture lines on undercut
+  ctx.strokeStyle = '#0A0A18'
+  ctx.lineWidth = 0.5
+  ctx.globalAlpha = 0.3
+  for (let y = 148; y < 172; y += 4) {
+    ctx.beginPath()
+    ctx.moveTo(245, y)
+    ctx.lineTo(262, y - 3)
+    ctx.stroke()
+  }
+  ctx.globalAlpha = 1
 
-  // Hair blue sheen highlights
+  // Hair blue sheen highlights on swept side
   ctx.strokeStyle = '#3B82F6'
-  ctx.lineWidth = 1
+  ctx.lineWidth = 1.2
   ctx.globalAlpha = 0.15
   ctx.beginPath()
-  ctx.moveTo(265, 132)
-  ctx.quadraticCurveTo(300, 124, 335, 133)
+  ctx.moveTo(290, 128)
+  ctx.quadraticCurveTo(320, 122, 350, 132)
   ctx.stroke()
   ctx.beginPath()
-  ctx.moveTo(275, 138)
-  ctx.quadraticCurveTo(310, 130, 345, 140)
+  ctx.moveTo(300, 135)
+  ctx.quadraticCurveTo(330, 128, 360, 140)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+
+  // ── TECH VISOR BAND — across forehead, signature silhouette cue ──
+  ctx.fillStyle = '#1A2438'
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 1.2
+  ctx.beginPath()
+  ctx.moveTo(248, 178)
+  ctx.quadraticCurveTo(300, 170, 358, 178)
+  ctx.quadraticCurveTo(358, 185, 358, 186)
+  ctx.quadraticCurveTo(300, 178, 248, 186)
+  ctx.closePath()
+  ctx.fill()
+  ctx.globalAlpha = 0.6
+  ctx.stroke()
+  ctx.globalAlpha = 1
+  // Visor scan indicator line
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 0.6
+  ctx.globalAlpha = 0.4
+  ctx.beginPath()
+  ctx.moveTo(258, 182)
+  ctx.lineTo(295, 178)
+  ctx.stroke()
+  ctx.globalAlpha = 1
+  // Visor status LED
+  ctx.fillStyle = '#00E5FF'
+  ctx.globalAlpha = 0.7
+  ctx.beginPath()
+  ctx.arc(348, 182, 2, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalAlpha = 1
+
+  // ── COMM EARPIECE — left side, breaks silhouette ──
+  ctx.fillStyle = '#1A2438'
+  ctx.beginPath()
+  ctx.moveTo(240, 215)
+  ctx.quadraticCurveTo(225, 218, 222, 228)
+  ctx.quadraticCurveTo(224, 240, 238, 238)
+  ctx.quadraticCurveTo(242, 230, 242, 220)
+  ctx.closePath()
+  ctx.fill()
+  // Earpiece glow dot
+  ctx.fillStyle = '#00E5FF'
+  ctx.globalAlpha = 0.5
+  ctx.beginPath()
+  ctx.arc(228, 228, 2.5, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.globalAlpha = 1
+  // Earpiece mic arm
+  ctx.strokeStyle = '#1A2438'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(226, 236)
+  ctx.quadraticCurveTo(230, 248, 250, 252)
+  ctx.stroke()
+  ctx.strokeStyle = '#00E5FF'
+  ctx.lineWidth = 0.5
+  ctx.globalAlpha = 0.3
+  ctx.beginPath()
+  ctx.moveTo(226, 237)
+  ctx.quadraticCurveTo(230, 249, 250, 253)
   ctx.stroke()
   ctx.globalAlpha = 1
 
@@ -2172,17 +2246,26 @@ function drawNeonQueen(ctx: CanvasRenderingContext2D) {
   ctx.globalAlpha = 1
   ctx.restore()
 
-  // Tablet glow
-  const tabletGlow = ctx.createRadialGradient(485, 500, 10, 485, 500, 90)
-  tabletGlow.addColorStop(0, 'rgba(0, 229, 255, 0.08)')
+  // Tablet glow — stronger uplighting onto coat and right arm
+  const tabletGlow = ctx.createRadialGradient(485, 500, 10, 485, 500, 120)
+  tabletGlow.addColorStop(0, 'rgba(0, 229, 255, 0.12)')
+  tabletGlow.addColorStop(0.3, 'rgba(0, 229, 255, 0.06)')
   tabletGlow.addColorStop(1, 'transparent')
   ctx.fillStyle = tabletGlow
-  ctx.fillRect(395, 410, 180, 180)
+  ctx.fillRect(380, 380, 210, 220)
+
+  // Tablet uplighting on lower coat — key lighting narrative
+  const tabletUplight = ctx.createRadialGradient(440, 450, 20, 440, 350, 180)
+  tabletUplight.addColorStop(0, 'rgba(0, 229, 255, 0.06)')
+  tabletUplight.addColorStop(0.5, 'rgba(0, 229, 255, 0.02)')
+  tabletUplight.addColorStop(1, 'transparent')
+  ctx.fillStyle = tabletUplight
+  ctx.fillRect(320, 300, 200, 300)
 
   // ── CYBER EYE GLOW on face and upper coat ──
   const cyberFaceGlow = ctx.createRadialGradient(335, 210, 5, 335, 280, 100)
-  cyberFaceGlow.addColorStop(0, 'rgba(0, 229, 255, 0.12)')
-  cyberFaceGlow.addColorStop(0.4, 'rgba(0, 229, 255, 0.05)')
+  cyberFaceGlow.addColorStop(0, 'rgba(0, 229, 255, 0.14)')
+  cyberFaceGlow.addColorStop(0.4, 'rgba(0, 229, 255, 0.06)')
   cyberFaceGlow.addColorStop(1, 'transparent')
   ctx.fillStyle = cyberFaceGlow
   ctx.fillRect(270, 170, 120, 200)

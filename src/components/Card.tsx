@@ -1053,14 +1053,21 @@ function NeonNightsOverlay({ rank }: { rank: FaceRank }) {
       {/* Rank-specific overlays */}
       {rank === 'Q' && (
         <>
-          {/* Data text fragments around cyber eye */}
-          <text x="210" y="120" fill="#00E5FF" fontSize="6" opacity="0.4" className="nn-data-drift">0xF4</text>
-          <text x="225" y="108" fill="#00E5FF" fontSize="5" opacity="0.3" className="nn-data-drift" style={{ animationDelay: '1s' }}>SYNC</text>
-          <text x="205" y="132" fill="#00E5FF" fontSize="5" opacity="0.35" className="nn-data-drift" style={{ animationDelay: '2s' }}>//OK</text>
-          <text x="230" y="125" fill="#00E5FF" fontSize="4" opacity="0.25" className="nn-data-drift" style={{ animationDelay: '0.5s' }}>AUTH</text>
-          {/* Eye glow pulse */}
+          {/* Cybernetic eye — layered glow for stronger read */}
+          <circle cx="192" cy="118" r="8" fill="#00E5FF" opacity="0.08"
+            filter="url(#nn-glow)" />
           <circle cx="192" cy="118" r="5" fill="#00E5FF" opacity="0.4"
             filter="url(#nn-glow)" className="nn-eye-glow" />
+          <circle cx="192" cy="118" r="2" fill="#00E5FF" opacity="0.6" />
+          {/* Data text fragments streaming from cyber eye */}
+          <text x="210" y="115" fill="#00E5FF" fontSize="6" opacity="0.4" className="nn-data-drift">0xF4</text>
+          <text x="220" y="105" fill="#00E5FF" fontSize="5" opacity="0.3" className="nn-data-drift" style={{ animationDelay: '1s' }}>SYNC</text>
+          <text x="205" y="128" fill="#00E5FF" fontSize="5" opacity="0.35" className="nn-data-drift" style={{ animationDelay: '2s' }}>//OK</text>
+          <text x="225" y="122" fill="#00E5FF" fontSize="4" opacity="0.25" className="nn-data-drift" style={{ animationDelay: '0.5s' }}>AUTH</text>
+          {/* Visor scan-line across forehead area */}
+          <line x1="130" y1="92" x2="175" y2="92" stroke="#00E5FF" strokeWidth="1" opacity="0.15" />
+          {/* Tablet ambient glow — soft uplighting from held tablet */}
+          <ellipse cx="240" cy="220" rx="30" ry="20" fill="#00E5FF" opacity="0.06" />
         </>
       )}
       {rank === 'K' && (
