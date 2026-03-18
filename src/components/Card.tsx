@@ -8,17 +8,23 @@ import { getFaceCardVariantOverlays } from './faceCardVariants'
 import { getCharacterOverlays } from './faceCardCharacters'
 import { generateCharacterArt, hasCanvasArt, type FaceRank } from './canvasCharacterArt'
 
-/** Map a card's rank to the filename prefix used in public/cards/ SVG assets */
+/** Map suit names to single-letter codes used by cardsJS SVG filenames */
+const SUIT_TO_CODE: Record<Suit, string> = {
+  clubs: 'C', diamonds: 'D', hearts: 'H', spades: 'S',
+}
+
+/** Map rank to cardsJS filename prefix */
 const RANK_TO_FILENAME: Record<Rank, string> = {
-  'A': 'ace', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6',
+  'A': 'A', '2': '2', '3': '3', '4': '4', '5': '5', '6': '6',
   '7': '7', '8': '8', '9': '9', '10': '10',
-  'J': 'jack', 'Q': 'queen', 'K': 'king',
+  'J': 'J', 'Q': 'Q', 'K': 'K',
 }
 
 /** Get the public SVG asset URL for a given card */
 function getCardAssetUrl(card: CardType): string {
   const rank = RANK_TO_FILENAME[card.rank]
-  return `/cards/${rank}_of_${card.suit}.svg`
+  const suit = SUIT_TO_CODE[card.suit]
+  return `/cards/${rank}${suit}.svg`
 }
 
 const SUIT_SYMBOLS: Record<Suit, string> = {
