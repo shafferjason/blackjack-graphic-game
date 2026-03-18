@@ -37,12 +37,6 @@ describe('Card component', () => {
     expect(container.querySelector('.card-back')).not.toBeInTheDocument()
   })
 
-  it('displays rank and suit symbol on face card', () => {
-    render(<Card card={{ suit: 'hearts', rank: 'K', id: 1 }} index={0} />)
-    const ranks = screen.getAllByText('K')
-    expect(ranks.length).toBeGreaterThanOrEqual(2) // top-left + bottom-right + badge
-  })
-
   it('renders number card with themed asset for hearts', () => {
     const { container } = render(<Card card={{ suit: 'hearts', rank: '2', id: 1 }} index={0} />)
     expect(container.querySelector('.card-face')).toBeInTheDocument()
@@ -53,22 +47,20 @@ describe('Card component', () => {
     expect(container.querySelector('.card-face')).toBeInTheDocument()
   })
 
-  it('renders face card for J, Q, K', () => {
+  it('renders face card J/Q/K as themed asset card using cardsJS SVGs', () => {
     for (const rank of ['J', 'Q', 'K'] as const) {
       const { container } = render(<Card card={{ suit: 'hearts', rank, id: 1 }} index={0} />)
-      // Classic skin uses canvas art — look for canvas-art-card or face-card-type
-      const canvasCard = container.querySelector('.canvas-art-card')
-      const faceCardType = container.querySelector('.face-card-type')
-      expect(canvasCard || faceCardType, `${rank} should render as face card`).toBeInTheDocument()
+      const themedCard = container.querySelector('.themed-asset-card')
+      const themedImg = container.querySelector('.themed-asset-img')
+      expect(themedCard || themedImg, `${rank} should render as themed asset card`).toBeInTheDocument()
     }
   })
 
-  it('renders ace card for A', () => {
+  it('renders ace card as themed asset card using cardsJS SVGs', () => {
     const { container } = render(<Card card={{ suit: 'hearts', rank: 'A', id: 1 }} index={0} />)
-    // Classic skin uses canvas art for aces — look for canvas-art-card or ace-suit
-    const canvasCard = container.querySelector('.canvas-art-card')
-    const aceSuit = container.querySelector('.ace-suit')
-    expect(canvasCard || aceSuit, 'Ace should render').toBeInTheDocument()
+    const themedCard = container.querySelector('.themed-asset-card')
+    const themedImg = container.querySelector('.themed-asset-img')
+    expect(themedCard || themedImg, 'Ace should render as themed asset card').toBeInTheDocument()
   })
 
   it('renders number cards as themed asset cards', () => {
@@ -85,26 +77,15 @@ describe('Card component', () => {
     expect(wrapper.style.getPropertyValue('--deal-i')).toBe('3')
   })
 
-  it('renders face card content for Jack', () => {
-    const { container } = render(<Card card={{ suit: 'hearts', rank: 'J', id: 1 }} index={0} />)
-    // Canvas art or SVG path rendering
-    const canvasCard = container.querySelector('.canvas-art-card')
-    const faceSvg = container.querySelector('.face-svg')
-    expect(canvasCard || faceSvg, 'Jack should render with canvas art or SVG').toBeInTheDocument()
-  })
-
-  it('renders face card content for Queen', () => {
-    const { container } = render(<Card card={{ suit: 'diamonds', rank: 'Q', id: 1 }} index={0} />)
-    const canvasCard = container.querySelector('.canvas-art-card')
-    const faceSvg = container.querySelector('.face-svg')
-    expect(canvasCard || faceSvg, 'Queen should render with canvas art or SVG').toBeInTheDocument()
-  })
-
-  it('renders face card content for King', () => {
-    const { container } = render(<Card card={{ suit: 'spades', rank: 'K', id: 1 }} index={0} />)
-    const canvasCard = container.querySelector('.canvas-art-card')
-    const faceSvg = container.querySelector('.face-svg')
-    expect(canvasCard || faceSvg, 'King should render with canvas art or SVG').toBeInTheDocument()
+  it('renders face cards J/Q/K as cardsJS SVG assets (no canvas art)', () => {
+    for (const rank of ['J', 'Q', 'K'] as const) {
+      const { container } = render(<Card card={{ suit: 'hearts', rank, id: 1 }} index={0} />)
+      // Must NOT render canvas art
+      expect(container.querySelector('.canvas-art-card')).toBeNull()
+      // Must render as themed asset card with cardsJS SVG
+      const themedCard = container.querySelector('.themed-asset-card')
+      expect(themedCard, `${rank} should render as themed asset card`).toBeInTheDocument()
+    }
   })
 })
 
@@ -112,20 +93,15 @@ describe('Custom skin rendering on face cards', () => {
   it('renders face card with neon-nights skin active', () => {
     saveCardSkinState({ unlockedSkins: ['classic', 'neon-nights'], activeSkinId: 'neon-nights' })
     const { container } = render(<Card card={{ suit: 'hearts', rank: 'K', id: 1 }} index={0} />)
-    // Neon nights J/K use themed asset; Q uses canvas art
-    const canvasCard = container.querySelector('.canvas-art-card')
-    const faceSvg = container.querySelector('.face-svg')
     const themedCard = container.querySelector('.themed-asset-card')
-    expect(canvasCard || faceSvg || themedCard, 'Neon King should render').toBeInTheDocument()
+    expect(themedCard, 'Neon King should render as themed asset card').toBeInTheDocument()
   })
 
   it('renders face card with diamond-dynasty skin active', () => {
     saveCardSkinState({ unlockedSkins: ['classic', 'diamond-dynasty'], activeSkinId: 'diamond-dynasty' })
     const { container } = render(<Card card={{ suit: 'spades', rank: 'Q', id: 1 }} index={0} />)
-    // Diamond dynasty now uses canvas art — check for either canvas-art-card or face-svg
-    const canvasCard = container.querySelector('.canvas-art-card')
-    const faceSvg = container.querySelector('.face-svg')
-    expect(canvasCard || faceSvg, 'Diamond Dynasty Queen should render').toBeInTheDocument()
+    const themedCard = container.querySelector('.themed-asset-card')
+    expect(themedCard, 'Diamond Dynasty Queen should render as themed asset card').toBeInTheDocument()
   })
 
   it('renders card face element for neon-nights with glowColor', () => {
@@ -146,22 +122,21 @@ describe('Custom skin rendering on face cards', () => {
     saveCardSkinState({ unlockedSkins: ['classic'], activeSkinId: 'classic' })
     const { container } = render(<Card card={{ suit: 'hearts', rank: 'K', id: 1 }} index={0} />)
     const cardFace = container.querySelector('.card-face') as HTMLElement
-    // Canvas art card won't have inline filter/boxShadow for classic skin
     expect(cardFace.style.filter).toBe('')
   })
 
-  it('renders all J/Q/K face cards without error across multiple skins', () => {
+  it('renders all J/Q/K face cards as themed asset cards across multiple skins', () => {
     const skins = ['classic', 'neon-nights', 'crimson-flame', 'arctic-frost', 'diamond-dynasty']
     for (const skinId of skins) {
       saveCardSkinState({ unlockedSkins: ['classic', skinId], activeSkinId: skinId })
       for (const rank of ['J', 'Q', 'K'] as const) {
         for (const suit of ['hearts', 'spades'] as const) {
           const { container } = render(<Card card={{ suit, rank, id: 1 }} index={0} />)
-          // Canvas art skins render canvas-art-card; SVG skins render face-svg; themed skins render themed-asset-card
-          const canvasCard = container.querySelector('.canvas-art-card')
-          const faceSvg = container.querySelector('.face-svg')
+          // All skins now render as themed asset cards using cardsJS SVG assets
           const themedCard = container.querySelector('.themed-asset-card')
-          expect(canvasCard || faceSvg || themedCard, `${skinId} ${rank} of ${suit}`).toBeInTheDocument()
+          expect(themedCard, `${skinId} ${rank} of ${suit}`).toBeInTheDocument()
+          // Must NOT render canvas art
+          expect(container.querySelector('.canvas-art-card')).toBeNull()
         }
       }
     }

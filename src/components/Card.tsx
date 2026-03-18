@@ -1,9 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import './Card.css'
 import type { Card as CardType, Suit, Rank } from '../types'
 import { loadCardSkinState, getSkinById, CARD_SKINS, type CardSkin, type CardBackDesign } from '../utils/cardSkinShop'
 import { getEffectiveFilterCaps } from '../config/designTokens'
-import { generateCharacterArt, hasCanvasArt, type FaceRank } from './canvasCharacterArt'
+import type { FaceRank } from './canvasCharacterArt'
 
 /** Map suit names to single-letter codes used by cardsJS SVG filenames */
 const SUIT_TO_CODE: Record<Suit, string> = {
@@ -60,72 +60,7 @@ function useActiveSkin(): CardSkin {
   return getActiveSkin()
 }
 
-/* ── Canvas 2D Character Art Card Face ──
-   Used for skins with Canvas-generated illustrated character art.
-   Renders character as background-image (WebP), with SVG overlays and CSS effects. */
-function CanvasArtCardFace({ card }: { card: CardType }) {
-  const symbol = SUIT_SYMBOLS[card.suit]
-  const color = SUIT_COLORS[card.suit]
-  const skin = useActiveSkin()
-  const rank = card.rank as FaceRank
-
-  const artUrl = useMemo(() => generateCharacterArt({
-    rank,
-    skinId: skin.id,
-    suit: card.suit,
-  }), [rank, skin.id, card.suit])
-
-  const skinId = skin.id
-
-  return (
-    <div className={`card card-face canvas-art-card skin--${skinId} ${color}`}>
-      {/* z-1: Background fill */}
-      <div className="card__bg" />
-      {/* z-2: Character art (Canvas 2D → WebP) */}
-      <div
-        className="card__art"
-        style={{ backgroundImage: `url('${artUrl}')` }}
-      />
-      {/* z-3: SVG overlay (skin-specific animations) */}
-      <CanvasOverlay skinId={skinId} rank={rank} />
-      {/* z-4: Card frame */}
-      <svg className="card__frame" viewBox="0 0 300 420">
-        <CanvasFrame skinId={skinId} />
-      </svg>
-      {/* z-5: Rank + suit labels */}
-      <div className="card__rank-top">
-        {card.rank}<span className="card__suit">{symbol}</span>
-      </div>
-      <div className="card__rank-bottom">
-        {card.rank}<span className="card__suit">{symbol}</span>
-      </div>
-      {/* z-6: Animation FX layer */}
-      <div className="card__fx" />
-    </div>
-  )
-}
-
-/* ── Canvas Overlay dispatcher — routes to skin-specific SVG overlays ── */
-function CanvasOverlay({ skinId, rank }: { skinId: string; rank: FaceRank }) {
-  switch (skinId) {
-    case 'neon-nights': return <NeonNightsOverlay rank={rank} />
-    case 'velvet-noir': return <VelvetNoirOverlay />
-    case 'sakura-bloom': return <SakuraBloomOverlay rank={rank} />
-    case 'blood-moon': return <BloodMoonOverlay />
-    case 'gilded-serpent': return <GildedSerpentOverlay rank={rank} />
-    case 'shadow-dynasty': return <ShadowDynastyOverlay rank={rank} />
-    case 'solar-pharaoh': return <SolarPharaohOverlay rank={rank} />
-    case 'celestial': return <CelestialOverlay rank={rank} />
-    case 'dragons-hoard': return <DragonsHoardOverlay rank={rank} />
-    case 'diamond-dynasty': return <DiamondDynastyOverlay rank={rank} />
-    case 'royal-gold': return <RoyalGoldOverlay />
-    case 'midnight-purple': return <MidnightPurpleOverlay rank={rank} />
-    case 'arctic-frost': return <ArcticFrostOverlay />
-    case 'emerald-fortune': return <EmeraldFortuneOverlay rank={rank} />
-    case 'crimson-flame': return <CrimsonFlameOverlay rank={rank} />
-    default: return null
-  }
-}
+/* ── Canvas Overlay and Canvas Art removed — all cards now use cardsJS SVG assets ── */
 
 /* ── Canvas Frame dispatcher — routes to skin-specific frame ── */
 function CanvasFrame({ skinId }: { skinId: string }) {
@@ -776,8 +711,6 @@ function ThemedAssetCardFace({ card }: { card: CardType }) {
   const assetUrl = getCardAssetUrl(card)
   const skin = useActiveSkin()
   const skinId = skin.id
-  const isFace = ['J', 'Q', 'K'].includes(card.rank)
-  const rank = card.rank as FaceRank
 
   return (
     <div className={`card card-face themed-asset-card skin--${skinId}`} aria-label={`${card.rank} of ${card.suit}`}>
@@ -790,9 +723,7 @@ function ThemedAssetCardFace({ card }: { card: CardType }) {
       />
       {/* z-2: Color tint overlay for atmosphere */}
       <div className="themed-asset-tint" />
-      {/* z-3: SVG overlay (skin-specific animations) — only for face cards */}
-      {isFace && <CanvasOverlay skinId={skinId} rank={rank} />}
-      {/* z-4: Card frame (skin-specific border) */}
+      {/* z-3: Card frame (skin-specific border) */}
       <svg className="card__frame" viewBox="0 0 300 420">
         <CanvasFrame skinId={skinId} />
       </svg>
@@ -804,21 +735,13 @@ function ThemedAssetCardFace({ card }: { card: CardType }) {
 
 function CardFace({ card }: { card: CardType }) {
   const skin = useActiveSkin()
-  const isFace = ['J', 'Q', 'K'].includes(card.rank)
-  const isAce = card.rank === 'A'
 
   // Standard skin: render cardsJS SVG assets directly
   if (skin.id === 'standard') {
     return <AssetCardFace card={card} />
   }
 
-  // Canvas 2D character art for face cards + aces on skins that support it
-  if ((isFace || isAce) && hasCanvasArt(skin.id)) {
-    return <CanvasArtCardFace card={card} />
-  }
-
-  // All remaining cards (number cards, and face cards on skins without canvas art)
-  // use cardsJS SVG base with skin-specific CSS treatment and overlays
+  // All themed skins use cardsJS SVG base with skin-specific CSS treatment
   return <ThemedAssetCardFace card={card} />
 }
 
