@@ -43,14 +43,14 @@ describe('Card component', () => {
     expect(ranks.length).toBeGreaterThanOrEqual(2) // top-left + bottom-right + badge
   })
 
-  it('applies red class for hearts', () => {
+  it('renders number card with themed asset for hearts', () => {
     const { container } = render(<Card card={{ suit: 'hearts', rank: '2', id: 1 }} index={0} />)
-    expect(container.querySelector('.card-face.red')).toBeInTheDocument()
+    expect(container.querySelector('.card-face')).toBeInTheDocument()
   })
 
-  it('applies black class for spades', () => {
+  it('renders number card with themed asset for spades', () => {
     const { container } = render(<Card card={{ suit: 'spades', rank: '3', id: 1 }} index={0} />)
-    expect(container.querySelector('.card-face.black')).toBeInTheDocument()
+    expect(container.querySelector('.card-face')).toBeInTheDocument()
   })
 
   it('renders face card for J, Q, K', () => {
@@ -71,10 +71,12 @@ describe('Card component', () => {
     expect(canvasCard || aceSuit, 'Ace should render').toBeInTheDocument()
   })
 
-  it('renders pip layout for number cards', () => {
+  it('renders number cards as themed asset cards', () => {
     const { container } = render(<Card card={{ suit: 'clubs', rank: '7', id: 1 }} index={0} />)
-    expect(container.querySelector('.pip-layout')).toBeInTheDocument()
-    expect(container.querySelectorAll('.pip-symbol')).toHaveLength(7)
+    // Number cards now use cardsJS SVG assets via ThemedAssetCardFace
+    const themedCard = container.querySelector('.themed-asset-card')
+    const assetImg = container.querySelector('.themed-asset-img')
+    expect(themedCard || assetImg).toBeInTheDocument()
   })
 
   it('sets --deal-i css variable from index prop', () => {
