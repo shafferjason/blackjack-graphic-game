@@ -580,12 +580,92 @@
 
 .holdem-raise-group {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.holdem-raise-quick-bets {
+  display: flex;
+  gap: 6px;
+}
+
+.holdem-raise-input-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.holdem-raise-bound {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--th-text-muted);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-width: 32px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.holdem-raise-confirm-row {
+  display: flex;
   align-items: center;
   gap: 8px;
 }
 
+.holdem-raise-input {
+  width: 72px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(212, 166, 68, 0.3);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--th-gold-light);
+  font-size: 0.85rem;
+  font-weight: 700;
+  font-family: 'Playfair Display', serif;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  -moz-appearance: textfield;
+}
+
+.holdem-raise-input::-webkit-outer-spin-button,
+.holdem-raise-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.holdem-raise-input:focus {
+  border-color: rgba(212, 166, 68, 0.6);
+  box-shadow: 0 0 8px rgba(212, 166, 68, 0.15);
+}
+
+.btn-quick {
+  padding: 3px 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--th-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.btn-quick:hover {
+  background: rgba(212, 166, 68, 0.15);
+  border-color: rgba(212, 166, 68, 0.3);
+  color: var(--th-gold-light);
+}
+
 .holdem-raise-slider {
-  width: 110px;
+  flex: 1;
+  min-width: 60px;
   accent-color: var(--th-gold);
   height: 4px;
 }
@@ -768,7 +848,7 @@
   }
 
   .holdem-raise-slider {
-    width: 80px;
+    min-width: 50px;
   }
 
   .holdem-player-area .holdem-seat {
@@ -809,7 +889,7 @@
   }
 
   .holdem-raise-slider {
-    width: 65px;
+    min-width: 40px;
   }
 }
 
@@ -851,7 +931,7 @@
   }
 
   .holdem-raise-slider {
-    width: 140px;
+    min-width: 100px;
   }
 }
 

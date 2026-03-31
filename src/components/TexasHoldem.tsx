@@ -138,9 +138,29 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
   const [raiseAmount, setRaiseAmount] = useState(20)
   const [potGrowing, setPotGrowing] = useState(false)
 
+  // Determine min/max raise
+  const minRaise = state.minRaise
+  const maxRaise = humanPlayer.chips
+
+  // Clamp raise to valid range
+  const clampedRaise = useMemo(() => {
+    return Math.max(minRaise, Math.min(raiseAmount, maxRaise))
+  }, [minRaise, maxRaise, raiseAmount])
+
   const handleRaise = useCallback(() => {
-    actions.raise(raiseAmount)
-  }, [actions, raiseAmount])
+    actions.raise(clampedRaise)
+    playButtonClick()
+  }, [actions, clampedRaise])
+
+  const handleRaiseInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value)
+    if (!isNaN(val)) setRaiseAmount(val)
+  }, [])
+
+  const setQuickBet = useCallback((amount: number) => {
+    setRaiseAmount(Math.max(minRaise, Math.min(amount, maxRaise)))
+    playButtonClick()
+  }, [minRaise, maxRaise])
 
   const isShowdown = state.phase === 'round_over' && state.winner !== null
   const isIdle = state.phase === 'idle'
@@ -208,15 +228,6 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
     }
     prevPotRef.current = state.pot
   }, [state.pot])
-
-  // Determine min/max raise
-  const minRaise = state.minRaise
-  const maxRaise = humanPlayer.chips
-
-  // Update raise slider range
-  const clampedRaise = useMemo(() => {
-    return Math.max(minRaise, Math.min(raiseAmount, maxRaise))
-  }, [minRaise, maxRaise, raiseAmount])
 
   const phaseLabel = state.phase === 'pre_flop' ? 'Pre-Flop'
     : state.phase === 'flop' ? 'Flop'
@@ -317,19 +328,41 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
             )}
             {canRaise && (
               <div className="holdem-raise-group">
-                <input
-                  type="range"
-                  min={minRaise}
-                  max={maxRaise}
-                  step={state.bigBlind}
-                  value={clampedRaise}
-                  onChange={e => setRaiseAmount(Number(e.target.value))}
-                  className="holdem-raise-slider"
-                  aria-label="Raise amount"
-                />
-                <button className="btn btn-accent" onClick={handleRaise}>
-                  Raise ${clampedRaise}
-                </button>
+                <div className="holdem-raise-quick-bets">
+                  <button className="btn btn-quick" onClick={() => setQuickBet(minRaise)} aria-label="Minimum raise">Min</button>
+                  <button className="btn btn-quick" onClick={() => setQuickBet(Math.max(minRaise, Math.floor(state.pot / 2)))} aria-label="Half pot raise">&frac12; Pot</button>
+                  <button className="btn btn-quick" onClick={() => setQuickBet(Math.max(minRaise, state.pot))} aria-label="Pot-sized raise">Pot</button>
+                </div>
+                <div className="holdem-raise-input-row">
+                  <span className="holdem-raise-bound">${minRaise}</span>
+                  <input
+                    type="range"
+                    min={minRaise}
+                    max={maxRaise}
+                    step={state.bigBlind}
+                    value={clampedRaise}
+                    onChange={e => setRaiseAmount(Number(e.target.value))}
+                    className="holdem-raise-slider"
+                    aria-label="Raise amount"
+                  />
+                  <span className="holdem-raise-bound">${maxRaise}</span>
+                </div>
+                <div className="holdem-raise-confirm-row">
+                  <input
+                    type="number"
+                    min={minRaise}
+                    max={maxRaise}
+                    step={state.bigBlind}
+                    value={clampedRaise}
+                    onChange={handleRaiseInputChange}
+                    onBlur={() => setRaiseAmount(clampedRaise)}
+                    className="holdem-raise-input"
+                    aria-label="Raise amount input"
+                  />
+                  <button className="btn btn-accent" onClick={handleRaise}>
+                    Raise ${clampedRaise}
+                  </button>
+                </div>
               </div>
             )}
             <button className="btn btn-allin" onClick={actions.allIn}>
