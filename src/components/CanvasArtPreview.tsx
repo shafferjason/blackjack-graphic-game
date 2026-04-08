@@ -1,12 +1,11 @@
-import { useState, useMemo } from 'react'
-import { generateCharacterArt, type FaceRank } from './canvasCharacterArt'
+import { useState } from 'react'
 import { getSkinById, CARD_SKINS, type CardSkin } from '../utils/cardSkinShop'
 import Card, { SkinOverrideProvider } from './Card'
 import type { Suit, Rank } from '../types'
 import './CanvasArtPreview.css'
 
 const CANVAS_SKINS = ['classic', 'neon-nights', 'crimson-flame', 'royal-gold', 'midnight-purple', 'arctic-frost', 'emerald-fortune'] as const
-const RANKS: FaceRank[] = ['J', 'Q', 'K', 'A']
+const RANKS: ('J' | 'Q' | 'K' | 'A')[] = ['J', 'Q', 'K', 'A']
 const SUITS: Suit[] = ['spades', 'hearts', 'diamonds', 'clubs']
 
 type ViewSize = 'gameplay' | 'medium' | 'large' | 'full'
@@ -16,18 +15,6 @@ const SIZE_CONFIG: Record<ViewSize, { label: string; width: number; height: numb
   medium: { label: 'Medium (150\u00d7210)', width: 150, height: 210 },
   large: { label: 'Large (225\u00d7315)', width: 225, height: 315 },
   full: { label: 'Full Canvas (300\u00d7420)', width: 300, height: 420 },
-}
-
-function RawCanvasPreview({ skinId, rank, suit, width, height }: {
-  skinId: string; rank: FaceRank; suit: Suit; width: number; height: number
-}) {
-  const artUrl = useMemo(() => generateCharacterArt({ rank, skinId, suit }), [rank, skinId, suit])
-  return (
-    <div className="cap-raw-canvas" style={{ width, height }}>
-      <img src={artUrl} alt={`${rank} ${suit} - ${skinId}`} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
-      <span className="cap-raw-label">{rank} {suit}</span>
-    </div>
-  )
 }
 
 function SkinCardGrid({ skinId, viewSize, suit }: { skinId: string; viewSize: ViewSize; suit: Suit }) {
@@ -55,7 +42,6 @@ export default function CanvasArtPreview({ onClose }: { onClose: () => void }) {
   const [activeSkin, setActiveSkin] = useState<typeof CANVAS_SKINS[number]>('classic')
   const [viewSize, setViewSize] = useState<ViewSize>('medium')
   const [activeSuit, setActiveSuit] = useState<Suit>('spades')
-  const [showRaw, setShowRaw] = useState(false)
 
   return (
     <div className="cap-overlay" onClick={onClose}>
@@ -107,21 +93,6 @@ export default function CanvasArtPreview({ onClose }: { onClose: () => void }) {
             ))}
           </div>
 
-          <div className="cap-control-group">
-            <label>View:</label>
-            <button
-              className={`cap-btn ${!showRaw ? 'active' : ''}`}
-              onClick={() => setShowRaw(false)}
-            >
-              In-Card (layered)
-            </button>
-            <button
-              className={`cap-btn ${showRaw ? 'active' : ''}`}
-              onClick={() => setShowRaw(true)}
-            >
-              Raw Canvas Art
-            </button>
-          </div>
         </div>
 
         {/* Card grid */}
@@ -130,22 +101,7 @@ export default function CanvasArtPreview({ onClose }: { onClose: () => void }) {
             {getSkinById(activeSkin)?.name ?? activeSkin}
           </h3>
 
-          {showRaw ? (
-            <div className="cap-card-row">
-              {RANKS.map(rank => (
-                <RawCanvasPreview
-                  key={`${rank}-${activeSuit}-${activeSkin}`}
-                  skinId={activeSkin}
-                  rank={rank}
-                  suit={activeSuit}
-                  width={SIZE_CONFIG[viewSize].width}
-                  height={SIZE_CONFIG[viewSize].height}
-                />
-              ))}
-            </div>
-          ) : (
-            <SkinCardGrid skinId={activeSkin} viewSize={viewSize} suit={activeSuit} />
-          )}
+          <SkinCardGrid skinId={activeSkin} viewSize={viewSize} suit={activeSuit} />
         </div>
 
         {/* All suits at gameplay size */}

@@ -802,20 +802,21 @@ export function QueenCharacterHead({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'cyberpunk':
       return (
         <g>
-          {/* Holographic tiara with data streams */}
-          <path d="M28,20 L30,12 L34,16 L37,8 L40,14 L43,8 L46,16 L50,12 L52,20" fill="none" stroke={p.accent} strokeWidth="0.8" opacity="0.6" />
-          {/* Holographic hair — geometric bobs */}
-          <path d="M26,22 Q24,28 26,34 L30,34 L28,22" fill={p.hair} stroke={p.ink} strokeWidth="0.3" />
-          <path d="M54,22 Q56,28 54,34 L50,34 L52,22" fill={p.hair} stroke={p.ink} strokeWidth="0.3" />
-          {/* LED strips in hair */}
-          <line x1="27" y1="26" x2="29" y2="26" stroke={p.accent} strokeWidth="0.4" opacity="0.4" />
-          <line x1="27" y1="30" x2="29" y2="30" stroke={p.accent} strokeWidth="0.4" opacity="0.3" />
-          <line x1="51" y1="26" x2="53" y2="26" stroke={p.accent} strokeWidth="0.4" opacity="0.4" />
-          <line x1="51" y1="30" x2="53" y2="30" stroke={p.accent} strokeWidth="0.4" opacity="0.3" />
-          {/* Glow nodes on crown points */}
-          {[37, 40, 43].map((x, i) => (
-            <circle key={i} cx={x} cy={8 + i * 0.3} r="1" fill={p.accent} opacity="0.4" />
-          ))}
+          {/* Asymmetric undercut hair — short left, swept right for unique silhouette */}
+          <path d="M26,22 Q25,25 26,28 L30,27 L28,22" fill={p.hair} stroke={p.ink} strokeWidth="0.3" />
+          <path d="M52,22 Q56,26 56,32 Q55,38 52,40 L49,36 Q52,30 51,24" fill={p.hair} stroke={p.ink} strokeWidth="0.3" />
+          {/* Shaved undercut texture on left */}
+          <line x1="27" y1="24" x2="29" y2="24" stroke={p.ink} strokeWidth="0.15" opacity="0.2" />
+          <line x1="26.5" y1="26" x2="29.5" y2="26" stroke={p.ink} strokeWidth="0.15" opacity="0.15" />
+          {/* Swept hair highlight on right */}
+          <path d="M52,23 Q55,27 55,33" fill="none" stroke={p.hairHi} strokeWidth="0.4" opacity="0.15" />
+          {/* Tech visor band across forehead — signature silhouette cue */}
+          <rect x="29" y="20.5" width="22" height="2" rx="1" fill={p.clothing} stroke={p.accent} strokeWidth="0.35" opacity="0.7" />
+          <line x1="31" y1="21.5" x2="35" y2="21.5" stroke={p.accent} strokeWidth="0.3" opacity="0.5" />
+          <circle cx="49" cy="21.5" r="0.6" fill={p.accent} opacity="0.6" />
+          {/* Comm earpiece on left — breaks silhouette */}
+          <path d="M26,30 Q23,31 22,33 Q23,35 25,34" fill={p.clothing} stroke={p.accent} strokeWidth="0.3" opacity="0.7" />
+          <circle cx="22.5" cy="33" r="0.8" fill={p.accent} opacity="0.4" />
         </g>
       )
     case 'baroque':
@@ -1091,13 +1092,21 @@ export function QueenCharacterBody({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'cyberpunk':
       return (
         <g>
-          {/* Neon-trimmed bodysuit with tech panels */}
-          <path d="M26,48 L22,60 L58,60 L54,48 Q40,54 26,48 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
-          {/* Glowing circuit seams */}
-          <path d="M34,50 L34,58" fill="none" stroke={p.accent} strokeWidth="0.4" opacity="0.3" />
-          <path d="M46,50 L46,58" fill="none" stroke={p.accent} strokeWidth="0.4" opacity="0.3" />
-          {/* Chest data port */}
-          <rect x="37" y="50" width="6" height="3" rx="1" fill={p.accent} opacity="0.2" stroke={p.accent} strokeWidth="0.3" />
+          {/* Tech-fabric trench coat — wider shoulders break standard Queen silhouette */}
+          <path d="M20,47 L18,60 L62,60 L60,47 Q40,55 20,47 Z" fill={p.clothing} stroke={p.ink} strokeWidth="0.4" />
+          {/* Trench coat lapels / high collar — signature Fixer look */}
+          <path d="M28,47 L33,44 L37,48" fill={p.clothingMid} stroke={p.ink} strokeWidth="0.25" opacity="0.6" />
+          <path d="M52,47 L47,44 L43,48" fill={p.clothingMid} stroke={p.ink} strokeWidth="0.25" opacity="0.6" />
+          {/* Raised collar behind neck */}
+          <path d="M32,44 Q36,42 40,43 Q44,42 48,44" fill={p.clothing} stroke={p.accent} strokeWidth="0.25" opacity="0.5" />
+          {/* Circuit seam accents on coat */}
+          <path d="M30,50 L28,58" fill="none" stroke={p.accent} strokeWidth="0.3" opacity="0.25" />
+          <path d="M50,50 L52,58" fill="none" stroke={p.accent} strokeWidth="0.3" opacity="0.25" />
+          {/* Coat center seam with accent piping */}
+          <line x1="40" y1="48" x2="40" y2="60" stroke={p.accent} strokeWidth="0.35" opacity="0.2" />
+          {/* Shoulder epaulette tech panels */}
+          <rect x="21" y="47" width="5" height="2" rx="0.5" fill={p.accent} opacity="0.15" stroke={p.accent} strokeWidth="0.2" />
+          <rect x="54" y="47" width="5" height="2" rx="0.5" fill={p.accent} opacity="0.15" stroke={p.accent} strokeWidth="0.2" />
         </g>
       )
     case 'baroque':
@@ -1319,11 +1328,20 @@ export function QueenCharacterProp({ theme, p }: { theme: CharacterTheme; p: Cha
     case 'cyberpunk':
       return (
         <g>
-          {/* Holographic data fan */}
-          <g transform="translate(62,38)">
-            <path d="M-3,0 Q0,-6 3,0" fill={p.accent} opacity="0.2" stroke={p.accent} strokeWidth="0.4" />
-            <path d="M-2,-1 Q0,-4 2,-1" fill={p.accent} opacity="0.15" />
-            <line x1="0" y1="0" x2="0" y2="8" stroke={p.accent} strokeWidth="0.6" opacity="0.4" />
+          {/* Translucent data tablet — spec-aligned signature prop */}
+          <g transform="translate(60,36)">
+            {/* Tablet body — translucent with cyan edge glow */}
+            <rect x="-5" y="-2" width="10" height="14" rx="1.2"
+              fill={p.accent} opacity="0.08" stroke={p.accent} strokeWidth="0.5" />
+            {/* Screen content — data lines */}
+            <line x1="-3" y1="1" x2="3" y2="1" stroke={p.accent} strokeWidth="0.3" opacity="0.35" />
+            <line x1="-3" y1="3.5" x2="1" y2="3.5" stroke={p.accent} strokeWidth="0.25" opacity="0.25" />
+            <line x1="-3" y1="6" x2="2.5" y2="6" stroke={p.accent} strokeWidth="0.25" opacity="0.3" />
+            <line x1="-3" y1="8.5" x2="0" y2="8.5" stroke={p.accent} strokeWidth="0.2" opacity="0.2" />
+            {/* Tablet corner indicator dot */}
+            <circle cx="3.5" cy="-0.5" r="0.5" fill={p.accent} opacity="0.5" />
+            {/* Ambient glow from tablet onto hand area */}
+            <ellipse cx="0" cy="7" rx="6" ry="4" fill={p.accent} opacity="0.04" />
           </g>
         </g>
       )

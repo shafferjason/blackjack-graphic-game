@@ -49,6 +49,7 @@ export default defineConfig({
         clientsClaim: true,
         cleanupOutdatedCaches: true,
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,woff,ogg}'],
+        navigateFallbackDenylist: [/^\/sw\.js$/, /^\/registerSW\.js$/, /^\/manifest\.webmanifest$/],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,

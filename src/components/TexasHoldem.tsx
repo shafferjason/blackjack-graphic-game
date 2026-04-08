@@ -1,21 +1,30 @@
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import { useTexasHoldem } from '../hooks/useTexasHoldem'
 import type { HoldemPlayer } from '../hooks/useTexasHoldem'
 import type { Card as CardType } from '../types'
 import Card from './Card'
+import {
+  playCardDeal,
+  playChipPlace,
+  playChipCollect,
+  playWinFanfare,
+  playLossThud,
+  playButtonClick,
+} from '../utils/sound'
 
 interface TexasHoldemProps {
   chips: number
   onChipsChange: (newChips: number) => void
 }
 
-function PlayerSeat({ player, isActive, showCards }: { player: HoldemPlayer; isActive: boolean; showCards: boolean }) {
+function PlayerSeat({ player, isActive, showCards, isWinner }: { player: HoldemPlayer; isActive: boolean; showCards: boolean; isWinner: boolean }) {
   const seatClass = [
     'holdem-seat',
     isActive ? 'holdem-seat--active' : '',
     player.folded ? 'holdem-seat--folded' : '',
     player.isAllIn ? 'holdem-seat--allin' : '',
     player.isDealer ? 'holdem-seat--dealer' : '',
+    isWinner ? 'holdem-seat--winner' : '',
   ].filter(Boolean).join(' ')
 
   return (
@@ -48,17 +57,43 @@ function PlayerSeat({ player, isActive, showCards }: { player: HoldemPlayer; isA
   )
 }
 
-function CommunityCards({ cards }: { cards: CardType[] }) {
+function CommunityCards({ cards, phase }: { cards: CardType[]; phase: string }) {
   const slots = 5
+  const prevCountRef = useRef(0)
+
+  // Track which cards are newly dealt for animation
+  const newCardCount = cards.length
+  const prevCount = prevCountRef.current
+  useEffect(() => {
+    prevCountRef.current = cards.length
+  }, [cards.length])
+
+  const communityClass = [
+    'holdem-community',
+    phase === 'flop' ? 'holdem-community--flop' : '',
+    phase === 'turn' ? 'holdem-community--turn' : '',
+    phase === 'river' ? 'holdem-community--river' : '',
+  ].filter(Boolean).join(' ')
+
   return (
-    <div className="holdem-community" aria-label="Community cards">
+    <div className={communityClass} aria-label="Community cards">
       <div className="holdem-community__label">Community Cards</div>
       <div className="holdem-community__cards">
         {Array.from({ length: slots }, (_, i) => {
           const card = cards[i]
           if (card) {
+            const isNewlyDealt = i >= prevCount && i < newCardCount
+            const wrapperClass = [
+              'holdem-card-wrapper',
+              'holdem-card-wrapper--community',
+              isNewlyDealt ? 'holdem-card--dealing' : '',
+            ].filter(Boolean).join(' ')
             return (
-              <div key={i} className="holdem-card-wrapper holdem-card-wrapper--community">
+              <div
+                key={i}
+                className={wrapperClass}
+                style={isNewlyDealt ? { animationDelay: `${(i - prevCount) * 100}ms` } : undefined}
+              >
                 <Card card={card} index={i} />
               </div>
             )
@@ -70,26 +105,129 @@ function CommunityCards({ cards }: { cards: CardType[] }) {
   )
 }
 
+/* Win celebration sparkle burst */
+function WinBurst() {
+  const sparkles = useMemo(() => {
+    const count = 10
+    return Array.from({ length: count }, (_, i) => ({
+      angle: (360 / count) * i,
+      distance: 60 + Math.random() * 50,
+      delay: i * 40,
+    }))
+  }, [])
+
+  return (
+    <div className="holdem-win-burst" aria-hidden="true">
+      {sparkles.map((s, i) => (
+        <div
+          key={i}
+          className="holdem-win-burst__sparkle"
+          style={{
+            '--sparkle-angle': `${s.angle}deg`,
+            '--sparkle-distance': `${s.distance}px`,
+            '--sparkle-delay': `${s.delay}ms`,
+          } as React.CSSProperties}
+        />
+      ))}
+    </div>
+  )
+}
+
 export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) {
   const { state, humanPlayer, isHumanTurn, toCall, canCheck, canCall, canRaise, actions } = useTexasHoldem(chips, onChipsChange)
   const [raiseAmount, setRaiseAmount] = useState(20)
-
-  const handleRaise = useCallback(() => {
-    actions.raise(raiseAmount)
-  }, [actions, raiseAmount])
-
-  const isShowdown = state.phase === 'round_over' && state.winner !== null
-  const isIdle = state.phase === 'idle'
-  const isRoundOver = state.phase === 'round_over'
+  const [potGrowing, setPotGrowing] = useState(false)
 
   // Determine min/max raise
   const minRaise = state.minRaise
   const maxRaise = humanPlayer.chips
 
-  // Update raise slider range
+  // Clamp raise to valid range
   const clampedRaise = useMemo(() => {
     return Math.max(minRaise, Math.min(raiseAmount, maxRaise))
   }, [minRaise, maxRaise, raiseAmount])
+
+  const handleRaise = useCallback(() => {
+    actions.raise(clampedRaise)
+    playButtonClick()
+  }, [actions, clampedRaise])
+
+  const handleRaiseInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value)
+    if (!isNaN(val)) setRaiseAmount(val)
+  }, [])
+
+  const setQuickBet = useCallback((amount: number) => {
+    setRaiseAmount(Math.max(minRaise, Math.min(amount, maxRaise)))
+    playButtonClick()
+  }, [minRaise, maxRaise])
+
+  const isShowdown = state.phase === 'round_over' && state.winner !== null
+  const isIdle = state.phase === 'idle'
+  const isRoundOver = state.phase === 'round_over'
+  const humanWon = isRoundOver && state.winner?.includes('You')
+  const humanLost = isRoundOver && !humanWon && state.winner !== null
+
+  // ── Phase-based table class ──
+  const tableClass = [
+    'holdem-table',
+    isIdle ? 'holdem-table--idle' : '',
+    !isIdle && !isRoundOver ? 'holdem-table--active' : '',
+    isShowdown && !humanWon && !humanLost ? 'holdem-table--showdown' : '',
+    humanWon ? 'holdem-table--win' : '',
+    humanLost ? 'holdem-table--lose' : '',
+  ].filter(Boolean).join(' ')
+
+  // ── Audio: phase transitions ──
+  const prevPhaseRef = useRef(state.phase)
+  const prevPotRef = useRef(state.pot)
+  useEffect(() => {
+    const prevPhase = prevPhaseRef.current
+    prevPhaseRef.current = state.phase
+
+    // Deal cards sound when hand starts
+    if (prevPhase === 'idle' && state.phase === 'pre_flop') {
+      playCardDeal()
+      setTimeout(() => playCardDeal(), 90)
+      setTimeout(() => playCardDeal(), 175)
+      setTimeout(() => playCardDeal(), 260)
+    }
+
+    // Community card sounds (flop/turn/river)
+    if (state.phase === 'flop' && prevPhase === 'pre_flop') {
+      playCardDeal()
+      setTimeout(() => playCardDeal(), 80)
+      setTimeout(() => playCardDeal(), 160)
+    }
+    if ((state.phase === 'turn' && prevPhase === 'flop') ||
+        (state.phase === 'river' && prevPhase === 'turn')) {
+      playCardDeal()
+    }
+
+    // Round over — win/loss
+    if (state.phase === 'round_over' && prevPhase !== 'round_over') {
+      const won = state.winner?.includes('You')
+      setTimeout(() => {
+        if (won) {
+          playWinFanfare()
+          setTimeout(() => playChipCollect(), 350)
+        } else {
+          playLossThud()
+        }
+      }, 200)
+    }
+  }, [state.phase, state.winner])
+
+  // ── Audio + visual: chip bets (pot growth) ──
+  useEffect(() => {
+    if (state.pot > prevPotRef.current && state.pot > 0) {
+      playChipPlace()
+      setPotGrowing(true)
+      const t = setTimeout(() => setPotGrowing(false), 350)
+      return () => clearTimeout(t)
+    }
+    prevPotRef.current = state.pot
+  }, [state.pot])
 
   const phaseLabel = state.phase === 'pre_flop' ? 'Pre-Flop'
     : state.phase === 'flop' ? 'Flop'
@@ -98,15 +236,31 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
     : state.phase === 'round_over' ? 'Round Over'
     : ''
 
+  // Banner class
+  const bannerClass = [
+    'holdem-banner',
+    humanWon ? 'holdem-banner--win' : '',
+    humanLost ? 'holdem-banner--lose' : '',
+  ].filter(Boolean).join(' ')
+
+  // Pot class
+  const potClass = [
+    'holdem-pot',
+    potGrowing ? 'holdem-pot--growing' : '',
+  ].filter(Boolean).join(' ')
+
+  // Determine winner player name for seat highlighting
+  const winnerName = isRoundOver ? state.winner : null
+
   return (
-    <div className="holdem-table">
+    <div className={tableClass}>
       {/* Pot & Phase */}
       <div className="holdem-info-bar">
-        <div className="holdem-pot">
+        <div className={potClass}>
           <span className="holdem-pot__label">Pot</span>
           <span className="holdem-pot__amount">${state.pot}</span>
         </div>
-        {phaseLabel && <div className="holdem-phase-pill">{phaseLabel}</div>}
+        {phaseLabel && <div className="holdem-phase-pill" key={state.phase}>{phaseLabel}</div>}
       </div>
 
       {/* AI Players at top */}
@@ -117,15 +271,19 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
             player={player}
             isActive={state.currentPlayerIndex === state.players.indexOf(player) && !isIdle && !isRoundOver}
             showCards={isShowdown && !player.folded}
+            isWinner={winnerName !== null && winnerName.includes(player.name)}
           />
         ))}
       </div>
 
       {/* Community Cards */}
-      <CommunityCards cards={state.communityCards} />
+      <CommunityCards cards={state.communityCards} phase={state.phase} />
+
+      {/* Win celebration sparkles */}
+      {humanWon && <WinBurst />}
 
       {/* Message Banner */}
-      <div className={`holdem-banner ${state.winner ? 'holdem-banner--win' : ''}`}>
+      <div className={bannerClass}>
         <p>{state.message}</p>
       </div>
 
@@ -135,6 +293,7 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
           player={humanPlayer}
           isActive={isHumanTurn}
           showCards={true}
+          isWinner={humanWon === true}
         />
       </div>
 
@@ -169,19 +328,41 @@ export default function TexasHoldem({ chips, onChipsChange }: TexasHoldemProps) 
             )}
             {canRaise && (
               <div className="holdem-raise-group">
-                <input
-                  type="range"
-                  min={minRaise}
-                  max={maxRaise}
-                  step={state.bigBlind}
-                  value={clampedRaise}
-                  onChange={e => setRaiseAmount(Number(e.target.value))}
-                  className="holdem-raise-slider"
-                  aria-label="Raise amount"
-                />
-                <button className="btn btn-accent" onClick={handleRaise}>
-                  Raise ${clampedRaise}
-                </button>
+                <div className="holdem-raise-quick-bets">
+                  <button className="btn btn-quick" onClick={() => setQuickBet(minRaise)} aria-label="Minimum raise">Min</button>
+                  <button className="btn btn-quick" onClick={() => setQuickBet(Math.max(minRaise, Math.floor(state.pot / 2)))} aria-label="Half pot raise">&frac12; Pot</button>
+                  <button className="btn btn-quick" onClick={() => setQuickBet(Math.max(minRaise, state.pot))} aria-label="Pot-sized raise">Pot</button>
+                </div>
+                <div className="holdem-raise-input-row">
+                  <span className="holdem-raise-bound">${minRaise}</span>
+                  <input
+                    type="range"
+                    min={minRaise}
+                    max={maxRaise}
+                    step={state.bigBlind}
+                    value={clampedRaise}
+                    onChange={e => setRaiseAmount(Number(e.target.value))}
+                    className="holdem-raise-slider"
+                    aria-label="Raise amount"
+                  />
+                  <span className="holdem-raise-bound">${maxRaise}</span>
+                </div>
+                <div className="holdem-raise-confirm-row">
+                  <input
+                    type="number"
+                    min={minRaise}
+                    max={maxRaise}
+                    step={state.bigBlind}
+                    value={clampedRaise}
+                    onChange={handleRaiseInputChange}
+                    onBlur={() => setRaiseAmount(clampedRaise)}
+                    className="holdem-raise-input"
+                    aria-label="Raise amount input"
+                  />
+                  <button className="btn btn-accent" onClick={handleRaise}>
+                    Raise ${clampedRaise}
+                  </button>
+                </div>
               </div>
             )}
             <button className="btn btn-allin" onClick={actions.allIn}>

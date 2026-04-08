@@ -140,7 +140,9 @@ function evaluate5(cards: Card[]): { rank: PokerHandRank; score: number } {
   if (groups[0].count === 3) {
     const trip = groups[0].value
     const kickers = groups.slice(1).map(g => g.value)
-    return { rank: 'three_of_a_kind', score: HAND_BASE_SCORES.three_of_a_kind + trip * 225 + kickerScore(kickers) }
+    // trip dominates kickers: trip * 15^2 + k1 * 15 + k2
+    const subScore = trip * 225 + (kickers[0] || 0) * 15 + (kickers[1] || 0)
+    return { rank: 'three_of_a_kind', score: HAND_BASE_SCORES.three_of_a_kind + subScore }
   }
 
   if (groups[0].count === 2 && groups[1].count === 2) {
@@ -153,7 +155,9 @@ function evaluate5(cards: Card[]): { rank: PokerHandRank; score: number } {
   if (groups[0].count === 2) {
     const pair = groups[0].value
     const kickers = groups.slice(1).map(g => g.value)
-    return { rank: 'one_pair', score: HAND_BASE_SCORES.one_pair + pair * 3375 + kickerScore(kickers) }
+    // pair dominates kickers: pair * 15^3 + k1 * 15^2 + k2 * 15 + k3
+    const subScore = pair * 3375 + (kickers[0] || 0) * 225 + (kickers[1] || 0) * 15 + (kickers[2] || 0)
+    return { rank: 'one_pair', score: HAND_BASE_SCORES.one_pair + subScore }
   }
 
   return { rank: 'high_card', score: HAND_BASE_SCORES.high_card + kickerScore(values) }
